@@ -14,7 +14,6 @@ namespace Scenes{
     private:
         struct UIState{
             bool start_button_is_hovered = false;
-            bool other_button_is_hovered = false;
         } ui_state;
     };
 }

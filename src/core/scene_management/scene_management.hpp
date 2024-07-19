@@ -13,8 +13,7 @@ namespace SceneManagement
 
     enum SceneName{
         MAIN_WINDOW,
-        NEW_GAME_WINDOW,
-        GAME_WINDOW,
+        game_window,
         __SCENE_NAME_COUNT__
     };
 

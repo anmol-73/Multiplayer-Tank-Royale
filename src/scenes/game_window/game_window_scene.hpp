@@ -12,7 +12,7 @@
 #include "core/scamlib/textbox.hpp"
 #include "core/scamlib/text.hpp"
 #include "core/maths.hpp"
-
+#include "core/utils/animation_controller.hpp"
 
 namespace Scenes{
     class GameWindowScene: public Scene{
@@ -25,7 +25,9 @@ namespace Scenes{
         void update();
         void loading_update();
         void load_without_context();
+        void load_with_context();
         void unload_without_context();
+        void unload_with_context();
 
     
     private:
@@ -33,7 +35,7 @@ namespace Scenes{
         const unsigned int player_radius = 20;
         
         const Color gun_color = BLACK;
-        const float gun_length = 25;
+        
 
         const Color enemy_color = PINK;
         const unsigned int enemy_radius = 10;
@@ -67,7 +69,6 @@ namespace Scenes{
          * The speed at which enemies move towards the player
          */
         float enemy_speed;
-        float player_speed;
 
         unsigned long long int kills;
 
@@ -77,9 +78,102 @@ namespace Scenes{
         Vector2 camera;
 
         /**
-         * The position of the player
+         * The player position
          */
-        Vector2 player;
+        Vector2 player_position;
+
+        /**
+         * Offset 
+         */
+        Vector2 offset;
+
+        /**
+         * The mouse position
+         */
+        Vector2 mouse;
+
+        /**
+         * The player size, speed, angle and angular velocity
+         */
+        struct PlayerData
+        {
+            Rectangle player = {
+                .width = 70,
+                .height = 100,
+            };
+            float player_speed;
+            double player_angle;
+            double sin_player;
+            double cos_player;
+            double player_rot_speed = PI/2;
+        } player_data;
+
+        Utils::AnimationController* player_controller;
+        size_t player_idle_idx;
+        size_t player_moving_idx;
+
+        Utils::AnimationController* gun_controller;
+        size_t gun_idle_idx;
+        size_t gun_shot_idx;
+
+        Texture2D player_spritesheet;
+        Image player_spritesheet_image;
+        bool main_load_ready;
+
+        /**
+         * The gun size, angle, sincos, angular speed, state
+         */
+        struct GunData
+        {
+            Rectangle gun = {
+                .width = 20,
+                .height = 80
+            };
+            double gun_angle;
+            double predicted_gun_angle;
+            double sin_gun;
+            double cos_gun;
+            double gun_rot_speed = 1; // rads per sec
+            bool has_shot = false;
+        } gun_data;
+
+        /**
+         * The gun size, angle, sincos, angular speed, state
+         */
+        struct CrosshairData
+        {
+            double mouse_distance;
+            Vector2 tracker_position;
+            double tracker_distance;
+            const float tracker_radius = 10;
+            double tracker_radial_speed = 500;
+            Color circle_color = WHITE; 
+        } crosshair_data;
+
+        /**
+         * To set gun and tank position to player_position
+         */
+        void set_position();
+
+        /**
+         * To update player_position and play animations based on button presses after delta_time
+         */
+        void handle_movement(float delta_time);
+
+        /**
+         * To make angle between pi and -pi
+         */
+        double normalize_angle(double angle);
+
+        /**
+         * To update angle to after delta_time
+         */
+        void set_gun_angle(float delta_time);
+
+        /**
+         * To update tracker circle to after delta_time
+         */
+        void set_tracker(float delta_time);
 
         /**
          * The number of bullets left
@@ -101,20 +195,13 @@ namespace Scenes{
          */
         Vector2 spawn_enemy();
 
-        struct Data{
-            Vector2 offset;
-            double gun_angle;
-            double sin_gun;
-            double cos_gun;
-            bool has_shot = false;
-        } data;
-
         /**
          * Generates a random number for the amount of ammo to be dropped
          */
         unsigned int get_drop_amount();
 
         std::mutex load_unload_mutex;
+
 
         float pregame_timer;
         struct UIState{

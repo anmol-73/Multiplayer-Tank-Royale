@@ -1,15 +1,13 @@
 #include "scene_management.hpp"
-#include "scenes/game_window/game_window_scene.hpp"
 #include "scenes/main_window/main_window_scene.hpp"
-#include "scenes/new_game_window/new_game_window_scene.hpp"
+#include "scenes/game_window/game_window_scene.hpp"
 
 #include "iostream"
 
 void SceneManagement::init()
 {
-    register_scene(SceneManagement::SceneName::GAME_WINDOW, new Scenes::GameWindowScene());
     register_scene(SceneManagement::SceneName::MAIN_WINDOW, new Scenes::MainWindowScene());
-    register_scene(SceneManagement::SceneName::NEW_GAME_WINDOW, new Scenes::NewGameWindowScene());
+    register_scene(SceneManagement::SceneName::game_window, new Scenes::GameWindowScene());
     should_run = true;
 
     for (unsigned long long int i = 0; i < scenes.size(); ++i){
