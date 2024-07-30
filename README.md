@@ -1,7 +1,5 @@
-# Game Networking Socket Space hogaya
-
-# Info 
-GNS implementation (hopefully) for multiplayer  
+# MTRMoment hogaya
+ 
 ## Usage
 Just cd into the directory with the make file and run `make`
 
