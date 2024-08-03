@@ -275,7 +275,7 @@ ifeq ($(PLATFORM),PLATFORM_DESKTOP)
 endif
 
 # Define library paths containing required libs.
-LDFLAGS = -L.lib
+LDFLAGS = -Llib
 
 ifneq ($(wildcard $(RAYLIB_RELEASE_PATH)/.*),)
     LDFLAGS += -L$(RAYLIB_RELEASE_PATH)
@@ -367,6 +367,7 @@ rwildcard=$(foreach d,$(wildcard $1*),$(call rwildcard,$d/,$2) $(filter $(subst 
 SRC_DIR = src
 BUILD_DIR = build
 OBJ_DIR = obj
+LDLIBS += -lenet
 
 # Define all object files from source files
 SRC = $(call rwildcard, *.c, *.h)

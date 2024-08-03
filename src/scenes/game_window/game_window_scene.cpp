@@ -2,6 +2,7 @@
 
 void Scenes::GameWindowScene::update()
 {
+    
     if (WindowShouldClose()){
         SceneManagement::quit();
         return;
@@ -86,6 +87,15 @@ void Scenes::GameWindowScene::loading_update()
 
 void Scenes::GameWindowScene::load_without_context()
 {
+
+    if (enet_initialize () != 0)
+    {
+        fprintf (stderr, "An error occurred while initializing ENet.\n");
+        return;
+    }
+    printf("SUCCESS!\n");
+    atexit (enet_deinitialize);
+
     Maths::init_rand();
     // Initial starting values
     const int initial_ammo = 12;
