@@ -85,9 +85,8 @@ void Scenes::GameWindowScene::loading_update()
     return;
 }
 
-void Scenes::GameWindowScene::load_without_context()
+void Scenes::GameWindowScene::init_server_connection()
 {
-
     if (enet_initialize () != 0)
     {
         fprintf (stderr, "An error occurred while initializing ENet.\n");
@@ -95,6 +94,107 @@ void Scenes::GameWindowScene::load_without_context()
     }
     printf("SUCCESS!\n");
     atexit (enet_deinitialize);
+ 
+    client = enet_host_create (NULL /* create a client host */,
+            1 /* only allow 1 outgoing connection */,
+            2 /* allow up 2 channels to be used, 0 and 1 */,
+            0 /* assume any amount of incoming bandwidth */,
+            0 /* assume any amount of outgoing bandwidth */);
+ 
+    if (client == NULL)
+    {
+        fprintf (stderr, 
+                "An error occurred while trying to create an ENet client host.\n");
+        exit (EXIT_FAILURE);
+    }
+    
+    /* Connect to some.server.net:1234. */
+    enet_address_set_host (&address, "127.0.0.1");
+    address.port = 7777;
+    
+    /* Initiate the connection, allocating the two channels 0 and 1. */
+    peer = enet_host_connect (client, &address, 2, 0);    
+    
+    if (peer == NULL)
+    {
+        fprintf (stderr, 
+                    "No available peers for initiating an ENet connection.\n");
+        exit (EXIT_FAILURE);
+    }
+    
+    /* Wait up to 5 seconds for the connection attempt to succeed. */
+    if (enet_host_service(client, &event, 5000) > 0 &&
+        event.type == ENET_EVENT_TYPE_CONNECT)
+    {
+        puts ("Connection to 127.0.0.1:7777 succeeded.");
+    }
+    else
+    {
+        /* Either the 5 seconds are up or a disconnect event was */
+        /* received. Reset the peer in the event the 5 seconds   */
+        /* had run out without any significant event.            */
+        enet_peer_reset (peer);
+        puts ("Connection to 127.0.0.1:7777 failed.");
+    }
+}
+
+void Scenes::GameWindowScene::end_server_connection()
+{
+    enet_peer_disconnect (peer, 0);
+
+    while(enet_host_service(client, &event, 3000) > 0)
+    {
+        switch(event.type)
+        {
+            case ENET_EVENT_TYPE_RECEIVE:
+                enet_packet_destroy(event.packet);
+                break;
+            case ENET_EVENT_TYPE_DISCONNECT:
+                puts("Disconnection succeeded. \n");
+                break;
+        }
+    }
+
+    enet_host_destroy(client);
+}
+
+void Scenes::GameWindowScene::send_data()
+{
+    Scenes::GameWindowScene::DataPacket data_packet;
+    data_packet.position = player_position;
+    data_packet.player_angle = player_data.player_angle;
+    data_packet.gun_angle = gun_data.gun_angle;
+    data_packet.has_shot = gun_data.has_shot;
+
+    ENetPacket * packet = enet_packet_create(&data_packet, 
+    sizeof(double),
+    ENET_PACKET_FLAG_RELIABLE);
+
+    enet_peer_send (peer, 0, packet);
+
+    while (enet_host_service (client, &event, 17) > 0)
+    {
+        switch (event.type)
+        {
+        case ENET_EVENT_TYPE_RECEIVE:
+            printf ("A packet of length %zu containing %s was received from %x:%d on channel %d.\n",
+                    event.packet -> dataLength,
+                    event.packet -> data,
+                    event.peer -> address.host,
+                    event.peer -> address.port,
+                    event.channelID);
+    
+            /* Clean up the packet now that we're done using it. */
+            enet_packet_destroy (event.packet);
+            
+            break;
+        }
+    }
+}
+
+void Scenes::GameWindowScene::load_without_context()
+{
+    init_server_connection();
 
     Maths::init_rand();
     // Initial starting values
@@ -133,10 +233,12 @@ void Scenes::GameWindowScene::load_without_context()
 
 void Scenes::GameWindowScene::unload_without_context()
 {
+    end_server_connection();
+    thread_pool.stop(true);
     UnloadImage(player_spritesheet_image);
     enemies.clear();
     drops.clear();
-    delete player_controller;    
+    delete player_controller;
     delete gun_controller;
 }
 
@@ -271,6 +373,8 @@ void Scenes::GameWindowScene::logic_update()
     {
         gun_controller->play(gun_idle_idx, true);
     }
+
+    thread_pool.push([this](int){send_data();});
 }
 
 

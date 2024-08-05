@@ -18,6 +18,7 @@ typedef struct tagMSG *LPMSG;
 #include <string>
 #include <mutex>
 #include <list>
+#include <ctpl_stl.hpp>
 
 #include "core/scene_management/scene.hpp"
 #include "core/scene_management/scene_management.hpp"
@@ -27,6 +28,7 @@ typedef struct tagMSG *LPMSG;
 #include "core/utils/animation_controller.hpp"
 
 namespace Scenes{
+    ctpl::thread_pool thread_pool(1);
     class GameWindowScene: public Scene{
     public:
         enum GameState{
@@ -43,6 +45,20 @@ namespace Scenes{
 
     
     private:
+
+        ENetHost* client;
+        ENetAddress address;
+        ENetEvent event;
+        ENetPeer *peer;
+
+        struct DataPacket
+        {
+            Vector2 position;
+            double player_angle;
+            double gun_angle;
+            bool has_shot;
+        };
+
         const Color player_color = GOLD;
         const unsigned int player_radius = 20;
         
@@ -214,6 +230,9 @@ namespace Scenes{
 
         std::mutex load_unload_mutex;
 
+        void init_server_connection();
+        void end_server_connection();
+        void send_data();
 
         float pregame_timer;
         struct UIState{
@@ -221,7 +240,6 @@ namespace Scenes{
             bool go_home_button_is_hovered = false;
         } ui_state;
     };
-
 }
 
 #include "game_window_scene.cpp"
