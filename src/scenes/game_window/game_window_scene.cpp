@@ -142,7 +142,7 @@ void Scenes::GameWindowScene::end_server_connection()
 {
     enet_peer_disconnect (peer, 0);
 
-    while(enet_host_service(client, &event, 3000) > 0)
+    /*while(enet_host_service(client, &event, 3000) > 0)
     {
         switch(event.type)
         {
@@ -153,7 +153,7 @@ void Scenes::GameWindowScene::end_server_connection()
                 puts("Disconnection succeeded. \n");
                 break;
         }
-    }
+    }*/
 
     enet_host_destroy(client);
 }
@@ -161,13 +161,14 @@ void Scenes::GameWindowScene::end_server_connection()
 void Scenes::GameWindowScene::send_data()
 {
     Scenes::GameWindowScene::DataPacket data_packet;
-    data_packet.position = player_position;
+    data_packet.x = player_position.x;
+    data_packet.y = player_position.y;
     data_packet.player_angle = player_data.player_angle;
     data_packet.gun_angle = gun_data.gun_angle;
     data_packet.has_shot = gun_data.has_shot;
 
     ENetPacket * packet = enet_packet_create(&data_packet, 
-    sizeof(double),
+    sizeof(DataPacket),
     ENET_PACKET_FLAG_RELIABLE);
 
     enet_peer_send (peer, 0, packet);
@@ -406,13 +407,6 @@ void Scenes::GameWindowScene::draw_game()
             }, 4, RAYWHITE
         );
     }
-
-    // Draw player
-    // DrawRectanglePro(player_data.player, 
-    //     {player_data.player.width/2, player_data.player.height/2},
-    //     -player_data.player_angle*RAD2DEG,
-    //     player_color
-    // );
 
     // Draw player
     Texture* player_texture = player_controller->get_sprite().first;

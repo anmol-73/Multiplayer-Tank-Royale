@@ -53,7 +53,8 @@ namespace Scenes{
 
         struct DataPacket
         {
-            Vector2 position;
+            float x;
+            float y;
             double player_angle;
             double gun_angle;
             bool has_shot;
