@@ -113,6 +113,7 @@ namespace Scenes{
          */
         Vector2 player_position;
 
+        int player_id = -1;
         /**
          * Offset 
          */

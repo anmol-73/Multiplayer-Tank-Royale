@@ -283,50 +283,50 @@ void Scenes::GameWindowScene::logic_update()
     if (gun_data.has_shot) --ammo;
     
     // Handle killing enemies, moving them closer and despawning ones that are very far away
-    for (size_t i = 0; i < enemies.size(); ++i){
-        // Move towards player
-        enemies[i] = Vector2MoveTowards(enemies[i], player_position, enemy_speed * delta_time);
+    // for (size_t i = 0; i < enemies.size(); ++i){
+    //     // Move towards player
+    //     enemies[i] = Vector2MoveTowards(enemies[i], player_position, enemy_speed * delta_time);
         
-        float dist_sqr = Vector2DistanceSqr(player_position, enemies[i]);
+    //     float dist_sqr = Vector2DistanceSqr(player_position, enemies[i]);
         
-        // Check if player was killed
-        if (dist_sqr < (player_radius + enemy_radius) * (player_radius + enemy_radius)){
-            // state = GameState::POST_GAME;
-            continue;
-        }
+    //     // Check if player was killed
+    //     if (dist_sqr < (player_radius + enemy_radius) * (player_radius + enemy_radius)){
+    //         // state = GameState::POST_GAME;
+    //         continue;
+    //     }
 
-        // Check if enemy was killed
-        if (
-            gun_data.has_shot &&
-            Maths::segment_intersects_with_circle(
-                player_position, {
-                player_position.x + (float)((bullet_range) * gun_data.cos_gun),
-                player_position.y + (float)((bullet_range) * gun_data.sin_gun)    
-            },
-            enemies[i],
-            enemy_radius
-        )){
-            unsigned int drop_count = get_drop_amount();
-            ++kills;
-            for (unsigned int j = 0; j < drop_count; ++j){
-                drops.push_back(
-                    Vector2Add(enemies[i], {
-                        (float)Maths::random(5, 20),
-                        (float)Maths::random(5, 20),
-                    })
-                );
-            }
+    //     // Check if enemy was killed
+    //     if (
+    //         gun_data.has_shot &&
+    //         Maths::segment_intersects_with_circle(
+    //             player_position, {
+    //             player_position.x + (float)((bullet_range) * gun_data.cos_gun),
+    //             player_position.y + (float)((bullet_range) * gun_data.sin_gun)    
+    //         },
+    //         enemies[i],
+    //         enemy_radius
+    //     )){
+    //         unsigned int drop_count = get_drop_amount();
+    //         ++kills;
+    //         for (unsigned int j = 0; j < drop_count; ++j){
+    //             drops.push_back(
+    //                 Vector2Add(enemies[i], {
+    //                     (float)Maths::random(5, 20),
+    //                     (float)Maths::random(5, 20),
+    //                 })
+    //             );
+    //         }
 
-            enemies[i] = spawn_enemy();
-            continue;
-        }
+    //         enemies[i] = spawn_enemy();
+    //         continue;
+    //     }
         
         // Check if enemy should be despawned
-        if (dist_sqr > cutoff_distance_square){
-            enemies[i] = spawn_enemy();
-            continue;
-        }
-    }
+    //     if (dist_sqr > cutoff_distance_square){
+    //         enemies[i] = spawn_enemy();
+    //         continue;
+    //     }
+    // }
 
     // Handle movement
     handle_movement(delta_time);  
@@ -386,27 +386,29 @@ void Scenes::GameWindowScene::draw_game()
     player_controller->update(delta_time);
     gun_controller->update(delta_time);
 
-    // Draw enemies
-    for (size_t i = 0; i < enemies.size(); ++i){
-        DrawCircle(enemies[i].x + offset.x, enemies[i].y + offset.y, enemy_radius, enemy_color);
-    }
+    // // Draw enemies
+    // for (size_t i = 0; i < enemies.size(); ++i){
+    //     DrawCircle(enemies[i].x + offset.x, enemies[i].y + offset.y, enemy_radius, enemy_color);
+    // }
 
-    // Draw drops
-    for (std::list<Vector2>::iterator it = drops.begin(); it != drops.end(); ++it){
-        DrawCircle((*it).x + offset.x, (*it).y + offset.y, drop_radius, drop_color);
-    }
+    // // Draw drops
+    // for (std::list<Vector2>::iterator it = drops.begin(); it != drops.end(); ++it){
+    //     DrawCircle((*it).x + offset.x, (*it).y + offset.y, drop_radius, drop_color);
+    // }
 
+    for (DataPacket& dp : player_list){
     // Draw trace
-    if (gun_data.has_shot){
+    if (dp.has_shot){
         DrawLineEx(
             {
-                player_position.x + offset.x,
-                player_position.y + offset.y    
+                dp.x + offset.x,
+                dp.y + offset.y    
             }, {
-                player_position.x + offset.x + (float)((bullet_range) * gun_data.cos_gun),
-                player_position.y + offset.y + (float)((bullet_range) * gun_data.sin_gun)    
+                dp.x + offset.x + (float)((bullet_range) * cos(dp.gun_angle)),
+                dp.y + offset.y + (float)((bullet_range) * sin(dp.gun_angle))    
             }, 4, RAYWHITE
         );
+    }
     }
 
     for (DataPacket& dp : player_list){
