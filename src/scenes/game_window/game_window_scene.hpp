@@ -94,6 +94,8 @@ namespace Scenes{
 
         GameState state;
 
+        std::vector<DataPacket> player_list;
+
         /**
          * The speed at which enemies move towards the player
          */

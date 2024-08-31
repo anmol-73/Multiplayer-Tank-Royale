@@ -13,7 +13,7 @@ struct DataPacket
 	bool has_shot;
 };
 
-std::vector<DataPacket *> player_list;
+std::vector<DataPacket> player_list;
 
 int player_count = 0;
 
@@ -67,7 +67,7 @@ int main (int argc, char ** argv)
 					*(int *)(event.peer -> data),
 					event.peer -> address.host,
 					event.peer -> address.port);
-					player_list.push_back(new DataPacket);
+					player_list.push_back(* new DataPacket);
 					player_count++;
 				break;
 
@@ -77,26 +77,26 @@ int main (int argc, char ** argv)
 						*(int *)(event.peer -> data),
 						event.channelID);*/
 
-					memcpy(player_list[*(int *)(event.peer->data)], event.packet->data, sizeof(DataPacket));
+					memcpy(&player_list[*(int *)(event.peer->data)], event.packet->data, sizeof(DataPacket));
 
 					/* Clean up the packet now that we're done using it. */
 					enet_packet_destroy (event.packet);
 
-					// printf ("x: %f\ny: %f\nplayer_angle: %lf\ngun_angle: %lf\nhas_shot: %d\n",
-					// 	player_list[*(int *)(event.peer->data)]->x,
-					// 	player_list[*(int *)(event.peer->data)]->y,
-                    //     player_list[*(int *)(event.peer->data)]->player_angle,
-					// 	player_list[*(int *)(event.peer->data)]->gun_angle,
-					// 	player_list[*(int *)(event.peer->data)]->has_shot);
+					printf ("x: %f\ny: %f\nplayer_angle: %lf\ngun_angle: %lf\nhas_shot: %d\n",
+						player_list[*(int *)(event.peer->data)].x,
+						player_list[*(int *)(event.peer->data)].y,
+                        player_list[*(int *)(event.peer->data)].player_angle,
+						player_list[*(int *)(event.peer->data)].gun_angle,
+						player_list[*(int *)(event.peer->data)].has_shot);
 				break;
 
 				case ENET_EVENT_TYPE_DISCONNECT:
 					printf ("%d disconnected.\n", *(int *)(event.peer -> data));
 					/* Reset the peer's client information. */
-					delete player_list[*(int *)(event.peer->data)];
+					delete &player_list[*(int *)(event.peer->data)];
 					free(event.peer -> data);
 			}
-			ENetPacket * player_list_packet = enet_packet_create((void *)&player_list, sizeof(DataPacket)*player_count, ENET_PACKET_FLAG_RELIABLE);
+			ENetPacket * player_list_packet = enet_packet_create((void *)&player_list, sizeof(player_list), ENET_PACKET_FLAG_RELIABLE);
 			enet_host_broadcast(server, 0, player_list_packet);
 		}
 	}

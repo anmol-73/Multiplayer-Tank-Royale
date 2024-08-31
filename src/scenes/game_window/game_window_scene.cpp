@@ -178,13 +178,14 @@ void Scenes::GameWindowScene::send_data()
         switch (event.type)
         {
         case ENET_EVENT_TYPE_RECEIVE:
-            printf ("A packet of length %zu containing %s was received from %x:%d on channel %d.\n",
-                    event.packet -> dataLength,
-                    event.packet -> data,
-                    event.peer -> address.host,
-                    event.peer -> address.port,
-                    event.channelID);
-    
+            // printf ("A packet of length %zu containing %s was received from %x:%d on channel %d.\n",
+            //         event.packet -> dataLength,
+            //         event.packet -> data,
+            //         event.peer -> address.host,
+            //         event.peer -> address.port,
+            //         event.channelID);
+            DataPacket* arr = (DataPacket *)event.packet->data;
+            player_list = std::vector<DataPacket> (arr, arr + event.packet->dataLength / sizeof(DataPacket));
             /* Clean up the packet now that we're done using it. */
             enet_packet_destroy (event.packet);
             
@@ -408,28 +409,43 @@ void Scenes::GameWindowScene::draw_game()
         );
     }
 
-    // Draw player
-    Texture* player_texture = player_controller->get_sprite().first;
-    Rectangle* player_source = player_controller->get_sprite().second;
-    DrawTexturePro(*player_texture,
-    *player_source,
-    player_data.player,
-    {player_data.player.width/2, player_data.player.height/2},
-    -(player_data.player_angle - PI/2)*RAD2DEG, WHITE);
+    for (DataPacket& dp : player_list){
+        Rectangle player = {
+            .x = dp.x + offset.x,
+            .y = dp.y + offset.y,
+            .width = player_data.player.width,
+            .height = player_data.player.height
+        };
+        // Draw player
+        Texture* player_texture = player_controller->get_sprite().first;
+        Rectangle* player_source = player_controller->get_sprite().second;
+        DrawTexturePro(*player_texture,
+        *player_source,
+        player,
+        {player.width/2, player.height/2},
+        -(dp.player_angle - PI/2)*RAD2DEG, WHITE);
+
+        // Draw gun
+        Rectangle gun = {
+            .x = dp.x + offset.x,
+            .y = dp.y + offset.y,
+            .width = gun_data.gun.width,
+            .height = gun_data.gun.height
+        };
+        Texture* gun_texture = gun_controller->get_sprite().first;
+        Rectangle* gun_source = gun_controller->get_sprite().second;
+        DrawTexturePro(*gun_texture,
+            *gun_source,
+            gun,
+            {
+                gun_data.gun.width/2,
+                gun_data.gun.height
+            }, 
+            (dp.gun_angle+PI/2)*RAD2DEG, WHITE
+        );
+    }
     
 
-    // Draw gun
-    Texture* gun_texture = gun_controller->get_sprite().first;
-    Rectangle* gun_source = gun_controller->get_sprite().second;
-    DrawTexturePro(*gun_texture,
-        *gun_source,
-        gun_data.gun,
-        {
-            gun_data.gun.width/2,
-            gun_data.gun.height
-        }, 
-        (gun_data.gun_angle+PI/2)*RAD2DEG, WHITE
-    );
 
     // Draw gun crosshair circle
     DrawCircleLines(crosshair_data.tracker_position.x+player_position.x+offset.x, 
