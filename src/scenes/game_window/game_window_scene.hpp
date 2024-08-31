@@ -42,7 +42,7 @@ namespace Scenes{
         void load_with_context();
         void unload_without_context();
         void unload_with_context();
-
+        void data_receiver(int);
     
     private:
 

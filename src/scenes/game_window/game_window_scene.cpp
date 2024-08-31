@@ -280,7 +280,7 @@ void Scenes::GameWindowScene::logic_update()
     const float drop_attraction_factor = 0.01;
 
     gun_data.has_shot = IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && ammo > 0;
-    if (gun_data.has_shot) --ammo;
+    if (gun_data.has_shot) ++ammo;
     
     // Handle killing enemies, moving them closer and despawning ones that are very far away
     // for (size_t i = 0; i < enemies.size(); ++i){
@@ -375,9 +375,10 @@ void Scenes::GameWindowScene::logic_update()
     {
         gun_controller->play(gun_idle_idx, true);
     }
-
+    thread_pool.clear_queue();
     thread_pool.push([this](int){send_data();});
 }
+
 
 
 void Scenes::GameWindowScene::draw_game()
