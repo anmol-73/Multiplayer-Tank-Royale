@@ -96,7 +96,7 @@ int main (int argc, char ** argv)
 					delete &player_list[*(int *)(event.peer->data)];
 					free(event.peer -> data);
 			}
-			ENetPacket * player_list_packet = enet_packet_create((void *)&player_list, sizeof(player_list), ENET_PACKET_FLAG_RELIABLE);
+			ENetPacket * player_list_packet = enet_packet_create((void *)player_list.data(), sizeof(DataPacket) * player_list.size(), ENET_PACKET_FLAG_RELIABLE);
 			enet_host_broadcast(server, 0, player_list_packet);
 		}
 	}
