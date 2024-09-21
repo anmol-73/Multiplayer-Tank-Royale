@@ -1,4 +1,5 @@
 #pragma once
+#include <cassert>
 #include <thread>
 #include <mutex>
 #include <condition_variable>
@@ -51,6 +52,7 @@ namespace SceneManagement
          */
         void __update();
 
+        virtual ~Scene(){};
 
     protected:
         /**

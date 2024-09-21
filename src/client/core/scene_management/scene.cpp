@@ -1,11 +1,10 @@
 #include "scene.hpp"
-#include <cassert>
 
 void SceneManagement::Scene::_init()
 {
     // Start the load unload worker thread :)
     load_parameters.thread_should_run = true;
-    load_parameters.load_unload_worker_thread = std::thread(load_unload_worker);
+    load_parameters.load_unload_worker_thread = std::thread([this](){this->load_unload_worker();});
 }
 
 void SceneManagement::Scene::_destroy()
