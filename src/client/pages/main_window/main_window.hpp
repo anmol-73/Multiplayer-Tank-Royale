@@ -1,4 +1,5 @@
-#pragma once
+#ifndef HEADER_MAIN_WINDOW
+#define HEADER_MAIN_WINDOW
 #include <raylib.h>
 
 #include "core/scene_management.hpp"
@@ -10,3 +11,4 @@ namespace Pages
         void _loading_update();
     };    
 } // namespace Pages
+#endif

@@ -1,10 +1,11 @@
 #include "scene_manager.hpp"
 
+bool SceneManagement::SceneManager::is_active(true);
+SceneManagement::SceneName SceneManagement::SceneManager::_loaded_scene(__NIL__);
+std::vector<std::unique_ptr<SceneManagement::Scene>>SceneManagement::SceneManager::_scenes(__NIL__);
+
 void SceneManagement::SceneManager::init()
 {
-    is_active = true;
-    _loaded_scene = __NIL__;
-
     // Just a sanity check to ensure that all defined scenes have been registered
     for (const auto &scene: _scenes){
         if (scene.get() == nullptr){

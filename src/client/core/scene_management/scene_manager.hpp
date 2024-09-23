@@ -1,4 +1,5 @@
-#pragma once
+#ifndef HEADER_SCENE_MANAGER
+#define HEADER_SCENE_MANAGER
 
 #include "scene.hpp"
 #include <vector>
@@ -13,13 +14,13 @@ namespace SceneManagement
          * A flag telling is the SceneMangaer is active.
          * NOTE: The main thread uses this to know whether to keep running or not.
          */
-        bool is_active = false;
+        extern bool is_active;
 
         /** An enum containing the name of the currently loaded scene. */
-        SceneName _loaded_scene = SceneName::__NIL__;
+        extern SceneName _loaded_scene;
 
         /** A vector keeping reference of all the scenes in the application. */
-        std::vector<std::unique_ptr<Scene>> _scenes(SceneName::__NIL__);
+        extern std::vector<std::unique_ptr<Scene>> _scenes;
 
         /**
          * Initializes the scene manager.
@@ -65,3 +66,4 @@ namespace SceneManagement
     } // namespace SceneManager
     
 } // namespace SceneManagement
+#endif

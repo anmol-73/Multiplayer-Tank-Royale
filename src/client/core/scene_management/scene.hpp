@@ -1,4 +1,5 @@
-#pragma once
+#ifndef HEADER_SCENE
+#define HEADER_SCENE
 #include <cassert>
 #include <thread>
 #include <mutex>
@@ -119,3 +120,4 @@ namespace SceneManagement
         inline bool is_active();
     };
 } // namespace SceneManagement
+#endif
