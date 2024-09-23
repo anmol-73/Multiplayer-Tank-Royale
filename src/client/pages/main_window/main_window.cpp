@@ -8,7 +8,7 @@ void Pages::MainWindowScene::_update()
     }
 
     BeginDrawing();{
-        ClearBackground({80, 80, 80, 255});
+        ClearBackground({0x1e, 0x1e, 0x1e, 0xff});
         
     }
     EndDrawing();
