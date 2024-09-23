@@ -12,26 +12,25 @@ LIB_DIR = ../../lib
 RAYLIB_DIR = C:/raylib/raylib
 
 # The compiler to use
-# We have to use the gcc in raylib on windows! (Idk about other platforms)
-COMPILER_PATH ?= C:/raylib/w64devkit/bin
 CC = g++ # The compiler to use
 
 # Compiler arguments
-CFLAGS = -Wall -std=c++14 -D_DEFAULT_SOURCE -Wno-missing-braces
-INCLUDE_DIRS = -I$(SRC_DIR) -I${INC_DIR} -I$(RAYLIB_DIR)/src/ -I$(RAYLIB_DIR)/src/external/
-LINK_DIRS = -L${LIB_DIR} -L$(RAYLIB_DIR)/src
 LINK_LIBS = -lraylib -lopengl32 -lgdi32 -lwinmm
+LINK_DIRS = -L${LIB_DIR} -L$(RAYLIB_DIR)/src
+INCLUDE_DIRS = -I$(SRC_DIR) -I${INC_DIR} -I$(RAYLIB_DIR)/src/ -I$(RAYLIB_DIR)/src/external/
+CFLAGS = -Wall -std=c++14 -D_DEFAULT_SOURCE -Wno-missing-braces
 PLATFORM ?= PLATFORM_DESKTOP
 
 # Recursive wildcard: https://stackoverflow.com/a/18258352
 rwildcard=$(foreach d,$(wildcard $(1:=/*)),$(call rwildcard,$d,$2) $(filter $(subst *,%,$2),$d))
 
+# Get the files present in src
 SRC = $(call rwildcard, $(abspath ${SRC_DIR}), *.cpp) # All .cpp files
-HEADERS = $(call rwildcard, $(abspath ${SRC_DIR}), *.hpp) # All .hpp files
 OBJS = $(SRC:.cpp=.o) # Corresponding .o files
+HEADERS = $(call rwildcard, $(abspath ${SRC_DIR}), *.hpp) # All .hpp files
 
 # NOTE: This is the default make target
-# The project itself :)
+# Build the executable
 $(PROJECT_NAME): $(OBJS)
 	@echo Built all object files
 	@echo Building executable
@@ -48,3 +47,9 @@ clean:
 	del ${PROJECT_NAME}.exe
 	@echo Deleting object files
 	@-for /f %%f in ('dir "${SRC_DIR}" /s /b ^| findstr /e .o') do @del %%f
+
+# Build the project and run the executable
+test:
+	@${MAKE} ${PROJECT_NAME}
+	@echo Running ${PROJECT_NAME}
+	@${PROJECT_NAME}
