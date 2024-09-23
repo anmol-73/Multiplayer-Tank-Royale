@@ -10,5 +10,3 @@ namespace Pages
         void _loading_update();
     };    
 } // namespace Pages
-
-#include "main_window.cpp"

@@ -65,7 +65,3 @@ namespace SceneManagement
     } // namespace SceneManager
     
 } // namespace SceneManagement
-
-
-
-#include "scene_manager.cpp"

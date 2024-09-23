@@ -119,6 +119,3 @@ namespace SceneManagement
         inline bool is_active();
     };
 } // namespace SceneManagement
-
-
-#include "scene.cpp"
