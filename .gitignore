@@ -1,3 +1,6 @@
 /.vscode
 /build
 *.o
+!/build/client/resources/
+!/build/client/resources/*
+!/build/client/resources/**/*
