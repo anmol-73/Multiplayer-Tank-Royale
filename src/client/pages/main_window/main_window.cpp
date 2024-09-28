@@ -50,7 +50,7 @@ void Pages::MainWindowScene::_update()
         if (ui_state.start_button_is_hovered && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){
             SetMouseCursor(MOUSE_CURSOR_DEFAULT);
             ui_state.start_button_is_hovered = false;
-            //SceneManagement::SceneManager::load_scene(SceneManagement::SceneName::COLLISION_TESTING, true);
+            SceneManagement::SceneManager::load_scene(SceneManagement::SceneName::COLLISION_TESTING, true);
         }
     }
     EndDrawing();

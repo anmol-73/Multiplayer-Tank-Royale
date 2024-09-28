@@ -4,12 +4,13 @@
 #include <thread>
 #include <mutex>
 #include <condition_variable>
-
+#include <stdio.h>
 
 namespace SceneManagement
 {
     enum SceneName{
         MAIN_PAGE,
+        COLLISION_TESTING,
         __NIL__ // NOTE: This must be the last position in the enum
     };
 

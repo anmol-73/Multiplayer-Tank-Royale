@@ -14,6 +14,8 @@ int main(int argc, char const *argv[])
     Global::init();
 
     SceneManagement::SceneManager::register_scene(SceneManagement::SceneName::MAIN_PAGE, new Pages::MainWindowScene());
+    SceneManagement::SceneManager::register_scene(SceneManagement::SceneName::COLLISION_TESTING, new Pages::GameWindowScene());
+
     SceneManagement::SceneManager::init();
 
     SceneManagement::SceneManager::load_scene(SceneManagement::SceneName::MAIN_PAGE, true);
