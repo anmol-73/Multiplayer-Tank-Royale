@@ -5,6 +5,7 @@
 #include <mutex>
 #include <condition_variable>
 
+#include "ui.hpp"
 
 namespace SceneManagement
 {
@@ -92,7 +93,11 @@ namespace SceneManagement
          * Tells whether the load requested was cancelled (By a cleanup request being made)
          */
         inline bool load_is_cancelled();
-        
+
+        /**
+         * Handles ui everywhere :)
+         */
+        DragonLib::View ui;        
 
     private:
         struct LoadParameters{

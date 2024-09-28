@@ -64,8 +64,8 @@ void SceneManagement::Scene::__update()
 
 inline bool SceneManagement::Scene::is_active(){
     // Just think about it a little bit (It makes sense full trust)
-    // Although its not required to && with has_loaded_with_context, it just makes it easier to read
-    return load_parameters.loads_requested == 0 && load_parameters.unloads_requested == 0 && load_parameters.has_loaded_with_context;
+    // Although its not required to && with has_loaded_without_context, it just makes it easier to read
+    return load_parameters.loads_requested == 0 && load_parameters.unloads_requested == 0 && load_parameters.has_loaded_without_context;
 }
 
 inline bool SceneManagement::Scene::load_is_cancelled()

@@ -1,5 +1,6 @@
 #include "main_window.hpp"
 
+
 void Pages::MainWindowScene::_update()
 {
     if (WindowShouldClose()){
@@ -9,7 +10,7 @@ void Pages::MainWindowScene::_update()
 
     BeginDrawing();{
         ClearBackground({0x1e, 0x1e, 0x1e, 0xff});
-        
+           
     }
     EndDrawing();
 }

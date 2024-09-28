@@ -9,6 +9,8 @@ namespace Pages
     class MainWindowScene: public SceneManagement::Scene{
         void _update();
         void _loading_update();
+
+        UI ui;
     };    
 } // namespace Pages
 #endif
