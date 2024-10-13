@@ -2,6 +2,9 @@
 #define HEADER_GAME_WINDOW
 
 #include <iostream>
+#include <vector>
+#include <algorithm>
+#include <utility>
 #include <raylib.h>
 #include <raymath.h>
 
@@ -11,6 +14,7 @@
 #include "core/scamlib/text.hpp"
 #include "core/maths.hpp"
 #include "core/utils/animation_controller.hpp"
+#include "core/physics/collisions.hpp"
 
 namespace Pages
 {
@@ -40,7 +44,12 @@ namespace Pages
             /**
              * Draws the hud
              */
-            void draw_hud(); 
+            void draw_hud();
+
+            /**
+             * Draws the floor
+             */
+            void draw_bg();  
 
             /**
              * Basically a delta added to all coordinates :)
@@ -76,6 +85,7 @@ namespace Pages
                 double sin_player;
                 double cos_player;
                 double player_rot_speed = PI/2;
+                bool player_colliding = false;
             } player_data;
 
             Utils::AnimationController* player_controller;
@@ -119,6 +129,17 @@ namespace Pages
                 double tracker_radial_speed = 500;
                 Color circle_color = WHITE; 
             } crosshair_data;
+
+            struct WallData
+            {
+                float width;
+                int num_x;
+                int num_y;
+                std::vector<std::pair<int, int>> walls = {std::make_pair(1, 2), std::make_pair(5,5)};
+            } wall_data;
+
+            Texture2D floor_tileset;
+            Image floor_tileset_image;
 
             /**
              * To set gun and tank position to player_position

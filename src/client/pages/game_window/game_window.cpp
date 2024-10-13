@@ -63,6 +63,8 @@ void Pages::GameWindowScene::_load_with_context()
             }
         );
     gun_shot_idx = gun_controller->register_animation(gun_shot);
+
+    floor_tileset = LoadTextureFromImage(floor_tileset_image);
 }
 
 void Pages::GameWindowScene::_loading_update()
@@ -89,7 +91,7 @@ void Pages::GameWindowScene::_load()
     SetMouseCursor(MOUSE_CURSOR_CROSSHAIR);
 
     player_data.player_speed = 120.0f;
-    player_data.player_angle = 0;
+    player_data.player_angle = PI;
     gun_data.gun_angle=0;
     camera = Vector2();
 
@@ -101,11 +103,17 @@ void Pages::GameWindowScene::_load()
     player_controller = new Utils::AnimationController();
     gun_controller = new Utils::AnimationController();
     main_load_ready = true;
+
+    floor_tileset_image = LoadImage("resources/game_window/floor_tileset.png");
+    wall_data.width = Maths::gcd(GetScreenHeight(),GetScreenWidth());
+    wall_data.num_x = GetScreenWidth()/wall_data.width;
+    wall_data.num_y = GetScreenHeight()/wall_data.width;
 }
 
 void Pages::GameWindowScene::_cleanup()
 {
     UnloadImage(player_spritesheet_image);
+    UnloadImage(floor_tileset_image);
     delete player_controller;
     delete gun_controller;
 }
@@ -113,6 +121,7 @@ void Pages::GameWindowScene::_cleanup()
 void Pages::GameWindowScene::_cleanup_with_context()
 {
     UnloadTexture(player_spritesheet);
+    UnloadTexture(floor_tileset);
 }
 
 void Pages::GameWindowScene::logic_update()
@@ -158,6 +167,27 @@ void Pages::GameWindowScene::logic_update()
         gun_controller->play(gun_idle_idx, true);
     }
 
+    // Handle collision detection
+    player_data.player_colliding=false;
+    for(int i = 0; i<wall_data.num_y; i++)
+    {
+        for(int j = 0; j<wall_data.num_x; j++)
+        {
+            if(std::find(wall_data.walls.begin(), wall_data.walls.end(), std::make_pair(i,j)) != wall_data.walls.end())
+            {
+                Rectangle wall = {
+                    .x = player_position.x+(j*wall_data.width),
+                    .y = player_position.y+(i*wall_data.width),
+                    .width = wall_data.width,
+                    .height = wall_data.width
+                };
+                player_data.player_colliding = Physics::sat_collision_detection(wall, 0, player_data.player, player_data.player_angle);
+                if(player_data.player_colliding){break;}
+            }
+            if(player_data.player_colliding){break;}
+        }
+        if(player_data.player_colliding){break;}
+    }
 }
 
 
@@ -167,6 +197,9 @@ void Pages::GameWindowScene::draw_game()
     float delta_time = GetFrameTime();
     player_controller->update(delta_time);
     gun_controller->update(delta_time);
+
+    // Draw floor
+    draw_bg();
 
    // Draw trace
     if (gun_data.has_shot){
@@ -194,6 +227,7 @@ void Pages::GameWindowScene::draw_game()
     // Draw gun
     Texture* gun_texture = gun_controller->get_sprite().first;
     Rectangle* gun_source = gun_controller->get_sprite().second;
+    Color tank_color = player_data.player_colliding ? RED:WHITE;
     DrawTexturePro(*gun_texture,
         *gun_source,
         gun_data.gun,
@@ -201,7 +235,7 @@ void Pages::GameWindowScene::draw_game()
             gun_data.gun.width/2,
             gun_data.gun.height
         }, 
-        (gun_data.gun_angle+PI/2)*RAD2DEG, WHITE
+        (gun_data.gun_angle+PI/2)*RAD2DEG, tank_color
     );
 
     // Draw gun crosshair circle
@@ -220,6 +254,42 @@ void Pages::GameWindowScene::draw_hud()
     });
 }
 
+void Pages::GameWindowScene::draw_bg()
+{
+    for(int i = 0; i<wall_data.num_y; i++)
+    {
+        for(int j = 0; j<wall_data.num_x; j++)
+        {
+            Rectangle tile;
+            Rectangle wall = {
+                .x = player_position.x+(j*wall_data.width),
+                .y = player_position.y+(i*wall_data.width),
+                .width = wall_data.width,
+                .height = wall_data.width
+            };
+            Vector2 center = {(wall_data.width/2), (wall_data.width/2)};
+            if(std::find(wall_data.walls.begin(), wall_data.walls.end(), std::make_pair(i,j)) != wall_data.walls.end())
+            {
+                tile = {
+                    .x = 16,
+                    .y = 0,
+                    .width = 16,
+                    .height = 16,
+                };
+            }
+            else
+            {
+                tile = {
+                    .x = 32,
+                    .y = 0,
+                    .width = 16,
+                    .height = 16,
+                };
+            }
+            DrawTexturePro(floor_tileset, tile, wall, center, 0, WHITE);
+        }
+    }
+}
 
 void Pages::GameWindowScene::set_position()
 {

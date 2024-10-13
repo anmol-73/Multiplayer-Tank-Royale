@@ -22,6 +22,8 @@ namespace Maths
      * Returns true if the segment intersects with the circle
      */
     bool segment_intersects_with_circle(Vector2 seg_start, Vector2 seg_end, Vector2 circ_center, float circ_radius);
+
+    int gcd(int a, int b);
 } // namespace Maths
 
 #endif

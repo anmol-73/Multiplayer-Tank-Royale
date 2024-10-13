@@ -56,3 +56,13 @@ bool Maths::segment_intersects_with_circle(Vector2 seg_start, Vector2 seg_end, V
     d = ((xc - x2) * (xc - x2) + (yc - y2) * (yc - y2));
     return (d <= r);
 }
+
+int Maths::gcd(int a, int b)
+{
+   if(b == 0) {
+        return a;
+    }
+    else {
+        return gcd(b, a % b);
+    }
+}
