@@ -5,8 +5,6 @@
 #include <mutex>
 #include <condition_variable>
 
-#include "ui.hpp"
-
 namespace SceneManagement
 {
     enum SceneName{
@@ -35,12 +33,12 @@ namespace SceneManagement
         /**
          * Called every frame after the scene has been loaded.
          */
-        virtual void _update(){};
+        virtual void _update();
 
         /**
          * Called every frame while the scene is still loading.
          */
-        virtual void _loading_update(){};
+        virtual void _loading_update();
 
         /** Pushes the load request onto the load-unload thread. */
         void __request_load();
@@ -54,7 +52,7 @@ namespace SceneManagement
          */
         void __update();
 
-        virtual ~Scene(){};
+        virtual ~Scene();
 
     protected:
         /**
@@ -62,7 +60,7 @@ namespace SceneManagement
          * 
          * NOTE: It is assured that for every `load` a `cleanup` will be called before another load
          */
-        virtual void _load(){};
+        virtual void _load();
 
         /**
          * Function called when a scene is asked to cleanup any resources loaded in `load`.
@@ -70,7 +68,7 @@ namespace SceneManagement
          * NOTE: It is not assured that cleanup_with_context is called before `cleanup`. (Refer to note in `load_with_context`)
          * NOTE: It is assured that an `load` was done before every time `cleanup` is called.
          */
-        virtual void _cleanup(){};
+        virtual void _cleanup();
         
         /**
          * Function called when a scene is asked to load itself.
@@ -79,7 +77,7 @@ namespace SceneManagement
          * NOTE: This is called on the main thread after every `load`.
          * NOTE: It is assured that for every `load_with_context` a `cleanup_with_context` will be called
          */
-        virtual void _load_with_context(){};
+        virtual void _load_with_context();
         
         /**
          * Function called when a scene is asked to cleanup any resources loaded in `load_with_context`.
@@ -87,17 +85,12 @@ namespace SceneManagement
          * NOTE: This is called on the main thread before `cleanup` is called.
          * NOTE: It is assured that an `load_with_context` was done before every time `cleanup_with_context` is called.
          */
-        virtual void _cleanup_with_context(){};
+        virtual void _cleanup_with_context();
 
         /**
          * Tells whether the load requested was cancelled (By a cleanup request being made)
          */
         inline bool load_is_cancelled();
-
-        /**
-         * Handles ui everywhere :)
-         */
-        DragonLib::View ui;        
 
     private:
         struct LoadParameters{

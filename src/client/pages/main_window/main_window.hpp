@@ -3,6 +3,7 @@
 #include <raylib.h>
 
 #include "core/scene_management.hpp"
+#include "main_window_ui.hpp"
 
 namespace Pages
 {
@@ -10,7 +11,8 @@ namespace Pages
         void _update();
         void _loading_update();
 
-        UI ui;
+
+        MainWindowUI ui;
     };    
 } // namespace Pages
 #endif

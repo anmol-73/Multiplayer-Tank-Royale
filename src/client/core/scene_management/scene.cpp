@@ -133,3 +133,11 @@ void SceneManagement::Scene::load_unload_worker()
         load_parameters.has_loaded_without_context = false;    
     }
 }
+
+SceneManagement::Scene::~Scene() = default;
+void SceneManagement::Scene::_cleanup_with_context(){};
+void SceneManagement::Scene::_load_with_context(){};
+void SceneManagement::Scene::_loading_update(){};
+void SceneManagement::Scene::_cleanup(){};
+void SceneManagement::Scene::_update(){};
+void SceneManagement::Scene::_load(){};

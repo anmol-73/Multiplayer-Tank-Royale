@@ -10,6 +10,8 @@ int main(int argc, char const *argv[])
     SetWindowMinSize(800, 450);
     SetTargetFPS(60);
 
+    Global::init();
+
     SceneManagement::SceneManager::register_scene(SceneManagement::SceneName::MAIN_PAGE, new Pages::MainWindowScene());
     SceneManagement::SceneManager::init();
 
@@ -20,5 +22,6 @@ int main(int argc, char const *argv[])
     }
 
     SceneManagement::SceneManager::cleanup();
+    Global::cleanup();
     return 0;
 }

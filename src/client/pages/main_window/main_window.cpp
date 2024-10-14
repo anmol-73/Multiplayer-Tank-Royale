@@ -1,6 +1,5 @@
 #include "main_window.hpp"
 
-
 void Pages::MainWindowScene::_update()
 {
     if (WindowShouldClose()){
@@ -10,9 +9,11 @@ void Pages::MainWindowScene::_update()
 
     BeginDrawing();{
         ClearBackground({0x1e, 0x1e, 0x1e, 0xff});
-           
+        ui.draw();
     }
     EndDrawing();
+    
+    ui.poll_events();
 }
 
 void Pages::MainWindowScene::_loading_update() { return _update(); }
