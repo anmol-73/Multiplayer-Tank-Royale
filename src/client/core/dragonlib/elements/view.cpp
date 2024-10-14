@@ -17,6 +17,7 @@ void DragonLib::UI::Elements::View::poll_events()
     for (size_t i = elements.size(); i > 0; --i){
         elements[i - 1]->poll_events();
         hstate.child_hovered |= elements[i - 1]->hstate.hovered;
+        hstate.requested_pointer |= elements[i - 1]->hstate.requested_pointer;
     }
     hstate.hovered = hstate.child_hovered;
 }

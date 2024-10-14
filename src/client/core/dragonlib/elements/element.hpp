@@ -14,8 +14,9 @@ namespace DragonLib
             public:
                 struct HoverState{
                     bool child_hovered = false; // Set to true if a child of this element is hovered
+                    bool requested_pointer = false; // Set to true if the element wants the cursor to be pointer
                     bool hovered = false; // Set to true if the element is hovered
-                    
+
                     /** Returns true if the element is hovered (and the child is not) */
                     inline bool exclusively_hovered();
 

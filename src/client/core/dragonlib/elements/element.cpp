@@ -20,6 +20,7 @@ void DragonLib::UI::Elements::Element::HoverState::clear()
 {
     child_hovered = false;
     hovered = false;
+    requested_pointer = false;
 }
 
 DragonLib::UI::Elements::Element::~Element() = default;
