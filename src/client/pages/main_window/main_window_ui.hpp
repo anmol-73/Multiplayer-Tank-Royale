@@ -1,7 +1,7 @@
-#ifndef HEADER_MAIN_WINDOW_UI
-#define HEADER_MAIN_WINDOW_UI
+#ifndef HEADER_PAGES_MAIN_WINDOW_UI
+#define HEADER_PAGES_MAIN_WINDOW_UI
 
-#include "core/dragonlib/ui.hpp"
+#include "core/dragonlib.hpp"
 
 namespace Pages
 {

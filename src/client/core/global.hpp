@@ -1,5 +1,6 @@
-#ifndef HEADER_GLOBAL
-#define HEADER_GLOBAL
+#ifndef HEADER_CORE_GLOBAL
+#define HEADER_CORE_GLOBAL
+
 #include <raylib.h>
 #include "dragonlib/utils/text.hpp"
 

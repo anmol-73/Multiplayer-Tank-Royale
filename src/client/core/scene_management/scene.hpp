@@ -1,5 +1,5 @@
-#ifndef HEADER_SCENE
-#define HEADER_SCENE
+#ifndef HEADER_CORE_SCENE_MANAGEMENT_SCENE
+#define HEADER_CORE_SCENE_MANAGEMENT_SCENE
 #include <cassert>
 #include <thread>
 #include <mutex>

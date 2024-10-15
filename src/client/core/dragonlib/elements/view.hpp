@@ -1,5 +1,5 @@
-#ifndef HEADER_VIEW
-#define HEADER_VIEW
+#ifndef HEADER_CORE_DRAGONLIB_ELEMENTS_VIEW
+#define HEADER_CORE_DRAGONLIB_ELEMENTS_VIEW
 #include <vector>
 #include <memory>
 #include "element.hpp"

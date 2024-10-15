@@ -1,5 +1,5 @@
-#ifndef HEADER_MAIN_WINDOW
-#define HEADER_MAIN_WINDOW
+#ifndef HEADER_PAGES_MAIN_WINDOW
+#define HEADER_PAGES_MAIN_WINDOW
 #include <raylib.h>
 
 #include "core/scene_management.hpp"

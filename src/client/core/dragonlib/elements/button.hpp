@@ -1,5 +1,5 @@
-#ifndef ELEMENTS_BUTTON
-#define ELEMENTS_BUTTON
+#ifndef HEADER_CORE_DRAGONLIB_ELEMENTS_BUTTON
+#define HEADER_CORE_DRAGONLIB_ELEMENTS_BUTTON
 
 #include <raylib.h>
 #include <functional>
