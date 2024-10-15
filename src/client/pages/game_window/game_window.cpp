@@ -1,5 +1,5 @@
 #include "game_window.hpp"
-
+#include "raymath.h"
 void Pages::GameWindowScene::_update()
 {
     
@@ -13,7 +13,7 @@ void Pages::GameWindowScene::_update()
 
     // Drawing
     BeginDrawing();{
-        ClearBackground(VIOLET);
+        ClearBackground(SKYBLUE);
         draw_game();
         draw_hud();
     }
@@ -169,6 +169,12 @@ void Pages::GameWindowScene::logic_update()
 
     // Handle collision detection
     player_data.player_colliding=false;
+    Rectangle collider = {
+        player_data.player.x - player_data.player.width / 2,
+        player_data.player.y - player_data.player.height / 2,
+        player_data.player.width,
+        player_data.player.height,
+    };
     for(int i = 0; i<wall_data.num_y; i++)
     {
         for(int j = 0; j<wall_data.num_x; j++)
@@ -176,12 +182,12 @@ void Pages::GameWindowScene::logic_update()
             if(std::find(wall_data.walls.begin(), wall_data.walls.end(), std::make_pair(i,j)) != wall_data.walls.end())
             {
                 Rectangle wall = {
-                    .x = player_position.x+(j*wall_data.width),
-                    .y = player_position.y+(i*wall_data.width),
+                    .x = player_position.x+(float)(j)*(wall_data.width),
+                    .y = player_position.y+(float)(i)*(wall_data.width),
                     .width = wall_data.width,
                     .height = wall_data.width
                 };
-                player_data.player_colliding = Physics::sat_collision_detection(wall, 0, player_data.player, player_data.player_angle);
+                player_data.player_colliding = Physics::sat_collision_detection(wall, 0, collider, -(player_data.player_angle - PI/2));
                 if(player_data.player_colliding){break;}
             }
             if(player_data.player_colliding){break;}
@@ -215,19 +221,20 @@ void Pages::GameWindowScene::draw_game()
     }
 
     // Draw player
+    Color tank_color = player_data.player_colliding ? RED:WHITE;
     Texture* player_texture = player_controller->get_sprite().first;
     Rectangle* player_source = player_controller->get_sprite().second;
     DrawTexturePro(*player_texture,
     *player_source,
-    player_data.player,
+    {player_data.player.x, player_data.player.y, player_data.player.width, player_data.player.height},
     {player_data.player.width/2, player_data.player.height/2},
-    -(player_data.player_angle - PI/2)*RAD2DEG, WHITE
+    
+    -(player_data.player_angle - PI/2)*RAD2DEG, tank_color
     );
     
     // Draw gun
     Texture* gun_texture = gun_controller->get_sprite().first;
     Rectangle* gun_source = gun_controller->get_sprite().second;
-    Color tank_color = player_data.player_colliding ? RED:WHITE;
     DrawTexturePro(*gun_texture,
         *gun_source,
         gun_data.gun,
@@ -276,6 +283,7 @@ void Pages::GameWindowScene::draw_bg()
                     .width = 16,
                     .height = 16,
                 };
+                DrawTexturePro(floor_tileset, tile, wall, {0,0}, 0, WHITE);
             }
             else
             {
@@ -286,7 +294,7 @@ void Pages::GameWindowScene::draw_bg()
                     .height = 16,
                 };
             }
-            DrawTexturePro(floor_tileset, tile, wall, center, 0, WHITE);
+            // DrawTexturePro(floor_tileset, tile, wall, center, 0, WHITE);
         }
     }
 }

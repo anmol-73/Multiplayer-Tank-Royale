@@ -18,10 +18,10 @@ std::vector<Vector2> Physics::get_corners(Rectangle rectangle, float angle_rad)
 
     // Corners before rotation (relative to center)
     std::vector<Vector2> corners = {
-        {x - half_width, y - half_height},  // bottom-left
-        {x + half_width, y - half_height},  // bottom-right
-        {x + half_width, y + half_height},  // top-right
-        {x - half_width, y + half_height}   // top-left
+        {x - half_width, y - half_height},  // top-left
+        {x + half_width, y - half_height},  // top-right
+        {x + half_width, y + half_height},  // bottom-right
+        {x - half_width, y + half_height}   // bottom-left
     };
 
     // Rotate corners around the center
