@@ -2,9 +2,11 @@
 
 #include "core/scene_management/scene_manager.hpp"
 #include "pages/pages.hpp"
+#include <enet/enet.h>
 
 int main(int argc, char const *argv[])
 {
+    enet_initialize();
     SetConfigFlags(FLAG_WINDOW_HIGHDPI | FLAG_VSYNC_HINT | FLAG_MSAA_4X_HINT | FLAG_WINDOW_RESIZABLE);
     InitWindow(800, 450, "git gud vro dhruv");
     SetWindowMinSize(800, 450);
