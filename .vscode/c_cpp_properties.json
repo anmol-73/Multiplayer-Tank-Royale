@@ -17,6 +17,24 @@
             "cStandard": "c23",
             "cppStandard": "c++23",
             "intelliSenseMode": "gcc-x64"
+        },
+        {
+            "name": "Mac",
+            "includePath": [
+                "/Users/shriram/Downloads/raylib-master/src/**",
+                "${workspaceFolder}/src/client/**",
+                "${workspaceFolder}/include/**"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE",
+                "GRAPHICS_API_OPENGL_33",
+                "PLATFORM_DESKTOP"
+            ],
+            "cStandard": "c23",
+            "cppStandard": "c++23",
+            "intelliSenseMode": "gcc-x64"
         }
     ],
     "version": 4
