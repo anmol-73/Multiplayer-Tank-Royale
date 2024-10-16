@@ -1,5 +1,5 @@
-#ifndef TEMPLATE_DRAWING
-#define TEMPLATE_DRAWING
+#ifndef HEADER_CORE_DRAGONLIB_UTILS_DRAWING
+#define HEADER_CORE_DRAGONLIB_UTILS_DRAWING
 
 #include <assert.h>
 #include <raylib.h>

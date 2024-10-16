@@ -1,5 +1,5 @@
-#ifndef TEMPLATE_CALCULATION
-#define TEMPLATE_CALCULATION
+#ifndef HEADER_CORE_DRAGONLIB_UTILS_LAYOUT_CALCULATION
+#define HEADER_CORE_DRAGONLIB_UTILS_LAYOUT_CALCULATION
 
 #include <assert.h>
 #include "core/dragonlib/layout_parameters.hpp"
