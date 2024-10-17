@@ -7,7 +7,7 @@
 #include <utility>
 #include <raylib.h>
 #include <raymath.h>
-
+#include <map>
 #include "core/scene_management.hpp"
 #include "core/global.hpp"
 #include "core/scamlib/textbox.hpp"
@@ -135,7 +135,7 @@ namespace Pages
                 float width;
                 int num_x;
                 int num_y;
-                std::vector<std::pair<int, int>> walls = {std::make_pair(1, 2), std::make_pair(5,5)};
+                std::vector<int> walls;
             } wall_data;
 
             Texture2D floor_tileset;

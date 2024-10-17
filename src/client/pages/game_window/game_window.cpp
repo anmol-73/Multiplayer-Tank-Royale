@@ -1,5 +1,5 @@
 #include "game_window.hpp"
-#include "raymath.h"
+
 void Pages::GameWindowScene::_update()
 {
     
@@ -108,6 +108,36 @@ void Pages::GameWindowScene::_load()
     wall_data.width = Maths::gcd(GetScreenHeight(),GetScreenWidth());
     wall_data.num_x = GetScreenWidth()/wall_data.width;
     wall_data.num_y = GetScreenHeight()/wall_data.width;
+
+    //loading csv data
+    wall_data.walls = {
+        2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+        2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2,
+        2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 2, 2,
+        2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 2, 2,
+        2, 2, 0, 0, 0, 2, 2, 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 0, 2,
+        2, 0, 0, 2, 2, 2, 2, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 2, 1, 2, 2, 2, 2, 2, 0, 2, 2,
+        2, 2, 2, 2, 2, 2, 2, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 2, 2, 2, 2, 2, 2, 2, 0, 2, 2,
+        2, 2, 2, 2, 2, 2, 2, 0, 2, 2, 1, 2, 2, 2, 2, 2, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 2,
+        2, 2, 2, 2, 2, 1, 0, 2, 2, 2, 2, 2, 2, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 2, 2,
+        2, 2, 2, 2, 2, 0, 2, 2, 2, 2, 0, 0, 0, 1, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 2, 0, 2, 2,
+        2, 2, 2, 2, 2, 0, 2, 2, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 2, 2, 2,
+        2, 2, 2, 0, 0, 2, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 2, 0, 2, 2, 2,
+        2, 2, 2, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 0, 2, 2, 2,
+        2, 2, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 2, 2, 2, 0, 0, 2, 2, 2, 2, 0, 2, 2, 2,
+        2, 2, 0, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 2, 2, 2, 2, 2, 0, 2, 2, 2, 2, 2, 2, 0, 2, 2, 2,
+        2, 0, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 2, 2, 2, 2, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 0, 2, 2, 2,
+        0, 0, 2, 2, 2, 2, 2, 0, 0, 0, 1, 2, 2, 2, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 2, 2, 2,
+        0, 2, 2, 2, 2, 0, 0, 2, 2, 2, 2, 2, 2, 0, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2,
+        0, 0, 1, 0, 0, 2, 2, 2, 2, 2, 2, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 2, 2, 2,
+        2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 2, 2, 2,
+        2, 2, 2, 2, 2, 2, 2, 2, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 2, 2, 2,
+        2, 2, 2, 2, 2, 2, 2, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        2, 2, 2, 2, 1, 0, 0, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 0, 0, 0, 0, 2, 2, 2, 0, 0, 0, 0, 0, 0,
+        2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2,
+        2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+        };
+
 }
 
 void Pages::GameWindowScene::_cleanup()
@@ -179,7 +209,7 @@ void Pages::GameWindowScene::logic_update()
     {
         for(int j = 0; j<wall_data.num_x; j++)
         {
-            if(std::find(wall_data.walls.begin(), wall_data.walls.end(), std::make_pair(i,j)) != wall_data.walls.end())
+            if(std::find(wall_data.walls.begin(), wall_data.walls.end(), 0) != wall_data.walls.end())
             {
                 Rectangle wall = {
                     .x = player_position.x+(float)(j)*(wall_data.width),
@@ -256,45 +286,63 @@ void Pages::GameWindowScene::draw_game()
 void Pages::GameWindowScene::draw_hud()
 {
     Scamlib::Draw::text({
-        .content = "FPS: " + std::to_string(GetFPS()),
+        .content = "X: " + std::to_string(floor((camera.x )/wall_data.width)) + " Y: " + std::to_string(floor((camera.y )/wall_data.width)),
         .color = DARKBROWN
     });
 }
 
 void Pages::GameWindowScene::draw_bg()
 {
-    for(int i = 0; i<wall_data.num_y; i++)
+    // std::cout << wall_data.num_x << " " << wall_data.num_y << std::endl;
+    // if (wall_data.walls.size() == 0){
+    //     wall_data.walls.push_back(0);
+    // }
+    for(int i = -2; i<wall_data.num_y+2; i++)
     {
-        for(int j = 0; j<wall_data.num_x; j++)
+        for(int j = -2; j<wall_data.num_x+2; j++)
         {
             Rectangle tile;
             Rectangle wall = {
-                .x = player_position.x+(j*wall_data.width),
-                .y = player_position.y+(i*wall_data.width),
+                .x = floor(camera.x/wall_data.width)*wall_data.width+((j-0.5)*wall_data.width) + offset.x - GetScreenWidth()/2,
+                .y = floor(camera.y/wall_data.width)*wall_data.width+((i-0.5)*wall_data.width) + offset.y - GetScreenHeight()/2,
                 .width = wall_data.width,
                 .height = wall_data.width
             };
             Vector2 center = {(wall_data.width/2), (wall_data.width/2)};
-            if(std::find(wall_data.walls.begin(), wall_data.walls.end(), std::make_pair(i,j)) != wall_data.walls.end())
+            switch (wall_data.walls[(i+(floor((camera.y)/wall_data.width)))*30 + (j+(floor((camera.x )/wall_data.width)))])
             {
+            case 0:
                 tile = {
                     .x = 16,
                     .y = 0,
                     .width = 16,
                     .height = 16,
                 };
-                DrawTexturePro(floor_tileset, tile, wall, {0,0}, 0, WHITE);
-            }
-            else
-            {
+                break;
+            
+            case 1:
+                tile = {
+                    .x = 0,
+                    .y = 0,
+                    .width = 16,
+                    .height = 16,
+                };
+                break;
+            
+            case 2:
                 tile = {
                     .x = 32,
                     .y = 0,
                     .width = 16,
                     .height = 16,
                 };
+                break;
+            
+            default:
+                break;
             }
-            // DrawTexturePro(floor_tileset, tile, wall, center, 0, WHITE);
+
+            DrawTexturePro(floor_tileset, tile, wall, center, 0, WHITE);
         }
     }
 }
@@ -309,7 +357,7 @@ void Pages::GameWindowScene::set_position()
 
 void Pages::GameWindowScene::handle_movement(float delta_time)
 {
-    if(IsKeyDown(KEY_A) || IsKeyDown(KEY_D) || IsKeyDown(KEY_W) || IsKeyDown(KEY_S))
+    if(IsKeyDown(KEY_Q) || IsKeyDown(KEY_A) || IsKeyDown(KEY_D) || IsKeyDown(KEY_W) || IsKeyDown(KEY_S))
     {
         player_controller->play(player_moving_idx, false);
         if (IsKeyDown(KEY_A)) player_data.player_angle += player_data.player_rot_speed * delta_time;
@@ -320,6 +368,12 @@ void Pages::GameWindowScene::handle_movement(float delta_time)
             double displacement = (player_data.player_speed * delta_time);
             player_position.x += (displacement*player_data.cos_player);
             player_position.y -= (displacement*player_data.sin_player);
+        }
+        if (IsKeyDown(KEY_Q))
+        {
+            double displacement = (player_data.player_speed* 10 * delta_time);
+            player_position.x += (displacement*player_data.cos_player*10);
+            player_position.y -= (displacement*player_data.sin_player*10);
         }
         if (IsKeyDown(KEY_S))
         {
