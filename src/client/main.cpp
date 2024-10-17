@@ -15,11 +15,16 @@ typedef struct tagMSG *LPMSG;
 	#undef far
 #endif
 
+<<<<<<< HEAD
 // #include <enet/enet.h>
 
 int main(int argc, char const *argv[])
 {
     // enet_initialize();
+=======
+int main(int argc, char const *argv[])
+{
+>>>>>>> 5d87b42617885ce47cf9f2476479b96868e3dc06
     SetConfigFlags(FLAG_WINDOW_HIGHDPI | FLAG_VSYNC_HINT | FLAG_MSAA_4X_HINT | FLAG_WINDOW_RESIZABLE);
     InitWindow(800, 450, "git gud vro dhruv");
     SetWindowMinSize(800, 450);
