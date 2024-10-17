@@ -69,3 +69,21 @@ void RoomHost::handle_message(ENetPeer *peer, size_t type, void *message)
             break;
     }
 }
+
+void RoomHost::on_run()
+{
+    const size_t host_name_size = 50;
+    char host_name[host_name_size];
+    enet_address_get_host_ip(&address, host_name, host_name_size);
+    std::cout << "Listening on " << host_name << std::endl;
+}
+
+void RoomHost::on_stop_request()
+{
+    std::cout << "Stoping the server" << std::endl;
+}
+
+void RoomHost::on_stop()
+{
+    std::cout << "Stopped the server :)" << std::endl;
+}

@@ -1,6 +1,7 @@
 #ifndef HEADER_HOST
 #define HEADER_HOST
 
+#include <iostream>
 #include <enet/enet.h>
 #include <memory>
 #include <stdexcept>
@@ -23,11 +24,29 @@ public:
     void run();
 
     /**
+     * Stops the server from running
+     */
+    void stop();
+
+    /**
      * Cleans up all resources used by the host
      */
     void cleanup();
 
 protected:
+    /**
+     * Overload this to do some extra logic when the server has started
+     */
+    virtual void on_run();
+    /**
+     * Overload this to do some extra logic when the server has finished running
+     */
+    virtual void on_stop();
+    /**
+     * Overload this to do some extra logic when the server has asked to finish
+     */
+    virtual void on_stop_request();
+
     /**
      * Overload this to specify whether to accept a new connection or not
      */
@@ -71,10 +90,9 @@ protected:
 
     ENetAddress address;
     ENetHost* host;
-
 private:
 
-    bool is_running = false;
+    volatile bool is_running = false;
 };
 
 #endif

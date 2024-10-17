@@ -15,6 +15,10 @@ struct RoomHost: public Host{
     void handle_new_client(ENetPeer* peer);
     void handle_disconnection(ENetPeer* peer);
     void handle_message(ENetPeer* peer, size_t type, void* message);
+    
+    void on_stop_request();
+    void on_stop();
+    void on_run();
 
 private:
     size_t current_room_size = 0;

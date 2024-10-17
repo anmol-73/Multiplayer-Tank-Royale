@@ -20,45 +20,54 @@ void Host::bind(int port)
 
 void Host::run()
 {
+    on_run();
+    const size_t timeout = 3000;
     is_running = true;
+    
+    ENetEvent event;
     while (is_running){
-        ENetEvent event;
-
-        while (enet_host_service(host, &event, 0) > 0){
-            switch (event.type){
-                case ENET_EVENT_TYPE_CONNECT:
-                {
-                    bool accepted_new_connection = accept_new_connection();
-                    size_t response = accepted_new_connection? Networking::Message::ConnectStatus::OK : Networking::Message::ConnectStatus::DENIED;
-                    
-                    send(response, event.peer);
-                    
-                    if (accepted_new_connection){
-                        handle_new_client(event.peer);
-                    } else{
-                        enet_peer_reset(event.peer);
-                    }
-                    break;
+        enet_host_service(host, &event, timeout);
+        switch (event.type){
+            case ENET_EVENT_TYPE_CONNECT:
+            {
+                bool accepted_new_connection = accept_new_connection();
+                size_t response = accepted_new_connection? Networking::Message::ConnectStatus::OK : Networking::Message::ConnectStatus::DENIED;
+                
+                send(response, event.peer);
+                
+                if (accepted_new_connection){
+                    handle_new_client(event.peer);
+                } else{
+                    enet_peer_reset(event.peer);
                 }
-
-                case ENET_EVENT_TYPE_DISCONNECT:
-                {
-                    handle_disconnection(event.peer);
-                    break;
-                }
-
-                case ENET_EVENT_TYPE_RECEIVE:
-                {
-                    auto [type, data] = Networking::decode_message(event.packet->data);
-                    handle_message(event.peer, type, data);
-                    break;
-                }
-
-                case ENET_EVENT_TYPE_NONE:
-                    break;
+                break;
             }
+
+            case ENET_EVENT_TYPE_DISCONNECT:
+            {
+                handle_disconnection(event.peer);
+                break;
+            }
+
+            case ENET_EVENT_TYPE_RECEIVE:
+            {
+                auto [type, data] = Networking::decode_message(event.packet->data);
+                handle_message(event.peer, type, data);
+                break;
+            }
+
+            case ENET_EVENT_TYPE_NONE:
+                break;
         }
     }
+    on_stop();
+}
+
+void Host::stop()
+{
+    if (!is_running) return;
+    is_running = false;
+    on_stop_request();
 }
 
 void Host::cleanup()
@@ -66,12 +75,16 @@ void Host::cleanup()
     enet_host_destroy(host);
 }
 
+
 bool Host::accept_new_connection()
 {
     return true;
 }
 
-void Host::handle_new_client(ENetPeer *peer){}
+void Host::on_run(){}
+void Host::on_stop_request(){}
+void Host::on_stop(){}
+void Host::handle_new_client(ENetPeer *peer) {}
 void Host::handle_disconnection(ENetPeer *peer){}
 void Host::handle_message(ENetPeer *peer, size_t type, void *message){}
 
