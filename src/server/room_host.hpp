@@ -1,5 +1,5 @@
-#ifndef HEADER_LOBBY_HOST
-#define HEADER_LOBBY_HOST
+#ifndef HEADER_ROOM_HOST
+#define HEADER_ROOM_HOST
 
 #include <enet/enet.h>
 #include <memory>
@@ -18,7 +18,8 @@ struct RoomHost: public Host{
 
 private:
     size_t current_room_size = 0;
-    std::vector<std::pair<ENetPeer*, std::string>> members;
+    std::vector<ENetPeer*> members;
+    char names[Networking::Message::Room::MAX_ROOM_SIZE][Networking::Message::Room::NAME_SIZE];
 };
 
 #endif

@@ -14,9 +14,9 @@ void RoomHost::handle_new_client(ENetPeer *peer)
 {
     ++current_room_size;
     for (size_t i = 0; i < members.size(); ++i){
-        if (members[i].first == nullptr){
+        if (members[i] == nullptr){
+            members[i] = peer;
             send(Networking::Message::Room::Server::ASSIGN_ID, &i, sizeof(size_t), peer);
-            members[i] = {peer, "New player"};
             return;
         }
     }
@@ -27,30 +27,45 @@ void RoomHost::handle_disconnection(ENetPeer *peer)
 {
     for (size_t i = 0; i < members.size(); ++i){
         // Handle the case where the client didn't properly disconnect also :)
-        if (members[i].first == peer){
-            members[i].first = nullptr;
-            members[i].second.clear();
+        if (members[i] == peer){
+            enet_peer_reset(peer);
+            members[i] = nullptr;
+            break;
         }
     }
 }
 
 void RoomHost::handle_message(ENetPeer *peer, size_t type, void *message)
 {
-    using ClientCommand = Networking::Message::Room::Client;
-    using ServerCommand = Networking::Message::Room::Server;
+    namespace Structs = Networking::Message::Room;
+    using ClientCommand = Structs::Client;
+    using ServerCommand = Structs::Server;
     switch (type)
     {
-    case ClientCommand::NAME_SET_REQUEST:
-        
-        break;
-    case ClientCommand::REMOVE_PLAYER_REQUEST:
-        
-        break;
-    case ClientCommand::START_GAME_REQUEST:
-        
-        break;
+        case ClientCommand::NAME_SET_REQUEST:
+        {
+            Structs::NameSetRequest *name = (Structs::NameSetRequest*)message;
+            strncpy(names[name->client_id], name->name, Structs::NAME_SIZE);
+            send(ServerCommand::ROOM_LIST_BROADCAST, name, sizeof(char) * Structs::NAME_SIZE * Structs::MAX_ROOM_SIZE);
+            break;
+        }
+        case ClientCommand::REMOVE_PLAYER_REQUEST:
+        {
+            size_t client_id = *(size_t*)message;
+            if (members[client_id] != nullptr){
+                send(ServerCommand::DISCONNECT, members[client_id]);
+                enet_peer_reset(members[client_id]);
+                members[client_id] = nullptr;            
+            }
+            break;
+        }
+        case ClientCommand::START_GAME_REQUEST:
+        {
+            send(ServerCommand::GAME_START);
+            break;
+        }
     
-    default:
-        break;
+        default:
+            break;
     }
 }

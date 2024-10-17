@@ -2,13 +2,14 @@
 #define HEADER_COMMON_NETWORKING_HELPER
 
 #include <memory>
+#include "void_ptr.hpp"
 
 namespace Networking
 {
     /**
      * Encodes the message type and the message data into a single messages
      */
-    std::pair<std::unique_ptr<void>, size_t> encode_message(int type, void* data, size_t data_size);
+    std::pair<unique_void_ptr, size_t> encode_message(int type, void* data, size_t data_size);
     
     /**
      * Seperates the message type and the message data from an encoded message

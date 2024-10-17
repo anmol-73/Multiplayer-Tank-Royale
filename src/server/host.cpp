@@ -26,27 +26,36 @@ void Host::run()
 
         while (enet_host_service(host, &event, 0) > 0){
             switch (event.type){
-            case ENET_EVENT_TYPE_CONNECT:
-                bool accepted_new_connection = accept_new_connection();
-                size_t response = accepted_new_connection? Networking::Message::ConnectStatus::OK : Networking::Message::ConnectStatus::DENIED;
-                
-                send(response, event.peer);
-                
-                if (accept_new_connection){
-                    handle_new_client(event.peer);
-                } else{
-                    enet_peer_reset(event.peer);
+                case ENET_EVENT_TYPE_CONNECT:
+                {
+                    bool accepted_new_connection = accept_new_connection();
+                    size_t response = accepted_new_connection? Networking::Message::ConnectStatus::OK : Networking::Message::ConnectStatus::DENIED;
+                    
+                    send(response, event.peer);
+                    
+                    if (accepted_new_connection){
+                        handle_new_client(event.peer);
+                    } else{
+                        enet_peer_reset(event.peer);
+                    }
+                    break;
                 }
-                break;
 
-            case ENET_EVENT_TYPE_DISCONNECT:
-                handle_disconnection(event.peer);
-                break;
+                case ENET_EVENT_TYPE_DISCONNECT:
+                {
+                    handle_disconnection(event.peer);
+                    break;
+                }
 
-            case ENET_EVENT_TYPE_RECEIVE:
-                auto [type, data] = Networking::decode_message(event.packet->data);
-                handle_message(event.peer, type, data);
-                break;
+                case ENET_EVENT_TYPE_RECEIVE:
+                {
+                    auto [type, data] = Networking::decode_message(event.packet->data);
+                    handle_message(event.peer, type, data);
+                    break;
+                }
+
+                case ENET_EVENT_TYPE_NONE:
+                    break;
             }
         }
     }
