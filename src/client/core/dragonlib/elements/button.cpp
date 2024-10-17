@@ -10,6 +10,7 @@ void DragonLib::UI::Elements::Button::draw()
 
 void DragonLib::UI::Elements::Button::poll_events()
 {
+    clear_state();
     hstate.hovered = CheckCollisionPointRec(GetMousePosition(), bounds);
     clicked = hstate.hovered && IsMouseButtonPressed(MOUSE_BUTTON_LEFT);
     hstate.requested_pointer = hstate.hovered;

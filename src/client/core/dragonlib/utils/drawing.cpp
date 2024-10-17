@@ -14,19 +14,11 @@ Rectangle DragonLib::Utils::Drawing::__draw_text_no_wrap(UI::DrawParameters::Tex
     assert(params.font != nullptr);
     Vector2 size = measure_text(params.font, params.content, params.font_size, params.spacing, params.line_space);
     Vector2 position = Vector2Subtract(
-        Calculation::resolve_item_units(params.position, params.position_mode, size),
-        Calculation::resolve_item_units(params.origin, params.origin_mode, size)
+        Calculation::resolve_measurement(params.position, size),
+        Calculation::resolve_measurement(params.origin, size)
     );
     
-    SetTextLineSpacing(params.line_space * params.font_size);
-    if (params.sdf){
-        BeginShaderMode(Global::Rendering::Shaders::sdf_font_shader);{
-            DrawTextEx(*params.font, params.content.c_str(), position, params.font_size, params.spacing, params.font_color);
-        }
-        EndShaderMode();
-    } else{
-        DrawTextEx(*params.font, params.content.c_str(), position, params.font_size, params.spacing, params.font_color);
-    }
+    place_text(params.content.c_str(), position, params.font_color, params.font_size, params.font, params.sdf, params.line_space);
 
     return Rectangle{
         .x = position.x,
@@ -51,26 +43,32 @@ Rectangle DragonLib::Utils::Drawing::draw_box(UI::DrawParameters::Box params)
 
 Rectangle DragonLib::Utils::Drawing::__draw_box_no_radius(UI::DrawParameters::Box &params)
 {
-    Vector2 size = Calculation::resolve_item_units(params.size, params.size_mode);
+    Vector2 size = Calculation::resolve_measurement(params.size);
+    Vector2 padding = Calculation::resolve_measurement(params.padding, size);
+
+    Vector2 rect_size = Vector2Add(size, Vector2Scale(padding, 2));
     Vector2 position = Vector2Subtract(
-        Calculation::resolve_item_units(params.position, params.position_mode, size),
-        Calculation::resolve_item_units(params.origin, params.origin_mode, size)
+        Vector2Subtract(
+            Calculation::resolve_measurement(params.position, size),
+            Calculation::resolve_measurement(params.origin, size)
+        ), padding
     );
+    
     if (params.fill.a != 0){
-        DrawRectangleV(position, size, params.fill);
+        DrawRectangleV(position, rect_size, params.fill);
     }
     if (params.border.width != 0 && params.border.color.a != 0){
         DrawRectangleLinesEx({
             .x = position.x,
             .y = position.y,
-            .width = size.x,
-            .height = size.y,
+            .width = rect_size.x,
+            .height = rect_size.y,
         }, params.border.width, params.border.color);
     }
 
     return {
         position.x, position.y,
-        size.x, size.y
+        rect_size.x, rect_size.y
     };
 }
 
@@ -88,38 +86,55 @@ Rectangle DragonLib::Utils::Drawing::draw_textbox(UI::DrawParameters::TextBox pa
         params.font = params.sdf ? &Global::Rendering::Fonts::main_sdf : &Global::Rendering::Fonts::main;
     }
     Vector2 size = measure_text(params.font, params.content, params.font_size, params.spacing, params.line_space);
+    Vector2 padding = Calculation::resolve_measurement(params.padding, size);
+    Vector2 rect_size = Vector2Add(size, Vector2Scale(padding, 2));
+    
     Vector2 position = Vector2Subtract(
-        Calculation::resolve_item_units(params.position, params.position_mode, size),
-        Calculation::resolve_item_units(params.rect_origin, params.rect_origin_mode, size)
+        Calculation::resolve_measurement(params.position, rect_size),
+        Calculation::resolve_measurement(params.rect_origin, rect_size)
     );
     
     if (params.fill.a != 0){
-        DrawRectangleV(position, size, params.fill);
+        DrawRectangleV(position, rect_size, params.fill);
     }
     if (params.border.width != 0 && params.border.color.a != 0){
+        
         DrawRectangleLinesEx({
-            .x = position.x,
-            .y = position.y,
-            .width = size.x,
-            .height = size.y,
+            .x = position.x - params.border.width - params.border.offset / 2,
+            .y = position.y - params.border.width - params.border.offset / 2,
+            .width = rect_size.x + 2*params.border.width + params.border.offset,
+            .height = rect_size.y + 2*params.border.width + params.border.offset,
         }, params.border.width, params.border.color);
     }
 
-    Vector2 text_position = Vector2Add(position, Calculation::resolve_item_units(params.text_origin, params.text_origin_mode, size));
-    SetTextLineSpacing(params.line_space * params.font_size);
-    if (params.sdf){
-        BeginShaderMode(Global::Rendering::Shaders::sdf_font_shader);{
-            DrawTextEx(*params.font, params.content.c_str(), text_position, params.font_size, params.spacing, params.font_color);
-        }
-        EndShaderMode();
-    } else{
-        DrawTextEx(*params.font, params.content.c_str(), text_position, params.font_size, params.spacing, params.font_color);
-    }
-
+    Vector2 text_position = Vector2Add(
+        padding,
+        Vector2Add(
+            position, Calculation::resolve_measurement(params.text_origin, size)
+        )
+    );    
+    
+    place_text(params.content.c_str(), text_position, params.font_color, params.font_size, params.font, params.sdf, params.line_space);
     return Rectangle{
         .x = position.x,
         .y = position.y,
-        .width = size.x,
-        .height = size.y
+        .width = rect_size.x,
+        .height = rect_size.y
     };
+}
+
+void DragonLib::Utils::Drawing::place_text(const char *content, Vector2 position, Color font_color, float font_size, Font *font, bool sdf, float line_space, float spacing)
+{
+    if (font == nullptr){
+        font = sdf ? &Global::Rendering::Fonts::main_sdf : &Global::Rendering::Fonts::main;
+    }
+    SetTextLineSpacing(line_space * font_size);
+    if (sdf){
+        BeginShaderMode(Global::Rendering::Shaders::sdf_font_shader);{
+            DrawTextEx(*font, content, position, font_size, spacing, font_color);
+        }
+        EndShaderMode();
+    } else{
+        DrawTextEx(*font, content, position, font_size, spacing, font_color);
+    }
 }

@@ -2,17 +2,39 @@
 
 Pages::MainWindowUI::MainWindowUI()
 {
+    using Mode = UI::DrawParameters::SizeMode;
     register_element(
-        new UI::Elements::Button(
-            [](UI::Elements::Button* buttons){
-                return UI::DrawParameters::TextBox{
-                    .content = "hello",
-                    .font_size = 32,
-                    .position = {0.5, 0.5},
-                    .rect_origin = {0.5, 0.5},
-                    .fill = buttons->hstate.hovered ? RED : YELLOW
-                };
+        new UI::Elements::Input(UI::Elements::InputParameters{
+            .size = {
+                .value = {0.4, 64},
+                .mode = {Mode::SCREEN_W, Mode::ABSOLUTE}
+            },
+            .padding = {
+                .value = {0.1, 0},
+                .mode = {Mode::SELF_H, Mode::SELF_H}
+            },
+            .text_origin = {
+                .value = {0, 0.05},
+                .mode = {Mode::SELF_H, Mode::SELF_H}
+            },
+            .background_color = WHITE,
+            .font_color = BLACK,
+            .default_border_params = {
+                .width = 2,
+                .color = WHITE,
+            },
+            .focused_border_params = {
+                .width = 2,
+                .color = GREEN,
+            },
+            .hover_border_params = {
+                .width = 2,
+                .color = YELLOW,
+            },
+            .placeholder = {
+                .content = "127.0.0.1",
+                .placeholder_font_color = GRAY
             }
-        )
+        })
     );
 }

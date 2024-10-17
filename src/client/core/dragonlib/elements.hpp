@@ -1,4 +1,5 @@
 #include "elements/page_view.hpp"
 #include "elements/element.hpp"
 #include "elements/button.hpp"
+#include "elements/input.hpp"
 #include "elements/view.hpp"

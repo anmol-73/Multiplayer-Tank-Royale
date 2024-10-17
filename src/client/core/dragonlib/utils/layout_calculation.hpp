@@ -10,7 +10,7 @@ namespace DragonLib
     {
         namespace Calculation
         {
-            Vector2 resolve_item_units(Vector2 item, UI::DrawParameters::CalculationMode mode, Vector2 element_size = {0});
+            Vector2 resolve_measurement(UI::DrawParameters::Measurement measurement, Vector2 element_size = {0});
         } // namespace Calculation        
     } // namespace Utils    
 } // namespace DragonLib
