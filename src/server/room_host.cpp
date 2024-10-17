@@ -80,10 +80,17 @@ void RoomHost::on_run()
 
 void RoomHost::on_stop_request()
 {
-    std::cout << "Stoping the server" << std::endl;
+    std::cout << "Stopping the server" << std::endl;
 }
 
 void RoomHost::on_stop()
 {
+    for (size_t i = 0; i < Networking::Message::Room::MAX_ROOM_SIZE; ++i){
+        if (members[i] != nullptr){
+            send(Networking::Message::Room::Server::DISCONNECT, members[i]);
+            enet_peer_reset(members[i]);
+            members[i] = nullptr;
+        }
+    }
     std::cout << "Stopped the server :)" << std::endl;
 }
