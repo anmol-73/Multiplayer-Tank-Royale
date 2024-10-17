@@ -2,11 +2,24 @@
 
 #include "core/scene_management/scene_manager.hpp"
 #include "pages/pages.hpp"
+
+#if defined(_WIN32)           
+	#define NOGDI             // All GDI defines and routines
+	#define NOUSER            // All USER defines and routines
+#endif
+typedef struct tagMSG *LPMSG;
 #include <enet/enet.h>
+
+#if defined(_WIN32)           // raylib uses these names as function parameters
+	#undef near
+	#undef far
+#endif
+
+// #include <enet/enet.h>
 
 int main(int argc, char const *argv[])
 {
-    enet_initialize();
+    // enet_initialize();
     SetConfigFlags(FLAG_WINDOW_HIGHDPI | FLAG_VSYNC_HINT | FLAG_MSAA_4X_HINT | FLAG_WINDOW_RESIZABLE);
     InitWindow(800, 450, "git gud vro dhruv");
     SetWindowMinSize(800, 450);
