@@ -6,7 +6,7 @@ Pages::MainWindowUI::MainWindowUI()
     register_element(
         new UI::Elements::Input(UI::Elements::InputParameters{
             .size = {
-                .value = {0.4, 64},
+                .value = {0.3, 32},
                 .mode = {Mode::SCREEN_W, Mode::ABSOLUTE}
             },
             .padding = {
@@ -34,7 +34,8 @@ Pages::MainWindowUI::MainWindowUI()
             .placeholder = {
                 .content = "127.0.0.1",
                 .placeholder_font_color = GRAY
-            }
+            },
+            .max_input_size = 16,
         })
     );
 }

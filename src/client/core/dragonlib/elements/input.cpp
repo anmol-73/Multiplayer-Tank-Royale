@@ -58,7 +58,9 @@ void DragonLib::UI::Elements::Input::poll_events()
         // Check if more characters have been pressed on the same frame
         while (key > 0)
         {
-            value += (char)key;
+            if (value.size() < params.max_input_size && ((char(key) != '\n') || params.allow_newline)){
+                value += (char)key;
+            }
 
             key = GetCharPressed();  // Check next character in the queue
         }

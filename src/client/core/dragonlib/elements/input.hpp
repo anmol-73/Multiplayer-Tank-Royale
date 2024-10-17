@@ -48,6 +48,9 @@ namespace DragonLib
                     std::string content;
                     Color placeholder_font_color = GRAY;
                 } placeholder;
+
+                size_t max_input_size = 32;
+                bool allow_newline = false;
             };
             struct Input: public Element{
             public:

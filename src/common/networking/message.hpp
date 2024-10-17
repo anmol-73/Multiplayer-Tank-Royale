@@ -10,20 +10,38 @@ namespace Networking
             DENIED
         };
 
-        namespace Lobby
+        // For the future where we can have multiple lobbies
+        // namespace Lobby
+        // {
+        //     enum Server{
+        //         ROOM_ADDRESS_SET
+        //     };
+        //     typedef char RoomAddress[50]; // https://superuser.com/questions/381022/how-many-characters-can-an-ip-address-be
+        // } // namespace Lobby
+        
+
+        namespace Room
         {
-            enum Client{ // The type of messages a client would send while in the lobby
+            const size_t MAX_ROOM_SIZE = 8;
+            enum Client{ // The type of messages a client would send while in the room
                 NAME_SET_REQUEST,
                 START_GAME_REQUEST,
                 REMOVE_PLAYER_REQUEST
             };
 
-            enum Server{ // The type of messages the server can send while in the lobby
-                NAME_SET,
+            typedef char Name[32];
+            typedef struct RoomMember{
+                size_t client_id;
+                Name name;
+            } RoomMemberBroadcast[MAX_ROOM_SIZE];
+
+            enum Server{ // The type of messages the server can send while in the room
+                ASSIGN_ID,
+                ROOM_LIST_BROADCAST,
                 GAME_START,
                 DISCONNECT
             };
-        } // namespace Lobby
+        } // namespace Room
 
         namespace Game
         {
