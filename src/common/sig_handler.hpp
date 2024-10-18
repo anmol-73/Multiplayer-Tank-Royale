@@ -2,6 +2,8 @@
 #include <windows.h>
 #endif
 #include <functional>
+#include <csignal>
+#include<iostream>
 
 namespace SignalHandler
 {

@@ -19,6 +19,15 @@ BOOL WINAPI SignalHandler::HandlerRoutine(_In_ DWORD dwCtrlType)
         return false;
     }
 }
+#else
+void my_handler(int signum)
+{
+     if (signum == SIGINT) {
+        if (SignalHandler::ctrlC_callback != nullptr) {
+            SignalHandler::ctrlC_callback(); 
+        }
+    }
+}
 #endif
 
 void SignalHandler::initialize()
@@ -26,8 +35,6 @@ void SignalHandler::initialize()
     #ifdef _WIN32
     SetConsoleCtrlHandler(HandlerRoutine, TRUE);
     #else
-    // TODO: Test this shit Shriram
-    // https://stackoverflow.com/questions/1641182/how-can-i-catch-a-ctrl-c-event
     struct sigaction sigIntHandler;
 
     sigIntHandler.sa_handler = my_handler;
