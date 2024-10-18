@@ -42,7 +42,8 @@
             "includePath": [
                 "/Users/shriram/Downloads/raylib-master/src/**",
                 "${workspaceFolder}/src/client/**",
-                "${workspaceFolder}/include/**"
+                "${workspaceFolder}/include/**",
+                "${workspaceFolder}/src/common/**"
             ],
             "defines": [
                 "_DEBUG",
