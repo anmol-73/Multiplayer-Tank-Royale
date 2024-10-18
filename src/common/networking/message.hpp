@@ -7,11 +7,6 @@ namespace Networking
 {
     namespace Message
     {
-        enum ConnectStatus{
-            OK,
-            DENIED
-        };
-
         // For the future where we can have multiple lobbies
         // namespace Lobby
         // {
@@ -24,6 +19,7 @@ namespace Networking
 
         namespace Room
         {
+            const size_t STRING_MESSAGE_SIZE = 64;
             const size_t MAX_ROOM_SIZE = 8;
             const size_t NAME_SIZE = 32;
             enum Client{ // The type of messages a client would send while in the room
@@ -40,7 +36,8 @@ namespace Networking
             typedef NameSetRequest LobbyNameBroadcast[MAX_ROOM_SIZE];
 
             enum Server{ // The type of messages the server can send while in the room
-                ASSIGN_ID,
+                CONNECT_OK,
+                CONNECT_DENIED,
                 ROOM_LIST_BROADCAST,
                 GAME_START,
                 DISCONNECT

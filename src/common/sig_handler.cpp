@@ -1,5 +1,4 @@
 #include "sig_handler.hpp"
-#include "stdio.h"
 
 std::function<void()> SignalHandler::ctrlC_callback;
 
@@ -20,7 +19,7 @@ BOOL WINAPI SignalHandler::HandlerRoutine(_In_ DWORD dwCtrlType)
     }
 }
 #else
-void my_handler(int signum)
+void SignalHandler::my_handler(int signum)
 {
      if (signum == SIGINT) {
         if (SignalHandler::ctrlC_callback != nullptr) {

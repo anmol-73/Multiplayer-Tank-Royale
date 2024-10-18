@@ -13,6 +13,7 @@ typedef struct tagMSG *LPMSG;
 #if defined(_WIN32)           // raylib uses these names as function parameters
 	#undef near
 	#undef far
+    #undef ABSOLUTE
 #endif
 
 int main(int argc, char const *argv[])

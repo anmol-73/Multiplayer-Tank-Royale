@@ -9,6 +9,12 @@ namespace Pages
     struct MainWindowUI: public UI::Elements::PageView{
     public:
         MainWindowUI();
+
+        const std::string& address_input_value();
+        inline bool address_submit_requested();
+    private:
+        size_t address_input_id;
+        size_t address_submit_id;
     };
 } // namespace Pages
 

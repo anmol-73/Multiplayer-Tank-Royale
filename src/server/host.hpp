@@ -48,11 +48,6 @@ protected:
     virtual void on_stop_request();
 
     /**
-     * Overload this to specify whether to accept a new connection or not
-     */
-    virtual bool accept_new_connection();
-
-    /**
      * Overload this to handle what logic to do when a client connects
      */
     virtual void handle_new_client(ENetPeer* peer);

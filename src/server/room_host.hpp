@@ -11,7 +11,6 @@
 struct RoomHost: public Host{
     RoomHost();
 
-    bool accept_new_connection();
     void handle_new_client(ENetPeer* peer);
     void handle_disconnection(ENetPeer* peer);
     void handle_message(ENetPeer* peer, size_t type, void* message);

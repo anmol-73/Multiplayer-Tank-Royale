@@ -2,7 +2,10 @@
 #define HEADER_COMMON_NETWORKING_HELPER
 
 #include <memory>
+#include <string>
 #include "void_ptr.hpp"
+#include "string_algos.hpp"
+
 
 namespace Networking
 {
@@ -15,6 +18,13 @@ namespace Networking
      * Seperates the message type and the message data from an encoded message
      */
     std::pair<int, void*> decode_message(void* message);
+
+    /**
+     * Extracts the ip and the port from the address string given
+     * NOTE: sets port to -1 if the address is not valid and returns reason of invalidity in pair.first
+     */
+    std::pair<std::string, int> parse_address_string(std::string& address);
+
 } // namespace Networking
 
 #endif

@@ -3,23 +3,32 @@
 RoomHost::RoomHost()
 {
     members.assign(Networking::Message::Room::MAX_ROOM_SIZE, {});
-}
-
-bool RoomHost::accept_new_connection()
-{
-    return current_room_size < Networking::Message::Room::MAX_ROOM_SIZE;
+    for (size_t i = 0; i < Networking::Message::Room::MAX_ROOM_SIZE; ++i){
+        strcpy(names[i], "");
+    }
 }
 
 void RoomHost::handle_new_client(ENetPeer *peer)
 {
+    namespace Structs = Networking::Message::Room;
+    using ServerCommand = Structs::Server;
+    if (current_room_size < Structs::MAX_ROOM_SIZE){
+        char reason[Structs::STRING_MESSAGE_SIZE] = "Room is full!";
+        send(ServerCommand::CONNECT_DENIED, reason, sizeof(char) * Structs::STRING_MESSAGE_SIZE, peer);
+        enet_host_flush(host);
+        enet_peer_reset(peer);
+        return;
+    };
+
     ++current_room_size;
     for (size_t i = 0; i < members.size(); ++i){
         if (members[i] == nullptr){
             members[i] = peer;
-            send(Networking::Message::Room::Server::ASSIGN_ID, &i, sizeof(size_t), peer);
+            send(Networking::Message::Room::Server::CONNECT_OK, &i, sizeof(size_t), peer);
             return;
         }
     }
+
     throw std::runtime_error("Critical logic error! Could not assign ID to room member");
 }
 
@@ -28,8 +37,8 @@ void RoomHost::handle_disconnection(ENetPeer *peer)
     for (size_t i = 0; i < members.size(); ++i){
         // Handle the case where the client didn't properly disconnect also :)
         if (members[i] == peer){
-            enet_peer_reset(peer);
             members[i] = nullptr;
+            strcpy(names[i], "");
             break;
         }
     }
@@ -37,25 +46,30 @@ void RoomHost::handle_disconnection(ENetPeer *peer)
 
 void RoomHost::handle_message(ENetPeer *peer, size_t type, void *message)
 {
+    // NOTE: Use enet_host_flush in order to send the message immediately!
     namespace Structs = Networking::Message::Room;
-    using ClientCommand = Structs::Client;
     using ServerCommand = Structs::Server;
+    using ClientCommand = Structs::Client;
     switch (type)
     {
         case ClientCommand::NAME_SET_REQUEST:
         {
             Structs::NameSetRequest *name = (Structs::NameSetRequest*)message;
             strncpy(names[name->client_id], name->name, Structs::NAME_SIZE);
-            send(ServerCommand::ROOM_LIST_BROADCAST, name, sizeof(char) * Structs::NAME_SIZE * Structs::MAX_ROOM_SIZE);
+            send(ServerCommand::ROOM_LIST_BROADCAST, names, sizeof(char) * Structs::NAME_SIZE * Structs::MAX_ROOM_SIZE);
             break;
         }
         case ClientCommand::REMOVE_PLAYER_REQUEST:
         {
             size_t client_id = *(size_t*)message;
             if (members[client_id] != nullptr){
-                send(ServerCommand::DISCONNECT, members[client_id]);
+                char reason[Structs::STRING_MESSAGE_SIZE] = "You have been kicked!";
+                send(ServerCommand::DISCONNECT, reason, sizeof(char) * Structs::STRING_MESSAGE_SIZE, members[client_id]);
+                enet_host_flush(host);
                 enet_peer_reset(members[client_id]);
                 members[client_id] = nullptr;            
+                strcpy(names[client_id], "");
+                send(ServerCommand::ROOM_LIST_BROADCAST, names, sizeof(char) * Structs::NAME_SIZE * Structs::MAX_ROOM_SIZE);
             }
             break;
         }
@@ -74,8 +88,12 @@ void RoomHost::on_run()
 {
     const size_t host_name_size = 50;
     char host_name[host_name_size];
+    ENetAddress sock_addr;
+    
+    enet_socket_get_address(host->socket, &sock_addr);
     enet_address_get_host_ip(&address, host_name, host_name_size);
-    std::cout << "Listening on " << host_name << std::endl;
+    
+    std::cout << "Listening on " << host_name << ":" << sock_addr.port << std::endl;
 }
 
 void RoomHost::on_stop_request()

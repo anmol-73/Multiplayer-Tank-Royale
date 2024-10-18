@@ -1,13 +1,16 @@
 #include "host.hpp"
 
+
 void Host::bind(int port)
 {
+    const size_t max_host_peers = 16;
+    
     address.host = ENET_HOST_ANY;
     address.port = port;
 
     host = enet_host_create(
         &address,           // the address to bind the server host to 
-        MAX_HOST_PEERS,     // allow up to 16 clients and/or outgoing connections
+        max_host_peers,     // allow up to 16 clients and/or outgoing connections
         2,                  // allow up to 2 channels to be used, 0 and 1
         0,                  // assume any amount of incoming bandwidth
         0                   // assume any amount of outgoing bandwidth
@@ -26,26 +29,18 @@ void Host::run()
     
     ENetEvent event;
     while (is_running){
-        enet_host_service(host, &event, timeout);
+        if (enet_host_service(host, &event, timeout) <= 0) continue;
         switch (event.type){
             case ENET_EVENT_TYPE_CONNECT:
             {
-                bool accepted_new_connection = accept_new_connection();
-                size_t response = accepted_new_connection? Networking::Message::ConnectStatus::OK : Networking::Message::ConnectStatus::DENIED;
-                
-                send(response, event.peer);
-                
-                if (accepted_new_connection){
-                    handle_new_client(event.peer);
-                } else{
-                    enet_peer_reset(event.peer);
-                }
+                handle_new_client(event.peer);
                 break;
             }
 
             case ENET_EVENT_TYPE_DISCONNECT:
             {
                 handle_disconnection(event.peer);
+                enet_peer_reset(event.peer);
                 break;
             }
 
@@ -53,6 +48,7 @@ void Host::run()
             {
                 auto [type, data] = Networking::decode_message(event.packet->data);
                 handle_message(event.peer, type, data);
+                enet_packet_destroy(event.packet);
                 break;
             }
 
@@ -75,11 +71,6 @@ void Host::cleanup()
     enet_host_destroy(host);
 }
 
-
-bool Host::accept_new_connection()
-{
-    return true;
-}
 
 void Host::on_run(){}
 void Host::on_stop_request(){}
