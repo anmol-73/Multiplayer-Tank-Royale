@@ -18,10 +18,10 @@ typedef struct tagMSG *LPMSG;
 
 int main(int argc, char const *argv[])
 {
-    SetConfigFlags(FLAG_WINDOW_HIGHDPI | FLAG_VSYNC_HINT | FLAG_MSAA_4X_HINT | FLAG_WINDOW_RESIZABLE);
-    InitWindow(800, 450, "git gud vro dhruv");
-    SetWindowMinSize(800, 450);
-    SetTargetFPS(60);
+    SetConfigFlags(FLAG_WINDOW_HIGHDPI | FLAG_VSYNC_HINT | FLAG_MSAA_4X_HINT | FLAG_WINDOW_MAXIMIZED | FLAG_WINDOW_UNDECORATED);
+    InitWindow(1600, 900, "Multiplayer Tank Royal (Demo)");
+    
+    SetTargetFPS(120);
 
     Global::init();
 
