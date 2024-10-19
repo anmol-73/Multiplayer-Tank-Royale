@@ -9,6 +9,14 @@ void Pages::MainWindowScene::_update()
 
     BeginDrawing();{
         ClearBackground({0x1e, 0x1e, 0x1e, 0xff});
+        DrawTexturePro(
+            background_texture,
+            {0, 0, (float)background_texture.width, (float)background_texture.height},
+            {0, 0, (float)GetScreenWidth(), (float)GetScreenHeight()},
+            {0},
+            0,
+            WHITE
+        );
         ui.draw();
     }
     EndDrawing();
@@ -40,13 +48,25 @@ void Pages::MainWindowScene::_loading_update() {
     return _update();
 }
 
+void Pages::MainWindowScene::_load_with_context()
+{
+    background_texture = LoadTextureFromImage(background_image);
+}
+
+void Pages::MainWindowScene::_cleanup_with_context()
+{
+    UnloadTexture(background_texture);
+}
+
 void Pages::MainWindowScene::_load()
 {
     Global::ServiceProviders::room_client_worker.await(); // Wait for the room client to stop running (if it was running before)
+    background_image = LoadImage("resources/ui_background.png");
 }
 
 void Pages::MainWindowScene::_cleanup()
 {
+    UnloadImage(background_image);
     connect_worker.cancel();
     connect_worker.await();
 }

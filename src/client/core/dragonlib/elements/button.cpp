@@ -1,11 +1,13 @@
 #include "button.hpp"
 
+DragonLib::UI::Elements::Button::Button(std::function<DrawParameters::TextBox(Button *)> draw_param_provider_)
+{
+    draw_param_provider = draw_param_provider_;
+}
+
 void DragonLib::UI::Elements::Button::draw()
 {
-    if (reactive){
-        draw_params = draw_param_provider(this);
-    }
-    bounds = Utils::Drawing::draw_textbox(draw_params);
+    bounds = Utils::Drawing::draw_textbox(draw_param_provider(this));
 }
 
 void DragonLib::UI::Elements::Button::poll_events()

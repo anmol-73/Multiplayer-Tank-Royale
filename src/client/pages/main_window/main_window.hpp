@@ -14,11 +14,16 @@ namespace Pages
         void _update();
         void _loading_update();
 
+        void _load_with_context();
+        void _cleanup_with_context();
         void _load();
         void _cleanup();
 
         MainWindowUI ui;
         Utils::Task connect_worker;
+
+        Image background_image;
+        Texture background_texture;
     };    
 } // namespace Pages
 #endif

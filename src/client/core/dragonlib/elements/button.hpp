@@ -15,15 +15,7 @@ namespace DragonLib
         {
             struct Button: public Element{
             public:
-                Button(std::function<DrawParameters::TextBox(Button*)> draw_param_provider_) {
-                    draw_param_provider = draw_param_provider_;
-                    reactive = true;
-                };
-                Button(DrawParameters::TextBox draw_params_){
-                    draw_params = draw_params_;
-                    reactive = false;
-                }
-
+                Button(std::function<DrawParameters::TextBox(Button*)> draw_param_provider_);
                 void draw();
                 void poll_events();
                 void clear_state();
@@ -31,9 +23,6 @@ namespace DragonLib
                 bool clicked = false;
             private:
                 Rectangle bounds = {};
-
-                bool reactive = false;
-                DrawParameters::TextBox draw_params = {};
                 std::function<DrawParameters::TextBox(Button*)> draw_param_provider = {};
             };
         } // namespace Elements

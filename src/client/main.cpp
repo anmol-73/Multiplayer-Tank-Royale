@@ -14,12 +14,15 @@ typedef struct tagMSG *LPMSG;
 	#undef near
 	#undef far
     #undef ABSOLUTE
+    #undef min
 #endif
 
 int main(int argc, char const *argv[])
 {
-    SetConfigFlags(FLAG_WINDOW_HIGHDPI | FLAG_VSYNC_HINT | FLAG_MSAA_4X_HINT | FLAG_WINDOW_MAXIMIZED | FLAG_WINDOW_UNDECORATED);
-    InitWindow(1600, 900, "Multiplayer Tank Royal (Demo)");
+    SetConfigFlags(FLAG_WINDOW_HIGHDPI | FLAG_VSYNC_HINT | FLAG_MSAA_4X_HINT);
+    
+    size_t window_width = std::min(1600 - 200, 1600);
+    InitWindow(1600, window_width * 9 / 16, "Multiplayer Tank Royal (Demo)");
     
     SetTargetFPS(120);
 
