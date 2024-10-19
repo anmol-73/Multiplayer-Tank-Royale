@@ -14,10 +14,11 @@ namespace Pages
         void _update();
         void _loading_update();
 
+        void _load();
         void _cleanup();
 
         MainWindowUI ui;
-        Utils::Task worker;
+        Utils::Task connect_worker;
     };    
 } // namespace Pages
 #endif

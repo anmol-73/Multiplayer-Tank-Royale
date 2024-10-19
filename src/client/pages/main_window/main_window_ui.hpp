@@ -11,7 +11,8 @@ namespace Pages
         MainWindowUI();
 
         const std::string& address_input_value();
-        inline bool address_submit_requested();
+        bool address_submit_requested();
+        void show_error(std::string error);
     private:
         size_t address_input_id;
         size_t address_submit_id;

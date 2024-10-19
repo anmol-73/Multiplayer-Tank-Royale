@@ -3,6 +3,7 @@
 
 #include <raylib.h>
 #include "dragonlib/utils/text.hpp"
+#include "utils/task.hpp"
 #include "communication/room_client.hpp"
 
 namespace Global
@@ -35,6 +36,7 @@ namespace Global
     namespace ServiceProviders
     {
         extern Communication::RoomClient room_client;
+        extern Utils::Task room_client_worker;
     } // namespace ServiceProviders
     
 

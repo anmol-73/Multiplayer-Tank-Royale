@@ -19,6 +19,8 @@ struct RoomHost: public Host{
     void on_stop();
     void on_run();
 
+    bool is_in_game = false;
+
 private:
     size_t current_room_size = 0;
     std::vector<ENetPeer*> members;

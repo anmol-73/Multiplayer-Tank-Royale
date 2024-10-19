@@ -92,10 +92,15 @@ Pages::MainWindowUI::MainWindowUI()
 
 const std::string &Pages::MainWindowUI::address_input_value()
 {
-    return static_cast<UI::Elements::Input*>(elements[address_input_id].get())->value;
+    return dynamic_cast<UI::Elements::Input*>(elements[address_input_id].get())->value;
 }
 
-inline bool Pages::MainWindowUI::address_submit_requested()
+bool Pages::MainWindowUI::address_submit_requested()
 {
-    return static_cast<UI::Elements::Button*>(elements[address_input_id].get())->clicked;
+    return dynamic_cast<UI::Elements::Button*>(elements[address_submit_id].get())->clicked;
+}
+
+void Pages::MainWindowUI::show_error(std::string error)
+{
+    std::cout << error << std::endl;
 }

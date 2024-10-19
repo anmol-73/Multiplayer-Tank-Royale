@@ -31,23 +31,62 @@ std::pair<bool, std::string> Communication::Client::connect(std::string server_a
     }
 
     ENetEvent event;
-    const size_t connection_timeout = 5000;
+    const size_t connection_timeout = 500;
+    const size_t max_tries = 10;
 
-    if (enet_host_service(host, &event, connection_timeout) > 0 && event.type == ENET_EVENT_TYPE_CONNECT)
-    {
-        return handle_established_connection();
+
+    for (size_t tries = 0; tries < max_tries; ++tries){
+        if (cancel_requested){
+            return {false, "Connection request cancelled!"};
+        }
+        if (enet_host_service(host, &event, connection_timeout) > 0 && event.type == ENET_EVENT_TYPE_CONNECT)
+        {
+            return handle_established_connection(cancel_requested);
+        }
+        else
+        {
+            enet_peer_reset(peer);
+            return {false, "Could not establish connection to server!"};
+        }
     }
-    else
-    {
-        enet_peer_reset(peer);
-        return {false, "Could not establish connection to server!"};
-    }
+
+    return {false, "Server did not respond in time!"};
 
 }
 
 void Communication::Client::cleanup()
 {
     destroy_host();
+}
+
+void Communication::Client::run()
+{
+    const size_t timeout = 500;
+    is_running = true;
+    on_run();
+    ENetEvent event;
+    while (is_running){
+        if (enet_host_service(host, &event, timeout) <= 0) continue;
+        switch (event.type){
+            // In the future we must handle the case when disconnects happen (for now assume nobody is malicious)
+            case ENET_EVENT_TYPE_RECEIVE:
+            {
+                auto [type, data] = Networking::decode_message(event.packet->data);
+                handle_message(type, data);
+                enet_packet_destroy(event.packet);
+                break;
+            }
+
+            default:
+                break;
+        }
+    }
+    on_stop();
+}
+
+void Communication::Client::stop()
+{
+    is_running = false;
 }
 
 void Communication::Client::destroy_host()
@@ -57,25 +96,21 @@ void Communication::Client::destroy_host()
     }
 }
 
-std::pair<bool, std::string> Communication::Client::handle_established_connection()
+std::pair<bool, std::string> Communication::Client::handle_established_connection(const bool& cancel_requested)
 {
     return {true, ""};
 }
-// This should be same as what the server is doing
-// Except this shit should be async
-// Perhaps this can be achieved by just used the task to run Clinet::run
 
-std::pair<size_t, void *> Communication::Client::receive_message(size_t timeout)
+void Communication::Client::handle_message(size_t type, void *message)
 {
-    ENetEvent event;
-    if (enet_host_service(host, &event, timeout) <= 0) return {-1ll, nullptr};
-    switch (event.type){
-    case ENET_EVENT_TYPE_RECEIVE:
-        return Networking::decode_message(event.packet->data);
+}
 
-    default:
-        return {-1ll, nullptr};
-    }
+void Communication::Client::on_run()
+{
+}
+
+void Communication::Client::on_stop()
+{
 }
 
 void Communication::Client::send(size_t command, void *data, size_t data_size, ENetPacketFlag flag)

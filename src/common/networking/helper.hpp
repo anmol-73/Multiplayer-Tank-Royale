@@ -12,12 +12,12 @@ namespace Networking
     /**
      * Encodes the message type and the message data into a single messages
      */
-    std::pair<unique_void_ptr, size_t> encode_message(int type, void* data, size_t data_size);
+    std::pair<unique_void_ptr, size_t> encode_message(size_t type, void* data, size_t data_size);
     
     /**
      * Seperates the message type and the message data from an encoded message
      */
-    std::pair<int, void*> decode_message(void* message);
+    std::pair<size_t, void*> decode_message(void* message);
 
     /**
      * Extracts the ip and the port from the address string given

@@ -36,6 +36,17 @@ namespace Communication
          */
         void cleanup();
 
+        /**
+         * Starts listening and handling connections
+         * NOTE: This will block, you probably need to run this on a new thread
+         */
+        void run();
+
+        /**
+         * Stops the server from running
+         */
+        void stop();
+
     protected:
         /**
          * Destroys the current host if it has been created
@@ -46,13 +57,22 @@ namespace Communication
          * Overload this to do additional logics (perhaps check if the server has actually accepted you)
          * when a connection has been established with the server
          */
-        virtual std::pair<bool, std::string> handle_established_connection();
+        virtual std::pair<bool, std::string> handle_established_connection(const bool& cancel_requested);
 
-        /** 
-         * Recieves a message from the serve
-         * NOTE: pair.first will be set to llmax (-1) if no message was recieved within the timeout
+        /**
+         * Overload this to do some logic when the serveer sends a message
+         * NOTE: This provides the decoded message (Refer to `common/networking/helper.hpp`)
          */
-        std::pair<size_t, void*> receive_message(size_t timeout = 0);
+        virtual void handle_message(size_t type, void* message);
+
+        /**
+         * Overload this to do some extra logic when the server has started
+         */
+        virtual void on_run();
+        /**
+         * Overload this to do some extra logic when the server has finished running
+         */
+        virtual void on_stop();
 
         /**
          * Sends a command (along with the message data) to the server
@@ -68,6 +88,9 @@ namespace Communication
         ENetAddress address;
         ENetHost* host = nullptr;
         ENetPeer* peer = nullptr;
+    
+    private:
+        volatile bool is_running = false;
     };
     
 } // namespace Communication

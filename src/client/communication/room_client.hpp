@@ -1,7 +1,6 @@
 #ifndef HEADER_COMMUNICATION_ROOM_CLIENT
 #define HEADER_COMMUNICATION_ROOM_CLIENT
 
-#include <enet/enet.h>
 #include <memory>
 #include <stdexcept>
 #include <map>
@@ -11,14 +10,15 @@
 namespace Communication
 {
     struct RoomClient: public Client{
-    /**
-     * Overload this to do additional logics (perhaps check if the server has actually accepted you)
-     * when a connection has been established with the server
-     */
-    virtual std::pair<bool, std::string> handle_established_connection();
-
+    public:
+        inline bool connected();
     private:
+        std::pair<bool, std::string> handle_established_connection(const bool& cancel_requested);
+        void handle_message(size_t type, void* message);
+        void on_stop();
+
         size_t id;
+        bool connected_to_server = false;
     };
 } // namespace Communication
 

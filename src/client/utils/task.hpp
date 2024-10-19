@@ -3,6 +3,7 @@
 
 #include <functional>
 #include <thread>
+#include <stdexcept>
 
 namespace Utils
 {
@@ -14,7 +15,7 @@ namespace Utils
 
         void await();
 
-        inline bool is_running();
+        bool is_running();
 
     private:
         std::thread worker;

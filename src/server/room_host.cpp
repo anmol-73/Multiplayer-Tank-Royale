@@ -10,9 +10,10 @@ RoomHost::RoomHost()
 
 void RoomHost::handle_new_client(ENetPeer *peer)
 {
+    std::cout << "HELLO0" << std::endl;
     namespace Structs = Networking::Message::Room;
     using ServerCommand = Structs::Server;
-    if (current_room_size < Structs::MAX_ROOM_SIZE){
+    if (current_room_size >= Structs::MAX_ROOM_SIZE){
         char reason[Structs::STRING_MESSAGE_SIZE] = "Room is full!";
         send(ServerCommand::CONNECT_DENIED, reason, sizeof(char) * Structs::STRING_MESSAGE_SIZE, peer);
         enet_host_flush(host);
@@ -24,6 +25,7 @@ void RoomHost::handle_new_client(ENetPeer *peer)
     for (size_t i = 0; i < members.size(); ++i){
         if (members[i] == nullptr){
             members[i] = peer;
+            std::cout << "Client(" << i << ") has connected!" << std::endl;
             send(Networking::Message::Room::Server::CONNECT_OK, &i, sizeof(size_t), peer);
             return;
         }
@@ -34,11 +36,19 @@ void RoomHost::handle_new_client(ENetPeer *peer)
 
 void RoomHost::handle_disconnection(ENetPeer *peer)
 {
+    namespace Structs = Networking::Message::Room;
+    using ServerCommand = Structs::Server;
+    using ClientCommand = Structs::Client;
     for (size_t i = 0; i < members.size(); ++i){
         // Handle the case where the client didn't properly disconnect also :)
         if (members[i] == peer){
             members[i] = nullptr;
             strcpy(names[i], "");
+            std::cout << "Client(" << i << ") has forcibly connected!" << std::endl;
+            if (!is_in_game){
+                send(ServerCommand::ROOM_LIST_BROADCAST, names, sizeof(char) * Structs::NAME_SIZE * Structs::MAX_ROOM_SIZE);
+                enet_host_flush(host);
+            }
             break;
         }
     }
@@ -50,6 +60,7 @@ void RoomHost::handle_message(ENetPeer *peer, size_t type, void *message)
     namespace Structs = Networking::Message::Room;
     using ServerCommand = Structs::Server;
     using ClientCommand = Structs::Client;
+    std::cout << "mESSage" << std::endl;
     switch (type)
     {
         case ClientCommand::NAME_SET_REQUEST:
@@ -69,19 +80,26 @@ void RoomHost::handle_message(ENetPeer *peer, size_t type, void *message)
                 enet_peer_reset(members[client_id]);
                 members[client_id] = nullptr;            
                 strcpy(names[client_id], "");
+
+                std::cout << "Client(" << client_id << ") has been removed!";
                 send(ServerCommand::ROOM_LIST_BROADCAST, names, sizeof(char) * Structs::NAME_SIZE * Structs::MAX_ROOM_SIZE);
             }
             break;
         }
         case ClientCommand::START_GAME_REQUEST:
         {
-            send(ServerCommand::GAME_START);
+            if (!is_in_game){
+                send(ServerCommand::GAME_START);
+                is_in_game = true;
+            }
             break;
         }
     
         default:
             break;
     }
+
+    enet_host_flush(host);
 }
 
 void RoomHost::on_run()
@@ -106,6 +124,7 @@ void RoomHost::on_stop()
     for (size_t i = 0; i < Networking::Message::Room::MAX_ROOM_SIZE; ++i){
         if (members[i] != nullptr){
             send(Networking::Message::Room::Server::DISCONNECT, members[i]);
+            enet_host_flush(host);
             enet_peer_reset(members[i]);
             members[i] = nullptr;
         }
