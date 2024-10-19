@@ -16,7 +16,6 @@ std::pair<bool, std::string> Communication::RoomClient::handle_established_conne
         if (enet_host_service(host, &event, timeout) > 0){
             auto [type, data] = Networking::decode_message(event.packet->data);
             
-            std::cout << type << " " << event.packet->dataLength << std::endl;
             if (type == Networking::Message::Room::Server::CONNECT_DENIED){
                 return {false, std::string((char*)data)};
             }

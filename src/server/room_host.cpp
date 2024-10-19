@@ -10,12 +10,12 @@ RoomHost::RoomHost()
 
 void RoomHost::handle_new_client(ENetPeer *peer)
 {
-    std::cout << "HELLO0" << std::endl;
     namespace Structs = Networking::Message::Room;
     using ServerCommand = Structs::Server;
     if (current_room_size >= Structs::MAX_ROOM_SIZE){
         char reason[Structs::STRING_MESSAGE_SIZE] = "Room is full!";
         send(ServerCommand::CONNECT_DENIED, reason, sizeof(char) * Structs::STRING_MESSAGE_SIZE, peer);
+        
         enet_host_flush(host);
         enet_peer_reset(peer);
         return;
@@ -44,8 +44,8 @@ void RoomHost::handle_disconnection(ENetPeer *peer)
         if (members[i] == peer){
             members[i] = nullptr;
             strcpy(names[i], "");
-            std::cout << "Client(" << i << ") has forcibly connected!" << std::endl;
-            if (!is_in_game){
+            std::cout << "Client(" << i << ") has forcibly disconnected!" << std::endl;
+            if (!is_in_game){ // Update the players connected
                 send(ServerCommand::ROOM_LIST_BROADCAST, names, sizeof(char) * Structs::NAME_SIZE * Structs::MAX_ROOM_SIZE);
                 enet_host_flush(host);
             }
@@ -60,7 +60,7 @@ void RoomHost::handle_message(ENetPeer *peer, size_t type, void *message)
     namespace Structs = Networking::Message::Room;
     using ServerCommand = Structs::Server;
     using ClientCommand = Structs::Client;
-    std::cout << "mESSage" << std::endl;
+    
     switch (type)
     {
         case ClientCommand::NAME_SET_REQUEST:
@@ -76,12 +76,16 @@ void RoomHost::handle_message(ENetPeer *peer, size_t type, void *message)
             if (members[client_id] != nullptr){
                 char reason[Structs::STRING_MESSAGE_SIZE] = "You have been kicked!";
                 send(ServerCommand::DISCONNECT, reason, sizeof(char) * Structs::STRING_MESSAGE_SIZE, members[client_id]);
+                
+                std::cout << "Client(" << client_id << ") has been removed!";
+                
                 enet_host_flush(host);
                 enet_peer_reset(members[client_id]);
-                members[client_id] = nullptr;            
+                
+                members[client_id] = nullptr;
                 strcpy(names[client_id], "");
 
-                std::cout << "Client(" << client_id << ") has been removed!";
+                // Update the players connacted
                 send(ServerCommand::ROOM_LIST_BROADCAST, names, sizeof(char) * Structs::NAME_SIZE * Structs::MAX_ROOM_SIZE);
             }
             break;

@@ -24,13 +24,13 @@ void Pages::MainWindowScene::_update()
                 // Connection succesful
                 // Move over to the room page
                 // SceneManagement::SceneManager::load_scene()
-                std::cout << "CONNECTED!" << std::endl;
+                
             } else{
                 ui.show_error(error);
             }
             // ui.enable_submit_button();
         });
-        std::cout << "WORKING" << std::endl;
+        
     }
 }
 
