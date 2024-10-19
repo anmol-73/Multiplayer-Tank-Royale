@@ -24,7 +24,6 @@ void Pages::MainWindowScene::_update()
     ui.poll_events();
 
     if(ui.address_submit_requested() && !connect_worker.is_running()){        
-        // ui.disable_submit_button();
         connect_worker.accomplish([this](const bool& cancel_requested){
             auto [succesful, error] = Global::ServiceProviders::room_client.connect(ui.address_input_value(), cancel_requested);
             
@@ -36,7 +35,6 @@ void Pages::MainWindowScene::_update()
             } else{
                 ui.show_error(error);
             }
-            // ui.enable_submit_button();
         });
         
     }

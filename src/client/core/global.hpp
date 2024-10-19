@@ -30,9 +30,14 @@ namespace Global
              * NOTE: It doesn't uses sdf
              */
             extern Font main;
+
         } // namespace Fonts
     } // namespace Rendering
 
+    /**
+     * Just some unit proportional to screen height. Use it for like text size and all.
+     */
+    extern float rem;
     namespace ServiceProviders
     {
         extern Communication::RoomClient room_client;

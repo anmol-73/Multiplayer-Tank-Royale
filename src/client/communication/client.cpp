@@ -45,7 +45,6 @@ std::pair<bool, std::string> Communication::Client::connect(std::string server_a
         }
         else
         {
-            enet_peer_reset(peer);
             return {false, "Could not establish connection to server!"};
         }
     }
@@ -93,6 +92,7 @@ void Communication::Client::destroy_host()
 {
     if (host != nullptr){
         enet_host_destroy(host);
+        host = nullptr;
     }
 }
 

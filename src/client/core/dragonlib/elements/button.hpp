@@ -21,6 +21,7 @@ namespace DragonLib
                 void clear_state();
                 
                 bool clicked = false;
+                bool mouse_down = false;
             private:
                 Rectangle bounds = {};
                 std::function<DrawParameters::TextBox(Button*)> draw_param_provider = {};

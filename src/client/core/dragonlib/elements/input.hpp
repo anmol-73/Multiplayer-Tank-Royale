@@ -61,11 +61,11 @@ namespace DragonLib
                 void clear_state();
                 
                 std::string value;
+                bool keyboard_focused = false;
             private:
                 Rectangle bounds = {};
                 InputParameters params;
 
-                bool keyboard_focused = false;
             };
         } // namespace Elements
     } // namespace UI    

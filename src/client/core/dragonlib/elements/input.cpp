@@ -18,7 +18,6 @@ void DragonLib::UI::Elements::Input::draw()
         .fill = params.background_color,
         .border = keyboard_focused? params.focused_border_params : hstate.exclusively_hovered() ? params.hover_border_params : params.default_border_params
     });
-
     Vector2 content_size = Utils::Calculation::resolve_measurement(params.size);
     Vector2 padding = Utils::Calculation::resolve_measurement(params.padding, content_size);
     Vector2 text_origin = Utils::Calculation::resolve_measurement(params.text_origin, content_size);

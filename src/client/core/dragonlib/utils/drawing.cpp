@@ -59,10 +59,10 @@ Rectangle DragonLib::Utils::Drawing::__draw_box_no_radius(UI::DrawParameters::Bo
     }
     if (params.border.width != 0 && params.border.color.a != 0){
         DrawRectangleLinesEx({
-            .x = position.x,
-            .y = position.y,
-            .width = rect_size.x,
-            .height = rect_size.y,
+            .x = position.x - params.border.width - params.border.offset / 2,
+            .y = position.y - params.border.width - params.border.offset / 2,
+            .width = rect_size.x + 2*params.border.width + params.border.offset,
+            .height = rect_size.y + 2*params.border.width + params.border.offset,
         }, params.border.width, params.border.color);
     }
 
