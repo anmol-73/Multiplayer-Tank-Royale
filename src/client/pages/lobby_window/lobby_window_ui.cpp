@@ -32,7 +32,7 @@ Pages::LobbyWindowUI::LobbyWindowUI()
             [](UI::Elements::Span* span){
                 return UI::DrawParameters::TextBox{
                     .content = "Server IP: 127.0.0.1:3000",
-                    .font_size = 1.3f * Global::rem,
+                    .font_size = 1.0f * Global::rem,
                     .font_color = {0x45, 0x41, 0x39, 0x80},
                     
                     .position = {
@@ -94,7 +94,7 @@ Pages::LobbyWindowUI::LobbyWindowUI()
                 .font_size = 0.8f * Global::rem,
                 .font_color =  {0x45, 0x41, 0x39, 0xff},
                 .position = {
-                    .value = {0.74, 0.63},
+                    .value = {0.81, 0.62},
                     .mode = {Mode::SCREEN_W, Mode::SCREEN_H}
                 }
             };
@@ -104,7 +104,7 @@ Pages::LobbyWindowUI::LobbyWindowUI()
     left_map_idx = register_element(
         Components::create_text_button(
             "<", {
-                .value = {0.65, 0.68},
+                .value = {0.65, 0.66},
                 .mode = {Mode::SCREEN_W, Mode::SCREEN_H},
             },
             {
@@ -118,7 +118,7 @@ Pages::LobbyWindowUI::LobbyWindowUI()
     right_map_idx = register_element(
         Components::create_text_button(
             ">", {
-                .value = {0.83, 0.68},
+                .value = {0.83, 0.66},
                 .mode = {Mode::SCREEN_W, Mode::SCREEN_H},
             },
             {
@@ -155,10 +155,10 @@ void Pages::LobbyWindowUI::poll_events()
     if ((!visible) || (!events_enabled)) return;
     UI::Elements::PageView::poll_events();
 
-    if (dynamic_cast<UI::Elements::Span*>(elements[left_map_idx].get())->clicked){
+    if (dynamic_cast<UI::Elements::Text*>(elements[left_map_idx].get())->clicked){
         current_map_idx -= 1;
         if (current_map_idx < 0) current_map_idx += map_names.size();
-    } else if (dynamic_cast<UI::Elements::Span*>(elements[right_map_idx].get())->clicked){
+    } else if (dynamic_cast<UI::Elements::Text*>(elements[right_map_idx].get())->clicked){
         current_map_idx += 1;
         if (current_map_idx >= (int)map_names.size()) current_map_idx -= map_names.size();
     }

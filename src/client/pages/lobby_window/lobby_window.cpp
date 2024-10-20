@@ -20,7 +20,7 @@ void Pages::LobbyWindowScene::_update()
         Rectangle map_rect = {(float)GetScreenWidth() * 0.66f, (float)GetScreenHeight() * 0.3f, (float)GetScreenWidth() * 0.3f, (float)GetScreenWidth() * 0.16875f};
         DrawTexturePro(
             map_texture[ui.current_map_idx],
-            {0, 0, (float)map_texture[ui.current_map_idx].width, (float)map_texture[0].height},
+            {0, 0, (float)map_texture[ui.current_map_idx].width, (float)map_texture[ui.current_map_idx].height},
             map_rect,
             {0},
             0,
