@@ -25,6 +25,9 @@ namespace Pages
         Image background_image;
         Texture background_texture;
         
+        std::vector<Image> map_image;
+        std::vector<Texture> map_texture;
+        
         std::vector<std::pair<size_t, std::string>> room_members;
     };
 

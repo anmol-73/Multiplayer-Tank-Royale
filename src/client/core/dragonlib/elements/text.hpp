@@ -15,7 +15,7 @@ namespace DragonLib
         {
             struct Text: public Element{
             public:
-                Text(std::function<std::pair<DrawParameters::Box, DrawParameters::Text>(Text*)> draw_param_provider_);
+                Text(std::function<std::pair<DrawParameters::Box, DrawParameters::Text>(Text*)> draw_param_provider_, bool interactable_ = false);
                 void draw();
                 void poll_events();
                 void clear_state();
@@ -24,6 +24,7 @@ namespace DragonLib
                 bool mouse_down = false;
             private:
                 Rectangle bounds = {};
+                bool interactable;
                 std::function<std::pair<DrawParameters::Box, DrawParameters::Text>(Text*)> draw_param_provider = {};
             };
         } // namespace Elements

@@ -16,6 +16,9 @@ namespace DragonLib
         namespace Elements
         {
             struct InputParameters{
+                std::string label = "";
+                Color lable_color = BLACK;
+
                 DrawParameters::Measurement position = {
                     .value = {0.5, 0.5},
                     .mode = {DrawParameters::SizeMode::SCREEN_W, DrawParameters::SizeMode::SCREEN_H}

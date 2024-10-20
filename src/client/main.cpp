@@ -15,6 +15,7 @@ typedef struct tagMSG *LPMSG;
 	#undef far
     #undef ABSOLUTE
     #undef min
+    #undef max
 #endif
 
 int main(int argc, char const *argv[])
@@ -32,7 +33,7 @@ int main(int argc, char const *argv[])
     SceneManagement::SceneManager::register_scene(SceneManagement::SceneName::LOBBY_PAGE, new Pages::LobbyWindowScene());
     SceneManagement::SceneManager::init();
 
-    SceneManagement::SceneManager::load_scene(SceneManagement::SceneName::LOBBY_PAGE);   
+    SceneManagement::SceneManager::load_scene(SceneManagement::SceneName::MAIN_PAGE);   
 
     while (SceneManagement::SceneManager::is_active){
         SceneManagement::SceneManager::update();

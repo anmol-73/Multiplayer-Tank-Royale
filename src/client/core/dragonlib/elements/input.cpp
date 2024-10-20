@@ -21,6 +21,17 @@ void DragonLib::UI::Elements::Input::draw()
     Vector2 content_size = Utils::Calculation::resolve_measurement(params.size);
     Vector2 padding = Utils::Calculation::resolve_measurement(params.padding, content_size);
     Vector2 text_origin = Utils::Calculation::resolve_measurement(params.text_origin, content_size);
+    
+    float max_offset = std::max(params.hover_border_params.offset, params.default_border_params.offset);
+    max_offset = std::max(params.focused_border_params.offset, max_offset) / 2;
+    Utils::Drawing::place_text(
+        params.label.c_str(),
+        {bounds.x + padding.x, bounds.y - content_size.y * 0.6f - max_offset},
+        params.lable_color,
+        content_size.y * 0.6,
+        params.font,
+        params.sdf
+    );
     Vector2 text_position = {
         bounds.x + padding.x + text_origin.x,
         bounds.y + padding.y + text_origin.y

@@ -2,6 +2,7 @@
 #define HEADER_PAGES_MAIN_WINDOW_UI
 
 #include "core/dragonlib.hpp"
+#include "pages/componenents.hpp"
 
 namespace Pages
 {

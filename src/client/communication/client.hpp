@@ -15,6 +15,7 @@ typedef struct tagMSG *LPMSG;
 	#undef far
     #undef ABSOLUTE
     #undef min
+    #undef max
 #endif
 
 #include <memory>

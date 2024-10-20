@@ -41,6 +41,7 @@ Pages::MainWindowUI::MainWindowUI()
 
     address_input_id = register_element(
         new UI::Elements::Input(UI::Elements::InputParameters{
+            .label = "Server Address:",
             .size = {
                 .value = {0.3, 0.05},
                 .mode = {Mode::SCREEN_W, Mode::SCREEN_H}
@@ -50,7 +51,7 @@ Pages::MainWindowUI::MainWindowUI()
                 .mode = {Mode::SELF_H, Mode::SELF_H}
             },
             .text_origin = {
-                .value = {0, -0.05},
+                .value = {0, 0.05},
                 .mode = {Mode::SELF_H, Mode::SELF_H}
             },
             .background_color = {0xb2, 0xad, 0x99, 0xc0},
@@ -78,27 +79,11 @@ Pages::MainWindowUI::MainWindowUI()
     );
 
     address_submit_id = register_element(
-        new UI::Elements::Span(
-            [](UI::Elements::Span* button){
-                return UI::DrawParameters::TextBox{
-                    .content = "Connect",
-                    .font_size = Global::rem,
-                    .font_color = button->hstate.hovered ? Color{0xbf, 0xba, 0xa3, 0xc0} : Color{0x45, 0x41, 0x39, 0xc0},
-                    .position = {
-                        .value = {0.5, 0.6},
-                        .mode = {Mode::SCREEN_W, Mode::SCREEN_H}
-                    },
-                    .fill = button->hstate.hovered ? Color{0x49, 0x47, 0x3f, (unsigned char)(button->mouse_down ? 0xff : 0xc0)} : Color{0xb2, 0xad, 0x99, 0xc0},
-                    .border = {
-                        .width = 2.0f,
-                        .color = button->hstate.hovered ? Color{0x49, 0x47, 0x3f, 0xc0} : Color{0xb2, 0xad, 0x99, 0xc0},
-                        .offset = button->mouse_down ? 10.0f : 12.0f,
-                    },
-                    .padding = {
-                        .value = {0.5, 0.2},
-                        .mode = {Mode::SELF_H, Mode::SELF_H}
-                    }
-                };
+        Components::create_span_button(
+            "Connect",
+            {
+                .value = {0.5, 0.6},
+                .mode = {Mode::SCREEN_W, Mode::SCREEN_H}
             }
         )
     );
