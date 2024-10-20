@@ -57,7 +57,7 @@ Pages::LobbyWindowUI::LobbyWindowUI()
                         {
                             .position = {
                                 .value = {
-                                    i < Networking::Message::Room::MAX_ROOM_SIZE/2 ? 0.05f : 0.35f, 0.2f + (i % (Networking::Message::Room::MAX_ROOM_SIZE/2)) * 0.1f
+                                    i < Networking::Message::Room::MAX_ROOM_SIZE/2 ? 0.05f : 0.35f, 0.25f + (i % (Networking::Message::Room::MAX_ROOM_SIZE/2)) * 0.1f
                                 },
                                 .mode = {Mode::SCREEN_W, Mode::SCREEN_H}
                             },
