@@ -38,12 +38,11 @@ void RoomHost::handle_disconnection(ENetPeer *peer)
 {
     namespace Structs = Networking::Message::Room;
     using ServerCommand = Structs::Server;
-    using ClientCommand = Structs::Client;
     for (size_t i = 0; i < members.size(); ++i){
         // Handle the case where the client didn't properly disconnect also :)
         if (members[i] == peer){
             members[i] = nullptr;
-            strcpy(names[i], "");
+            strcpy(names[i], "Player");
             std::cout << "Client(" << i << ") has forcibly disconnected!" << std::endl;
             if (!is_in_game){ // Update the players connected
                 send(ServerCommand::ROOM_LIST_BROADCAST, names, sizeof(char) * Structs::NAME_SIZE * Structs::MAX_ROOM_SIZE);

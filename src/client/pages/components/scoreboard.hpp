@@ -1,0 +1,6 @@
+#ifndef HEADER_PAGES_LOBBY_WINDOW_UI
+#define HEADER_PAGES_LOBBY_WINDOW_UI
+
+
+
+#endif

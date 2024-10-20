@@ -109,7 +109,7 @@ Rectangle DragonLib::Utils::Drawing::draw_textbox(UI::DrawParameters::TextBox pa
 
     Vector2 text_position = Vector2Add(
         padding,
-        Vector2Add(
+        Vector2Subtract(
             position, Calculation::resolve_measurement(params.text_origin, size)
         )
     );    

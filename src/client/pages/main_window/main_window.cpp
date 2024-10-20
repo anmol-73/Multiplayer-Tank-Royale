@@ -20,23 +20,19 @@ void Pages::MainWindowScene::_update()
         ui.draw();
     }
     EndDrawing();
-
     ui.poll_events();
 
     if(ui.address_submit_requested() && !connect_worker.is_running()){        
+        ui.show_info("Trying to connect...", false);
         connect_worker.accomplish([this](const bool& cancel_requested){
             auto [succesful, error] = Global::ServiceProviders::room_client.connect(ui.address_input_value(), cancel_requested);
             
             if (succesful){
-                // Connection succesful
-                // Move over to the room page
-                // SceneManagement::SceneManager::load_scene()
-                
+                SceneManagement::SceneManager::load_scene(SceneManagement::SceneName::LOBBY_PAGE);
             } else{
-                ui.show_error(error);
+                ui.show_info(error, true);
             }
         });
-        
     }
 }
 

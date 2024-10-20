@@ -5,23 +5,8 @@ Pages::MainWindowUI::MainWindowUI()
     using Mode = UI::DrawParameters::SizeMode;
     
     register_element(
-        new UI::Elements::Button(
-            [](UI::Elements::Button* button){
-                return UI::DrawParameters::TextBox{
-                    .content = "Tank Stars",
-                    .font_size = 5 * Global::rem,
-                    .font_color =  {0x45, 0x41, 0x39, 0xff},
-                    .position = {
-                        .value = {0.5, 0.2},
-                        .mode = {Mode::SCREEN_W, Mode::SCREEN_H}
-                    }
-                };
-            }
-        )
-    );
-    register_element(
-        new UI::Elements::Button(
-            [](UI::Elements::Button* button){
+        new UI::Elements::Span(
+            [](UI::Elements::Span* _){
                 return UI::DrawParameters::TextBox{
                     .content = "Tank Stars",
                     .font_size = 5 * Global::rem,
@@ -31,8 +16,23 @@ Pages::MainWindowUI::MainWindowUI()
                         .mode = {Mode::SCREEN_W, Mode::SCREEN_H}
                     },
                     .text_origin = {
-                        .value = {Global::rem / 3, Global::rem / 4},
+                        .value = {-Global::rem / 3, -Global::rem / 4},
                         .mode = {Mode::ABSOLUTE, Mode::ABSOLUTE}
+                    }
+                };
+            }
+        )
+    );
+    register_element(
+        new UI::Elements::Span(
+            [](UI::Elements::Span* _){
+                return UI::DrawParameters::TextBox{
+                    .content = "Tank Stars",
+                    .font_size = 5 * Global::rem,
+                    .font_color =  {0x45, 0x41, 0x39, 0xff},
+                    .position = {
+                        .value = {0.5, 0.2},
+                        .mode = {Mode::SCREEN_W, Mode::SCREEN_H}
                     }
                 };
             }
@@ -50,7 +50,7 @@ Pages::MainWindowUI::MainWindowUI()
                 .mode = {Mode::SELF_H, Mode::SELF_H}
             },
             .text_origin = {
-                .value = {0, 0.05},
+                .value = {0, -0.05},
                 .mode = {Mode::SELF_H, Mode::SELF_H}
             },
             .background_color = {0xb2, 0xad, 0x99, 0xc0},
@@ -78,8 +78,8 @@ Pages::MainWindowUI::MainWindowUI()
     );
 
     address_submit_id = register_element(
-        new UI::Elements::Button(
-            [](UI::Elements::Button* button){
+        new UI::Elements::Span(
+            [](UI::Elements::Span* button){
                 return UI::DrawParameters::TextBox{
                     .content = "Connect",
                     .font_size = Global::rem,
@@ -104,13 +104,13 @@ Pages::MainWindowUI::MainWindowUI()
     );
 
     register_element(
-        new UI::Elements::Button(
-            [this](UI::Elements::Button* button){
+        new UI::Elements::Span(
+            [this](UI::Elements::Span* _){
                 
                 return UI::DrawParameters::TextBox{
-                    .content = this->error_text,
+                    .content = this->information.second,
                     .font_size = Global::rem,
-                    .font_color = {0xe9, 0x7d, 0x81, 0xff},
+                    .font_color = this->information.first ? Color{0xe9, 0x7d, 0x81, 0xff} : Color{0x49, 0x47, 0x3f,  0xc0},
                     .position = {
                         .value = {0.5, 0.85},
                         .mode = {Mode::SCREEN_W, Mode::SCREEN_H}
@@ -129,19 +129,10 @@ const std::string &Pages::MainWindowUI::address_input_value()
 
 bool Pages::MainWindowUI::address_submit_requested()
 {
-    return dynamic_cast<UI::Elements::Button*>(elements[address_submit_id].get())->clicked;
+    return dynamic_cast<UI::Elements::Span*>(elements[address_submit_id].get())->clicked;
 }
 
-void Pages::MainWindowUI::poll_events()
+void Pages::MainWindowUI::show_info(std::string text, bool is_error)
 {
-    if ((!visible) || (!events_enabled)) return;
-    UI::Elements::PageView::poll_events();
-    if (dynamic_cast<UI::Elements::Input*>(elements[address_input_id].get())->keyboard_focused){
-        error_text = "";
-    };
-}
-
-void Pages::MainWindowUI::show_error(std::string error)
-{
-    error_text = error;
+    information = {is_error, text};
 }

@@ -29,9 +29,10 @@ int main(int argc, char const *argv[])
     Global::init();
 
     SceneManagement::SceneManager::register_scene(SceneManagement::SceneName::MAIN_PAGE, new Pages::MainWindowScene());
+    SceneManagement::SceneManager::register_scene(SceneManagement::SceneName::LOBBY_PAGE, new Pages::LobbyWindowScene());
     SceneManagement::SceneManager::init();
 
-    SceneManagement::SceneManager::load_scene(SceneManagement::SceneName::MAIN_PAGE);   
+    SceneManagement::SceneManager::load_scene(SceneManagement::SceneName::LOBBY_PAGE);   
 
     while (SceneManagement::SceneManager::is_active){
         SceneManagement::SceneManager::update();

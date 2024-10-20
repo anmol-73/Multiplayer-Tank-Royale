@@ -1,16 +1,16 @@
-#include "button.hpp"
+#include "span.hpp"
 
-DragonLib::UI::Elements::Button::Button(std::function<DrawParameters::TextBox(Button *)> draw_param_provider_)
+DragonLib::UI::Elements::Span::Span(std::function<DrawParameters::TextBox(Span *)> draw_param_provider_)
 {
     draw_param_provider = draw_param_provider_;
 }
 
-void DragonLib::UI::Elements::Button::draw()
+void DragonLib::UI::Elements::Span::draw()
 {
     bounds = Utils::Drawing::draw_textbox(draw_param_provider(this));
 }
 
-void DragonLib::UI::Elements::Button::poll_events()
+void DragonLib::UI::Elements::Span::poll_events()
 {
     clear_state();
     hstate.hovered = CheckCollisionPointRec(GetMousePosition(), bounds);
@@ -19,7 +19,7 @@ void DragonLib::UI::Elements::Button::poll_events()
     hstate.requested_pointer = hstate.hovered;
 }
 
-void DragonLib::UI::Elements::Button::clear_state()
+void DragonLib::UI::Elements::Span::clear_state()
 {
     Element::clear_state();
     clicked = false;

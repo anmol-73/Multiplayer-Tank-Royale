@@ -12,12 +12,11 @@ namespace Pages
 
         const std::string& address_input_value();
         bool address_submit_requested();
-        void show_error(std::string error);
-        void poll_events();
+        void show_info(std::string text, bool is_error);
     private:
         size_t address_input_id;
         size_t address_submit_id;
-        std::string error_text;
+        std::pair<bool, std::string> information;
     };
 } // namespace Pages
 

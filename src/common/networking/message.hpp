@@ -20,7 +20,7 @@ namespace Networking
         namespace Room
         {
             const size_t STRING_MESSAGE_SIZE = 64;
-            const size_t MAX_ROOM_SIZE = 8;
+            const size_t MAX_ROOM_SIZE = 12;
             const size_t NAME_SIZE = 32;
             enum Client{ // The type of messages a client would send while in the room
                 NAME_SET_REQUEST,
