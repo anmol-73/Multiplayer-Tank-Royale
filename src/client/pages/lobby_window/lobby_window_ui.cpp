@@ -57,7 +57,7 @@ Pages::LobbyWindowUI::LobbyWindowUI()
                         {
                             .position = {
                                 .value = {
-                                    i < Networking::Message::Room::MAX_ROOM_SIZE/2 ? 0.05f : 0.35f, 0.3f + (i % (Networking::Message::Room::MAX_ROOM_SIZE/2)) * 0.1f
+                                    i < Networking::Message::Room::MAX_ROOM_SIZE/2 ? 0.05f : 0.35f, 0.2f + (i % (Networking::Message::Room::MAX_ROOM_SIZE/2)) * 0.1f
                                 },
                                 .mode = {Mode::SCREEN_W, Mode::SCREEN_H}
                             },
@@ -66,7 +66,7 @@ Pages::LobbyWindowUI::LobbyWindowUI()
                                 .mode = {Mode::SCREEN_W, Mode::SCREEN_H}
                             },
                             .origin = {0},
-                            .fill = !this->room_members[i].second.empty() ? Color{0xb2, 0xad, 0x99, 0xc0} : Color{0x49, 0x47, 0x3f, 0x60}
+                            .fill = !this->room_members[i].second.empty() ? Color{0x92, 0x8d, 0x79, 0xc0} : Color{0x49, 0x47, 0x3f, 0x60}
                         },
                         {
                             .content = this->room_members[i].second,

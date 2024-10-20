@@ -54,7 +54,7 @@ Pages::MainWindowUI::MainWindowUI()
                 .value = {0, 0.05},
                 .mode = {Mode::SELF_H, Mode::SELF_H}
             },
-            .background_color = {0xb2, 0xad, 0x99, 0xc0},
+            .background_color = {0x92, 0x8d, 0x79, 0xc0},
             .font_color = {0x45, 0x41, 0x39, 0xc0},
             .default_border_params = {
                 .width = 0,
