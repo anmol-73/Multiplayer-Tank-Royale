@@ -1,7 +1,9 @@
 #include "scene_manager.hpp"
+#include <iostream>
 
 bool SceneManagement::SceneManager::is_active(true);
 SceneManagement::SceneName SceneManagement::SceneManager::_loaded_scene(__NIL__);
+SceneManagement::SceneName SceneManagement::SceneManager::_deferred_load_scene_request(__NIL__);
 std::vector<std::unique_ptr<SceneManagement::Scene>>SceneManagement::SceneManager::_scenes(__NIL__);
 
 void SceneManagement::SceneManager::init()
@@ -30,6 +32,11 @@ void SceneManagement::SceneManager::cleanup()
 
 void SceneManagement::SceneManager::update()
 {
+    if (_deferred_load_scene_request != SceneName::__NIL__){
+        std::cout << _deferred_load_scene_request << std::endl;
+        load_scene(_deferred_load_scene_request);
+        _deferred_load_scene_request = SceneName::__NIL__;
+    }
     if (_loaded_scene == SceneName::__NIL__) return;
     _scenes[_loaded_scene].get()->__update();
 }
@@ -47,9 +54,17 @@ void SceneManagement::SceneManager::register_scene(SceneName scene_name, Scene *
 
 void SceneManagement::SceneManager::load_scene(SceneName scene, bool ignore_reload)
 {
+    if (!is_active) return;
+    if (ignore_reload && scene == _loaded_scene) return;
     _unload_loaded_scene();
     _loaded_scene = scene;
     _scenes[_loaded_scene].get()->__request_load();
+}
+
+void SceneManagement::SceneManager::load_deferred(SceneName scene, bool ignore_reload)
+{
+    if (ignore_reload && scene == _loaded_scene) return;
+    _deferred_load_scene_request = scene;
 }
 
 void SceneManagement::SceneManager::_unload_loaded_scene()

@@ -29,6 +29,22 @@ void StringAlgorithms::strip(std::string &string)
     }
 }
 
+std::string StringAlgorithms::stripped(const std::string &string)
+{
+    size_t i = 0;
+    for (; i < string.size(); ++i){
+        if (string[i] != ' ' && string[i] != '\n' && string[i] != '\t' && string[i] != '\r') break;
+    }
+
+    size_t j = string.size();
+    for (; j > 0; --j){
+        if (string[j - 1] != ' ' && string[j - 1] != '\n' && string[j - 1] != '\t' && string[j - 1] != '\r') break;
+    }
+
+    return string.substr(i, j - i);
+    
+}
+
 std::pair<bool, size_t> StringAlgorithms::sstoll(const std::string &string)
 {
     try{

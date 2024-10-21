@@ -19,6 +19,8 @@ namespace SceneManagement
         /** An enum containing the name of the currently loaded scene. */
         extern SceneName _loaded_scene;
 
+        extern SceneName _deferred_load_scene_request;
+
         /** A vector keeping reference of all the scenes in the application. */
         extern std::vector<std::unique_ptr<Scene>> _scenes;
 
@@ -51,6 +53,14 @@ namespace SceneManagement
          * NOTE: If `ignore_reload` is set to true and new sene is the currently loaded scene, nothing is done.
          */
         void load_scene(SceneName scene, bool ignore_reload=true);
+
+        /**
+         * Loads a scene the next time update is called
+         * 
+         * NOTE: It is ok to call this function not from the main thread
+         * NOTE: If multiple calls are made before a main loop update is done, the most recent one is taken into account.
+         */
+        void load_deferred(SceneName scene, bool ignore_reload=true);
         
         /**
          * Unloads the currently loaded scene.

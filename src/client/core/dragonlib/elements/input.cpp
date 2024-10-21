@@ -3,9 +3,6 @@
 DragonLib::UI::Elements::Input::Input(InputParameters parameters)
 {
     params = parameters;
-    if (params.font == nullptr){
-        params.font = params.sdf ? &Global::Rendering::Fonts::main_sdf : &Global::Rendering::Fonts::main;
-    }
 }
 
 void DragonLib::UI::Elements::Input::draw()
@@ -38,7 +35,7 @@ void DragonLib::UI::Elements::Input::draw()
     };
     bool show_placeholder = value.empty() && (!keyboard_focused);
     Utils::Drawing::place_text(
-        (show_placeholder ? params.placeholder.content : value).c_str(),
+        (show_placeholder ? params.placeholder.content : keyboard_focused ? (value + "|") : value).c_str(),
         text_position,
         show_placeholder ? params.placeholder.placeholder_font_color : params.font_color,
         content_size.y * 0.8,

@@ -10,11 +10,8 @@ namespace Utils
     struct Task{
     public:
         void accomplish(std::function<void(const bool&)> work);
-
         void cancel();
-
         void await();
-
         bool is_running();
 
     private:

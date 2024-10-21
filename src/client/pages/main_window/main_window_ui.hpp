@@ -11,12 +11,11 @@ namespace Pages
     public:
         MainWindowUI();
 
-        const std::string& address_input_value();
-        bool address_submit_requested();
         void show_info(std::string text, bool is_error);
+        UI::Elements::Input* name_input;
+        UI::Elements::Input* address_input;
+        UI::Elements::Span* address_submit_button;
     private:
-        size_t address_input_id;
-        size_t address_submit_id;
         std::pair<bool, std::string> information;
     };
 } // namespace Pages

@@ -3,13 +3,16 @@
 #include <raylib.h>
 
 #include "core/scene_management.hpp"
+#include "core/dragonlib.hpp"
 #include "main_window_ui.hpp"
 #include "core/global.hpp"
-#include "utils/task.hpp"
+#include "core/task.hpp"
 
 namespace Pages
 {
-    class MainWindowScene: public SceneManagement::Scene{
+    class MainWindowScene: public SceneManagement::Scene{    
+    public:
+        MainWindowScene();
     private:
         void _update();
         void _loading_update();
@@ -22,8 +25,7 @@ namespace Pages
         MainWindowUI ui;
         Utils::Task connect_worker;
 
-        Image background_image;
-        Texture background_texture;
+        DragonLib::DImage background;
     };    
 } // namespace Pages
 #endif

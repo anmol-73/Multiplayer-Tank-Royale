@@ -1,4 +1,4 @@
-#include "simple.hpp"
+#include "button.hpp"
 
 
 DragonLib::UI::Elements::Span *Pages::Components::create_span_button(const std::string text, DragonLib::UI::DrawParameters::Measurement position, DragonLib::UI::DrawParameters::Measurement origin, float font_size)
@@ -10,13 +10,13 @@ DragonLib::UI::Elements::Span *Pages::Components::create_span_button(const std::
             return UI::DrawParameters::TextBox{
                 .content = text,
                 .font_size = font_size,
-                .font_color = button->hstate.hovered ? Color{0xbf, 0xba, 0xa3, 0xc0} : Color{0x45, 0x41, 0x39, 0xc0},
+                .font_color = button->hstate.hovered ? Color{0xbf, 0xba, 0xa3, 0xe0} : Color{0x45, 0x41, 0x39, 0xe0},
                 .position = position,
                 .rect_origin = origin,
-                .fill = button->hstate.hovered ? Color{0x49, 0x47, 0x3f, (unsigned char)(button->mouse_down ? 0xff : 0xc0)} : Color{0x92, 0x8d, 0x79, 0xc0},
+                .fill = button->hstate.hovered ? Color{0x49, 0x47, 0x3f, (unsigned char)(button->mouse_down ? 0xff : 0xc0)} : Color{0xb2, 0xad, 0x99, 0xc0},
                 .border = {
                     .width = 2.0f,
-                    .color = button->hstate.hovered ? Color{0x49, 0x47, 0x3f, 0xc0} : Color{0x92, 0x8d, 0x79, 0xc0},
+                    .color = button->hstate.hovered ? Color{0x49, 0x47, 0x3f, 0xc0} : Color{0xb2, 0xad, 0x99, 0xc0},
                     .offset = button->mouse_down ? 10.0f : 12.0f,
                 },
                 .padding = {
@@ -40,17 +40,17 @@ DragonLib::UI::Elements::Text *Pages::Components::create_text_button(const std::
                     .position = position,
                     .size = size,
                     .origin = origin,
-                    .fill = button->hstate.hovered ? Color{0x49, 0x47, 0x3f, (unsigned char)(button->mouse_down ? 0xff : 0xc0)} : Color{0x92, 0x8d, 0x79, 0xc0},
+                    .fill = button->hstate.hovered ? Color{0x49, 0x47, 0x3f, (unsigned char)(button->mouse_down ? 0xff : 0xc0)} : Color{0xb2, 0xad, 0x99, 0xc0},
                     .border = {
                         .width = 2.0f,
-                        .color = button->hstate.hovered ? Color{0x49, 0x47, 0x3f, 0xc0} : Color{0x92, 0x8d, 0x79, 0xc0},
+                        .color = button->hstate.hovered ? Color{0x49, 0x47, 0x3f, 0xc0} : Color{0xb2, 0xad, 0x99, 0xc0},
                         .offset = button->mouse_down ? 10.0f : 12.0f,
                     }
                 },
                 {
                     .content = text,
                     .font_size = font_size,
-                    .font_color = button->hstate.hovered ? Color{0xbf, 0xba, 0xa3, 0xc0} : Color{0x45, 0x41, 0x39, 0xc0},
+                    .font_color = button->hstate.hovered ? Color{0xbf, 0xba, 0xa3, 0xe0} : Color{0x45, 0x41, 0x39, 0xe0},
                     .position = {
                         .value={0.5, 0.5},
                         .mode = {Mode::SELF_W, Mode::SELF_H}
