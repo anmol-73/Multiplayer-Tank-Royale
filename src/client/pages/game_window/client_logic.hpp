@@ -1,6 +1,6 @@
 #ifndef HEADER_CLIENT_LOGIC
 #define HEADER_CLIENT_LOGIC
-#include "common/maps/maps.hpp"
+#include "maps/maps.hpp"
 #include <raylib.h>
 #include <stdlib.h>
 #include <string>
@@ -15,7 +15,6 @@ class LogicUtils{
         struct PlayerPacket{
             int ID;
             Vector2 position_absolute;
-            std::string name;
             float player_angle;
             float gun_angle;
             bool has_shot;
@@ -28,8 +27,6 @@ class LogicUtils{
         /*
         * THe live player data used which updates every frame
         */
-
-        MapData current_map;
 
         
         struct WallData

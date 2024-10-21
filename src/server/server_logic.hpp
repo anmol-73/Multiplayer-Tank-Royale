@@ -1,8 +1,8 @@
 #ifndef HEADER_SERVER_LOGIC
 #define HEADER_SERVER_LOGIC
 
-#include "common/maps/maps.hpp"
-#include "common/collisions.hpp"
+#include "maps/maps.hpp"
+#include "collisions.hpp"
 
 #include <raylib.h>
 #include <string>

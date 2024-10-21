@@ -1,4 +1,4 @@
-#include "common/maps/maps.hpp"
+#include "maps/maps.hpp"
 
 Maps::MapData Maps::map1 = {
         .map_width_tiles = 480,

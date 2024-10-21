@@ -20,13 +20,13 @@ RAYLIB_DIR = r"C:\raylib\raylib"
 CC = "g++" # The compiler to use
 
 # Compiler arguments
-LINK_LIBS = "-lraylib -lopengl32 -lgdi32 -lwinmm"
+LINK_LIBS = "-lraylib -lopengl32 -lgdi32 -lwinmm -lenet"
 LINK_DIRS = f"-L{LIB_DIR} -L{RAYLIB_DIR}/src"
-INCLUDE_DIRS = f"-I{SRC_DIR} -I{INC_DIR} -I{RAYLIB_DIR}/src/ -I{RAYLIB_DIR}/src/external/"
-CFLAGS = "-Wall -std=c++14 -D_DEFAULT_SOURCE -Wno-missing-braces"
+INCLUDE_DIRS = f"-I{SRC_DIR} -I{COM_DIR} -I{INC_DIR} -I{RAYLIB_DIR}/src/ -I{RAYLIB_DIR}/src/external/"
+CFLAGS = "-Wall -std=c++17 -D_DEFAULT_SOURCE -Wno-missing-braces"
 PLATFORM = "PLATFORM_DESKTOP"
 
-if len(sys.argv) > 1 and sys.argv[1] == "clean" or sys.argv[1] == "test":
+if len(sys.argv) > 1 and (sys.argv[1] == "clean" or sys.argv[1] == "test"):
 	print("Deleting object files")
 	for file in pathlib.Path(SRC_DIR).glob("**/*.o"):
 		file.unlink()
@@ -37,8 +37,8 @@ if len(sys.argv) > 1 and sys.argv[1] == "clean" or sys.argv[1] == "test":
 		exe.unlink()
 
 # Get the files present in src
-headers = [file.absolute().resolve().as_posix() for file in pathlib.Path(SRC_DIR).glob("**/*.hpp")]
-sources = [file.absolute().resolve().as_posix() for file in pathlib.Path(SRC_DIR).glob("**/*.cpp")]
+headers = [file.absolute().resolve().as_posix() for file in pathlib.Path(SRC_DIR).glob("**/*.hpp")] + [file.absolute().resolve().as_posix() for file in pathlib.Path(COM_DIR).glob("**/*.hpp")]
+sources = [file.absolute().resolve().as_posix() for file in pathlib.Path(SRC_DIR).glob("**/*.cpp")] + [file.absolute().resolve().as_posix() for file in pathlib.Path(COM_DIR).glob("**/*.cpp")]
 objects = [file.removesuffix(".cpp") + ".o" for file in sources]
 
 OBJS = " ".join(f"\"{object}\"" for object in objects)
