@@ -3,6 +3,8 @@
 
 #include <raylib.h>
 #include "dragonlib/utils/text.hpp"
+#include "utils/task.hpp"
+#include "communication/room_client.hpp"
 
 namespace Global
 {
@@ -28,8 +30,20 @@ namespace Global
              * NOTE: It doesn't uses sdf
              */
             extern Font main;
+
         } // namespace Fonts
     } // namespace Rendering
+
+    /**
+     * Just some unit proportional to screen height. Use it for like text size and all.
+     */
+    extern float rem;
+    namespace ServiceProviders
+    {
+        extern Communication::RoomClient room_client;
+        extern Utils::Task room_client_worker;
+    } // namespace ServiceProviders
+    
 
     /**
      * Initializes global parameters

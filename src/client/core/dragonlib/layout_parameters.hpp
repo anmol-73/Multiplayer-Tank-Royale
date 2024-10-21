@@ -14,6 +14,8 @@ namespace DragonLib
             struct BorderParameters{
                 float width = 0; // The width of the border
                 Color color = BLACK; // The color of the border
+                float offset = 0; // The offset around the box with which the border is drawn
+                
                 // TODO: Add support for border radius?
                 // (One of the initial commits has the struct definition to store radius information it doesn't have an implementation yet)
             };
@@ -24,16 +26,31 @@ namespace DragonLib
                 SELF_W, // Relative to self width
                 ABSOLUTE // Pixels
             };
-            using CalculationMode = std::array<SizeMode, 2>;
-            struct Box{
-                CalculationMode position_mode = {SizeMode::SCREEN_W, SizeMode::SCREEN_H};
-                Vector2 position = {0}; // The position to place the origin of the rect
+            struct Measurement{
+                Vector2 value;
+                std::array<SizeMode, 2> mode;
+            };
 
-                CalculationMode size_mode = {SizeMode::SCREEN_W, SizeMode::SCREEN_H};
-                Vector2 size = {0}; // The size of the box
+            struct Box{
+                Measurement position = { // The position to place the origin of the rect
+                    .value = {0.5, 0.5},
+                    .mode = {SizeMode::SCREEN_W, SizeMode::SCREEN_H}
+                };
+
+                Measurement size = { // The size of the box
+                    .value = {0.1, 0.1},
+                    .mode = {SizeMode::SCREEN_W, SizeMode::SCREEN_H}
+                };
                 
-                CalculationMode origin_mode = {SizeMode::SELF_W, SizeMode::SELF_H};
-                Vector2 origin = {0}; // Specifies the origin of the rect
+                Measurement origin = { // Specifies the origin of the rect
+                    .value = {0.5, 0.5},
+                    .mode = {SizeMode::SELF_W, SizeMode::SELF_H}
+                };
+
+                Measurement padding = { // Padding to add on the left and the right. NOTE: SELF is wrt the content rect!
+                    .value = {0},
+                    .mode = {SizeMode::SELF_W, SizeMode::SELF_H}
+                };
 
                 Color fill = {255, 255, 255, 0}; // The color to fill the box with
 
@@ -47,11 +64,15 @@ namespace DragonLib
                 float font_size = 32; // Font size
                 Color font_color = GRAY; // Font color
                 
-                CalculationMode position_mode = {SizeMode::SCREEN_W, SizeMode::SCREEN_H};
-                Vector2 position = {0}; // The position to place the origin of the rect
+                Measurement position = { // The position to place the origin of the rect
+                    .value = {0.5, 0.5},
+                    .mode = {SizeMode::SCREEN_W, SizeMode::SCREEN_H}
+                };
                 
-                CalculationMode origin_mode = {SizeMode::SELF_W, SizeMode::SELF_H};
-                Vector2 origin = {0}; // Specifies the origin of the rect
+                Measurement origin = { // Specifies the origin of the rect
+                    .value = {0.5, 0.5},
+                    .mode = {SizeMode::SELF_W, SizeMode::SELF_H}
+                };
                
                 float wrap_width = 0; // Set to 0 if no wrapping to be done
                 
@@ -64,19 +85,30 @@ namespace DragonLib
                 Font* font; // The font (uses `Global::Rendering::Fonts::main` if set to null)
                 bool sdf = true;
                 float font_size = 32; // Font size
-                Color font_color = GRAY; // Font color
+                Color font_color = GRAY; // Font color                
                 
-                CalculationMode position_mode = {SizeMode::SCREEN_W, SizeMode::SCREEN_H};
-                Vector2 position = {0}; // The position to place the origin of the rect
+                Measurement position = { // The position to place the origin of the rect
+                    .value = {0.5, 0.5},
+                    .mode = {SizeMode::SCREEN_W, SizeMode::SCREEN_H}
+                };
 
-                CalculationMode rect_origin_mode = {SizeMode::SELF_W, SizeMode::SELF_H};
-                Vector2 rect_origin = {0}; // Specifies the origin of the rect
+                Measurement rect_origin = { // Specifies the origin of the rect
+                    .value = {0.5, 0.5},
+                    .mode = {SizeMode::SELF_W, SizeMode::SELF_H}
+                };
                 
                 Color fill = {255, 255, 255, 0};
                 BorderParameters border;
+
+                Measurement padding = { // Padding to add on the left and the right. NOTE: SELF is wrt the content rect!
+                    .value = {0},
+                    .mode = {SizeMode::SELF_W, SizeMode::SELF_H}
+                };
                 
-                CalculationMode text_origin_mode = {SizeMode::SELF_W, SizeMode::SELF_H};
-                Vector2 text_origin = {0}; // Specifies the origin of the text wrt to the rect
+                Measurement text_origin = { // Specifies the origin of the text wrt to the rect origin. NOTE: SELF is wrt the content rect!
+                    .value = {0},
+                    .mode = {SizeMode::SELF_W, SizeMode::SELF_H}
+                };
                 
                 float spacing = 1; // The space between letters
                 float line_space = 1.0f; // The vertical padding between lines of text (As a percentage of height of the text)

@@ -61,6 +61,11 @@ namespace DragonLib
              * NOTE: If you require a box whose size doesn't depend on text inside, simply draw a rect followed by the text :)
              */
             Rectangle draw_textbox(UI::DrawParameters::TextBox params);
+
+            /**
+             * Draws text at a given position.
+             */
+            void place_text(const char* content, Vector2 position, Color font_color, float font_size, Font* font = nullptr, bool sdf = true, float line_space = 1, float spacing = 1);
         } // namespace Drawing
         
     } // namespace Utils

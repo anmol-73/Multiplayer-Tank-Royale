@@ -11,7 +11,7 @@ void DragonLib::UI::Elements::Element::clear_state()
     hstate.clear();
 }
 
-inline bool DragonLib::UI::Elements::Element::HoverState::exclusively_hovered()
+bool DragonLib::UI::Elements::Element::HoverState::exclusively_hovered()
 {
     return hovered && (!child_hovered);
 }
