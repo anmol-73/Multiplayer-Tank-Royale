@@ -15,11 +15,10 @@ void DragonLib::UI::Elements::Span::draw()
 void DragonLib::UI::Elements::Span::poll_events()
 {
     clear_state();
-    if (!interactable) return;
     hstate.hovered = CheckCollisionPointRec(GetMousePosition(), bounds);
     clicked = hstate.hovered && IsMouseButtonPressed(MOUSE_BUTTON_LEFT);
     mouse_down = hstate.hovered && IsMouseButtonDown(MOUSE_BUTTON_LEFT);
-    hstate.requested_pointer = hstate.hovered;
+    hstate.requested_pointer = hstate.hovered & interactable;
 }
 
 void DragonLib::UI::Elements::Span::clear_state()

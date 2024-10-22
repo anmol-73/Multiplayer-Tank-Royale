@@ -1,5 +1,10 @@
 #include "main_window.hpp"
 
+Pages::MainWindowScene::MainWindowScene()
+{
+    background = DragonLib::DImage("resources/ui_background.png");
+}
+
 void Pages::MainWindowScene::_update()
 {
     if (WindowShouldClose()){
@@ -10,8 +15,8 @@ void Pages::MainWindowScene::_update()
     BeginDrawing();{
         ClearBackground({0x1e, 0x1e, 0x1e, 0xff});
         DrawTexturePro(
-            background_texture,
-            {0, 0, (float)background_texture.width, (float)background_texture.height},
+            background.tex,
+            {0, 0, (float)background.tex.width, (float)background.tex.height},
             {0, 0, (float)GetScreenWidth(), (float)GetScreenHeight()},
             {0},
             0,
@@ -22,45 +27,50 @@ void Pages::MainWindowScene::_update()
     EndDrawing();
     ui.poll_events();
 
-    if(ui.address_submit_requested() && !connect_worker.is_running()){        
-        ui.show_info("Trying to connect...", false);
-        connect_worker.accomplish([this](const bool& cancel_requested){
-            auto [succesful, error] = Global::ServiceProviders::room_client.connect(ui.address_input_value(), cancel_requested);
-            
-            if (succesful){
-                SceneManagement::SceneManager::load_scene(SceneManagement::SceneName::LOBBY_PAGE);
-            } else{
-                ui.show_info(error, true);
-            }
-        });
+    if(ui.address_submit_button->clicked && !connect_worker.is_running()){        
+        if (StringAlgorithms::stripped(ui.name_input->value) == std::string()){
+            ui.show_info("Please enter a non empty name!", true);
+        } else{
+            ui.show_info("Trying to connect...", false);
+            connect_worker.accomplish([this](const bool& cancel_requested){
+                auto [succesful, error] = Global::ServiceProviders::room_client.connect(ui.address_input->value, cancel_requested);
+                
+                if (succesful){
+                    SceneManagement::SceneManager::load_deferred(SceneManagement::SceneName::LOBBY_PAGE);
+                } else{
+                    ui.show_info(error, true);
+                }
+            });
+        }
     }
 }
 
 void Pages::MainWindowScene::_loading_update() {
-    // TODO:
-    // Populate this properly.... (until the room_client is ready we can't do anything)
-    return _update();
+    DragonLib::Utils::Drawing::draw_text({
+        .content = "Loading...",
+        .font_size = Global::rem * 2
+    });
 }
 
 void Pages::MainWindowScene::_load_with_context()
 {
-    background_texture = LoadTextureFromImage(background_image);
+    background.load_tex();
 }
 
 void Pages::MainWindowScene::_cleanup_with_context()
 {
-    UnloadTexture(background_texture);
+    background.unload_tex();
 }
 
 void Pages::MainWindowScene::_load()
 {
     Global::ServiceProviders::room_client_worker.await(); // Wait for the room client to stop running (if it was running before)
-    background_image = LoadImage("resources/ui_background.png");
+    background.load_im();
 }
 
 void Pages::MainWindowScene::_cleanup()
 {
-    UnloadImage(background_image);
+    background.unload_im();
     connect_worker.cancel();
     connect_worker.await();
 }

@@ -39,9 +39,56 @@ Pages::MainWindowUI::MainWindowUI()
         )
     );
 
-    address_input_id = register_element(
-        new UI::Elements::Input(UI::Elements::InputParameters{
+    register_element(
+        name_input = new UI::Elements::Input(UI::Elements::InputParameters{
+            .label = "Screen name:",
+            .position = {
+                .value = {0.5, 0.5},
+                .mode = {Mode::SCREEN_W, Mode::SCREEN_H}
+            },
+            .size = {
+                .value = {0.3, 0.05},
+                .mode = {Mode::SCREEN_W, Mode::SCREEN_H}
+            },
+            .padding = {
+                .value = {0.1, 0},
+                .mode = {Mode::SELF_H, Mode::SELF_H}
+            },
+            .text_origin = {
+                .value = {0, 0.07},
+                .mode = {Mode::SELF_H, Mode::SELF_H}
+            },
+            .background_color = {0xb2, 0xad, 0x99, 0xc0},
+            .font_color = {0x45, 0x41, 0x39, 0xf0},
+            .default_border_params = {
+                .width = 0,
+                .color = {0x49, 0x47, 0x3f, 0xc0},
+            },
+            .focused_border_params = {
+                .width = 2.0f,
+                .color = {0x49, 0x47, 0x3f, 0xf0},
+                .offset = 6.0f
+            },
+            .hover_border_params = {
+                .width = 2.0f,
+                .color = {0x49, 0x47, 0x3f, 0x60},
+                .offset = 12.0f
+            },
+            .placeholder = {
+                .content = "Enter a name...",
+                .placeholder_font_color = {0x45, 0x41, 0x39, 0x80}
+            },
+            .max_input_size = 24,
+        })
+    );
+
+    register_element(
+        address_input = new UI::Elements::Input(UI::Elements::InputParameters{
             .label = "Server Address:",
+            .position = {
+                .value = {0.5, 0.6},
+                .mode = {Mode::SCREEN_W, Mode::SCREEN_H}
+            },
             .size = {
                 .value = {0.3, 0.05},
                 .mode = {Mode::SCREEN_W, Mode::SCREEN_H}
@@ -54,8 +101,8 @@ Pages::MainWindowUI::MainWindowUI()
                 .value = {0, 0.05},
                 .mode = {Mode::SELF_H, Mode::SELF_H}
             },
-            .background_color = {0x92, 0x8d, 0x79, 0xc0},
-            .font_color = {0x45, 0x41, 0x39, 0xc0},
+            .background_color = {0xb2, 0xad, 0x99, 0xc0},
+            .font_color = {0x45, 0x41, 0x39, 0xf0},
             .default_border_params = {
                 .width = 0,
                 .color = {0x49, 0x47, 0x3f, 0xc0},
@@ -72,17 +119,17 @@ Pages::MainWindowUI::MainWindowUI()
             },
             .placeholder = {
                 .content = "eg: 127.0.0.1:3000",
-                .placeholder_font_color = {0x45, 0x41, 0x39, 0x20}
+                .placeholder_font_color = {0x45, 0x41, 0x39, 0x80}
             },
             .max_input_size = 24,
         })
     );
 
-    address_submit_id = register_element(
-        Components::create_span_button(
+    register_element(
+        address_submit_button = Components::create_span_button(
             "Connect",
             {
-                .value = {0.5, 0.6},
+                .value = {0.5, 0.7},
                 .mode = {Mode::SCREEN_W, Mode::SCREEN_H}
             }
         )
@@ -95,7 +142,7 @@ Pages::MainWindowUI::MainWindowUI()
                 return UI::DrawParameters::TextBox{
                     .content = this->information.second,
                     .font_size = Global::rem,
-                    .font_color = this->information.first ? Color{0xe9, 0x7d, 0x81, 0xff} : Color{0x49, 0x47, 0x3f,  0xc0},
+                    .font_color = this->information.first ? Color{0xd9, 0x5d, 0x61, 0xff} : Color{0x49, 0x47, 0x3f,  0xe0},
                     .position = {
                         .value = {0.5, 0.85},
                         .mode = {Mode::SCREEN_W, Mode::SCREEN_H}
@@ -105,16 +152,6 @@ Pages::MainWindowUI::MainWindowUI()
             }
         )
     );
-}
-
-const std::string &Pages::MainWindowUI::address_input_value()
-{
-    return dynamic_cast<UI::Elements::Input*>(elements[address_input_id].get())->value;
-}
-
-bool Pages::MainWindowUI::address_submit_requested()
-{
-    return dynamic_cast<UI::Elements::Span*>(elements[address_submit_id].get())->clicked;
 }
 
 void Pages::MainWindowUI::show_info(std::string text, bool is_error)
