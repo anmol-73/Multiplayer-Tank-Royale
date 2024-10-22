@@ -78,7 +78,7 @@ Pages::MainWindowUI::MainWindowUI()
                 .content = "Enter a name...",
                 .placeholder_font_color = {0x45, 0x41, 0x39, 0x80}
             },
-            .max_input_size = 24,
+            .max_input_size = 23,
         })
     );
 
@@ -121,7 +121,7 @@ Pages::MainWindowUI::MainWindowUI()
                 .content = "eg: 127.0.0.1:3000",
                 .placeholder_font_color = {0x45, 0x41, 0x39, 0x80}
             },
-            .max_input_size = 24,
+            .max_input_size = 23,
         })
     );
 

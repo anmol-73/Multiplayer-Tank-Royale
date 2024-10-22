@@ -1,5 +1,15 @@
 #include "lobby_window.hpp"
 
+Pages::LobbyWindowScene::LobbyWindowScene()
+{
+    background = DragonLib::DImage("resources/ui_background.png");
+    map_images = {
+        DragonLib::DImage("resources/map1.png"),
+        DragonLib::DImage("resources/map2.png")
+    };
+    room_members.assign(Networking::Message::Room::MAX_ROOM_SIZE, {});
+}
+
 void Pages::LobbyWindowScene::_update()
 {
     if (WindowShouldClose()){
@@ -10,8 +20,8 @@ void Pages::LobbyWindowScene::_update()
     BeginDrawing();{
         ClearBackground({0x1e, 0x1e, 0x1e, 0xff});
         DrawTexturePro(
-            background_texture,
-            {0, 0, (float)background_texture.width, (float)background_texture.height},
+            background.tex,
+            {0, 0, (float)background.tex.width, (float)background.tex.height},
             {0, 0, (float)GetScreenWidth(), (float)GetScreenHeight()},
             {0},
             0,
@@ -19,8 +29,8 @@ void Pages::LobbyWindowScene::_update()
         );
         Rectangle map_rect = {(float)GetScreenWidth() * 0.66f, (float)GetScreenHeight() * 0.3f, (float)GetScreenWidth() * 0.3f, (float)GetScreenWidth() * 0.16875f};
         DrawTexturePro(
-            map_texture[ui.current_map_idx],
-            {0, 0, (float)map_texture[ui.current_map_idx].width, (float)map_texture[ui.current_map_idx].height},
+            map_images[ui.current_map_idx].tex,
+            {0, 0, (float)map_images[ui.current_map_idx].tex.width, (float)map_images[ui.current_map_idx].tex.height},
             map_rect,
             {0},
             0,
@@ -34,60 +44,45 @@ void Pages::LobbyWindowScene::_update()
 }
 
 
-void Pages::LobbyWindowScene::_loading_update()
-{
-    // I think we should wait for all the player info?
-    BeginDrawing();{
-        ClearBackground({0x1e, 0x1e, 0x1e, 0xff});
-    }EndDrawing();
+void Pages::LobbyWindowScene::_loading_update() {
+    DragonLib::Utils::Drawing::draw_text({
+        .content = "Loading...",
+        .font_size = Global::rem * 2
+    });
 }
 
 
 void Pages::LobbyWindowScene::_load()
 {
-    room_members = {
-        {0, "Tank Destroyer"},
-        {1, "Player 1"},
-        {2, "Denviser"},
-        {3, "Xx__VoidGamer__xX"},
-        {4, "RyuKaminari"},
-    };
-    background_image = LoadImage("resources/ui_background.png");
-    map_image = {
-        LoadImage("resources/map1.png"),
-        LoadImage("resources/map2.png")
-    };
-    std::vector<std::string> map_names = {
+    for (size_t i = 0; i < room_members.size(); ++i) room_members[i] = "";
+    
+    background.load_im();
+    for (auto &map: map_images) map.load_im();
+    
+    Global::ServiceProviders::room_client_worker.accomplish([](const bool &should_cancel){
+        Global::ServiceProviders::room_client.run(should_cancel);
+    });
+    ui.update_room_members(room_members);
+    ui.make_ready({
         "Forest",
         "Catacombs"
-    };
-    ui.make_ready(room_members, map_names);
+    });
 }
 
 void Pages::LobbyWindowScene::_load_with_context()
 {
-    background_texture = LoadTextureFromImage(background_image);
-    map_texture.clear();
-    map_texture.assign(map_image.size(), {});
-    for (size_t i = 0; i < map_image.size(); ++i){
-        map_texture[i] = LoadTextureFromImage(map_image[i]);
-    }
+    background.load_tex();
+    for (auto &map: map_images) map.load_tex();
 }
 
 void Pages::LobbyWindowScene::_cleanup_with_context()
 {
-    for (size_t i = 0; i < map_image.size(); ++i){
-        UnloadTexture(map_texture[i]);
-    }
-    UnloadTexture(background_texture);
+    background.unload_tex();
+    for (auto &map: map_images) map.unload_tex();
 }
 
 void Pages::LobbyWindowScene::_cleanup()
 {
-    UnloadImage(background_image);
-    for (size_t i = 0; i < map_image.size(); ++i){
-        UnloadImage(map_image[i]);
-    }
-    connect_worker.cancel();
-    connect_worker.await();
+    background.unload_im();
+    for (auto &map: map_images) map.unload_im();
 }

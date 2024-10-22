@@ -141,13 +141,9 @@ Pages::LobbyWindowUI::LobbyWindowUI()
     );
 }
 
-void Pages::LobbyWindowUI::make_ready(std::vector<std::pair<size_t, std::string>> &room_members_, std::vector<std::string> &map_names_)
+void Pages::LobbyWindowUI::make_ready(std::vector<std::string> map_names_)
 {
     map_names = map_names_;
-    room_members = std::vector<std::pair<size_t, std::string>>(Networking::Message::Room::MAX_ROOM_SIZE, {0, ""});
-    for (size_t i = 0; i < room_members_.size(); ++i){
-        room_members[i] = room_members_[i];
-    }
 }
 
 void Pages::LobbyWindowUI::poll_events()
@@ -161,5 +157,15 @@ void Pages::LobbyWindowUI::poll_events()
     } else if (dynamic_cast<UI::Elements::Text*>(elements[right_map_idx].get())->clicked){
         current_map_idx += 1;
         if (current_map_idx >= (int)map_names.size()) current_map_idx -= map_names.size();
+    }
+}
+
+void Pages::LobbyWindowUI::update_room_members(std::vector<std::string> &room_members_)
+{
+    room_members = std::vector<std::pair<size_t, std::string>>(Networking::Message::Room::MAX_ROOM_SIZE, {0, ""});
+    
+    for (size_t i = 0; i < room_members_.size(); ++i){
+        room_members[i].first = i;
+        room_members[i].second = room_members_[i];
     }
 }

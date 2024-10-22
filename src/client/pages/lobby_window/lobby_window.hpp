@@ -10,7 +10,10 @@
 namespace Pages
 {
     class LobbyWindowScene: public SceneManagement::Scene{
+    public:
+        LobbyWindowScene();
     private:
+
         void _update();
         void _loading_update();
 
@@ -20,15 +23,11 @@ namespace Pages
         void _cleanup();
 
         LobbyWindowUI ui;
-        Utils::Task connect_worker;
 
-        Image background_image;
-        Texture background_texture;
+        DragonLib::DImage background;
+        std::vector<DragonLib::DImage> map_images;
         
-        std::vector<Image> map_image;
-        std::vector<Texture> map_texture;
-        
-        std::vector<std::pair<size_t, std::string>> room_members;
+        std::vector<std::string> room_members;
     };
 
 } // namespace Pages
