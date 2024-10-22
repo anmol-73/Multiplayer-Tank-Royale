@@ -1,6 +1,7 @@
 #ifndef HEADER_CLIENT_LOGIC
 #define HEADER_CLIENT_LOGIC
 #include "maps/maps.hpp"
+#include "core/utils/animation_controller.hpp"
 #include <raylib.h>
 #include <stdlib.h>
 #include <string>
@@ -21,7 +22,7 @@ namespace LogicUtils{
         int health;
         bool is_alive;
         bool is_connected;
-    }player_packet;
+    } extern player_packet;
 
     /*
     * THe live player data used which updates every frame
@@ -29,14 +30,14 @@ namespace LogicUtils{
     
     struct LivePlayerData{
         int ID;
-        Vector2 position;
+        Vector2 position; // Tank top left in units (absoolute)
         std::string name;
-        double angle;
+        double angle; // Angle with x axis
         int health;
         int ammo;
         int max_ammo;
         bool is_alive;
-    }player_data;
+    } extern player_data;
 
     /*
     * Define the Gun stats 
@@ -53,7 +54,7 @@ namespace LogicUtils{
         double gun_rot_speed;
         double bullet_range;
         // int gun_type;
-    }gun_data;
+    } extern gun_data;
 
     struct HullStats{
         Rectangle player_rectangle = {
@@ -64,23 +65,23 @@ namespace LogicUtils{
         double player_rot_speed;
         bool player_colliding;
         // int hull_type;
-    } hull_data;
+    } extern hull_data;
 
     struct CrosshairData
     {
-        Vector2 mouse_position;
-        double mouse_distance;
-        Vector2 tracker_position;
-        double tracker_distance;
+        Vector2 mouse_position; // Relative
+        double mouse_distance; // Relative
+        Vector2 tracker_position; // Relative and wrt top left
+        double tracker_distance; // Relative
         double tracker_radius;
         double tracker_radial_speed;
         Color circle_color = WHITE; 
-    } crosshair_data;
+    } extern crosshair_data;
 
     struct ViewportData
     {
         Vector2 offset; // Top left
-    } viewport_data;
+    } extern viewport_data;
 
     double normalize_angle(double angle);
     /**
@@ -96,6 +97,17 @@ namespace LogicUtils{
      * To update tracker circle to after delta_time
      */
     void set_tracker(float delta_time);
+
+    Texture2D extern player_spritesheet;
+    Image extern player_spritesheet_image;
+
+    Utils::AnimationController extern *player_controller;
+    size_t extern player_idle_idx;
+    size_t extern player_moving_idx;
+
+    Utils::AnimationController extern *gun_controller;
+    size_t extern gun_idle_idx;
+    size_t extern gun_shot_idx;
 };
 
 

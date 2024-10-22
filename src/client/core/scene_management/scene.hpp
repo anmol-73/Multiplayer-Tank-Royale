@@ -10,6 +10,7 @@ namespace SceneManagement
     enum SceneName{
         MAIN_PAGE,
         LOBBY_PAGE,
+        GAME_PAGE,
         __NIL__ // NOTE: This must be the last position in the enum
     };
 

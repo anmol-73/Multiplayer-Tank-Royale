@@ -5,7 +5,7 @@
 #include <raylib.h>
 #include "core/scene_management.hpp"
 #include "core/global.hpp"
-#include "utils/task.hpp"
+#include "core/task.hpp"
 #include "client_logic.hpp"
 #include "core/utils/animation_controller.hpp"
 #include "core/dragonlib.hpp"
@@ -38,17 +38,9 @@ namespace Pages
          * Draws the hud
          */
         void draw_hud();
-    
-        Texture2D player_spritesheet;
-        Image player_spritesheet_image;
 
-        Utils::AnimationController* player_controller;
-        size_t player_idle_idx;
-        size_t player_moving_idx;
-
-        Utils::AnimationController* gun_controller;
-        size_t gun_idle_idx;
-        size_t gun_shot_idx;
+        double pixels_per_unit_x;
+        double pixels_per_unit_y;
     };
 
 } // namespace Pages
