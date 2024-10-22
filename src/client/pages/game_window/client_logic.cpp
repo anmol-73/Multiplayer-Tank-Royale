@@ -15,6 +15,8 @@ size_t LogicUtils::player_moving_idx;
 Utils::AnimationController *LogicUtils::gun_controller;
 size_t LogicUtils::gun_idle_idx;
 size_t LogicUtils::gun_shot_idx;
+Texture2D LogicUtils::map;
+Image LogicUtils::map_image;
 
 void LogicUtils::handle_movement(float delta_time)
 {
@@ -27,17 +29,17 @@ void LogicUtils::handle_movement(float delta_time)
         if (IsKeyDown(KEY_W))
         {
             double displacement = (hull_data.player_speed * delta_time);
-            player_data.position.x -= (displacement*cos(player_data.angle));
+            player_data.position.x += (displacement*cos(player_data.angle));
             player_data.position.y += (displacement*sin(player_data.angle));
-            viewport_data.offset.x -= (displacement*cos(player_data.angle));
+            viewport_data.offset.x += (displacement*cos(player_data.angle));
             viewport_data.offset.y += (displacement*sin(player_data.angle));
         }
         if (IsKeyDown(KEY_S))
         {
             double displacement = (hull_data.player_speed * delta_time);
-            player_data.position.x += (displacement*cos(player_data.angle));
+            player_data.position.x -= (displacement*cos(player_data.angle));
             player_data.position.y -= (displacement*sin(player_data.angle));
-            viewport_data.offset.x += (displacement*cos(player_data.angle));
+            viewport_data.offset.x -= (displacement*cos(player_data.angle));
             viewport_data.offset.y -= (displacement*sin(player_data.angle));
         }
     }
