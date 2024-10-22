@@ -127,8 +127,8 @@ void Pages::GameWindowScene::_cleanup_with_context()
 
 void Pages::GameWindowScene::logic_update()
 {
-    pixels_per_unit_x = GetScreenWidth()/1024;
-    pixels_per_unit_y = GetScreenHeight()/576;
+    pixels_per_unit_x = (float)GetScreenWidth()/(float)1024;
+    pixels_per_unit_y = (float)GetScreenHeight()/(float)576;
     LogicUtils::crosshair_data.mouse_position = {GetMousePosition().x/(float)pixels_per_unit_x, GetMousePosition().y/(float)pixels_per_unit_x};
     // set_position(); // For drawing
     LogicUtils::gun_data.has_shot = IsMouseButtonPressed(MOUSE_BUTTON_LEFT);
@@ -174,6 +174,8 @@ void Pages::GameWindowScene::draw_game()
         LogicUtils::gun_controller->play(LogicUtils::gun_idle_idx, true);
     }
 
+    std::printf("%f",576*(float)pixels_per_unit_y);
+
     // Draw bg
     DrawTexturePro(LogicUtils::map,
         {LogicUtils::viewport_data.offset.x, LogicUtils::viewport_data.offset.y, 1024, 576},
@@ -202,8 +204,8 @@ void Pages::GameWindowScene::draw_game()
     Rectangle* player_source = LogicUtils::player_controller->get_sprite().second;
     DrawTexturePro(*player_texture,
     *player_source,
-    {(512)*(float)pixels_per_unit_x, (288)*(float)pixels_per_unit_y, LogicUtils::hull_data.player_rectangle.width, LogicUtils::hull_data.player_rectangle.height},
-    {LogicUtils::hull_data.player_rectangle.width/2, LogicUtils::hull_data.player_rectangle.height/2},
+    {(512)*(float)pixels_per_unit_x, (288)*(float)pixels_per_unit_y, LogicUtils::hull_data.player_rectangle.width*(float)pixels_per_unit_x, LogicUtils::hull_data.player_rectangle.height*(float)pixels_per_unit_y},
+    {LogicUtils::hull_data.player_rectangle.width/2*(float)pixels_per_unit_x, LogicUtils::hull_data.player_rectangle.height/2*(float)pixels_per_unit_y},
     
     (LogicUtils::player_data.angle)*RAD2DEG, WHITE
     );
