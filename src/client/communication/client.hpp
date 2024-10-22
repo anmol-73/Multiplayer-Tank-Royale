@@ -42,7 +42,7 @@ namespace Communication
          * Starts listening and handling connections
          * NOTE: This will block, you probably need to run this on a new thread
          */
-        void run();
+        void run(const bool& should_cancel);
 
         /**
          * Stops the server from running

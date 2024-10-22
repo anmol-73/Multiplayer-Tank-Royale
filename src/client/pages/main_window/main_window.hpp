@@ -26,6 +26,7 @@ namespace Pages
         Utils::Task connect_worker;
 
         DragonLib::DImage background;
+        std::string requested_name;
     };    
 } // namespace Pages
 #endif

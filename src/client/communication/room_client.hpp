@@ -1,6 +1,7 @@
 #ifndef HEADER_COMMUNICATION_ROOM_CLIENT
 #define HEADER_COMMUNICATION_ROOM_CLIENT
 
+#include <cassert>
 #include <memory>
 #include <stdexcept>
 #include <map>
@@ -12,6 +13,7 @@ namespace Communication
     struct RoomClient: public Client{
     public:
         inline bool connected();
+        void send_name_request(const std::string& name);
     private:
         std::pair<bool, std::string> handle_established_connection(const bool& cancel_requested);
         void handle_message(size_t type, void* message);

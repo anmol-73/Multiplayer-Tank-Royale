@@ -31,7 +31,7 @@ std::pair<bool, std::string> Communication::Client::connect(std::string server_a
     }
 
     ENetEvent event;
-    const size_t connection_timeout = 500;
+    const size_t connection_timeout = 300;
     const size_t max_tries = 10;
 
 
@@ -43,14 +43,9 @@ std::pair<bool, std::string> Communication::Client::connect(std::string server_a
         {
             return handle_established_connection(cancel_requested);
         }
-        else
-        {
-            return {false, "Could not establish connection to server!"};
-        }
     }
 
-    return {false, "Server did not respond in time!"};
-
+    return {false, "Could not establish connection to server!"};
 }
 
 void Communication::Client::cleanup()
@@ -58,13 +53,13 @@ void Communication::Client::cleanup()
     destroy_host();
 }
 
-void Communication::Client::run()
+void Communication::Client::run(const bool& should_cancel)
 {
     const size_t timeout = 500;
     is_running = true;
     on_run();
     ENetEvent event;
-    while (is_running){
+    while (is_running && (!should_cancel)){
         if (enet_host_service(host, &event, timeout) <= 0) continue;
         switch (event.type){
             // In the future we must handle the case when disconnects happen (for now assume nobody is malicious)
@@ -80,6 +75,7 @@ void Communication::Client::run()
                 break;
         }
     }
+    is_running = false;
     on_stop();
 }
 

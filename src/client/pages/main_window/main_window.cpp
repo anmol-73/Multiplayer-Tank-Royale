@@ -27,8 +27,9 @@ void Pages::MainWindowScene::_update()
     EndDrawing();
     ui.poll_events();
 
-    if(ui.address_submit_button->clicked && !connect_worker.is_running()){        
-        if (StringAlgorithms::stripped(ui.name_input->value) == std::string()){
+    if(ui.address_submit_button->clicked && !connect_worker.is_running()){    
+        requested_name = StringAlgorithms::stripped(ui.name_input->value);   
+        if (requested_name == std::string()){
             ui.show_info("Please enter a non empty name!", true);
         } else{
             ui.show_info("Trying to connect...", false);
@@ -36,6 +37,7 @@ void Pages::MainWindowScene::_update()
                 auto [succesful, error] = Global::ServiceProviders::room_client.connect(ui.address_input->value, cancel_requested);
                 
                 if (succesful){
+                    Global::ServiceProviders::room_client.send_name_request(requested_name);
                     SceneManagement::SceneManager::load_deferred(SceneManagement::SceneName::LOBBY_PAGE);
                 } else{
                     ui.show_info(error, true);
