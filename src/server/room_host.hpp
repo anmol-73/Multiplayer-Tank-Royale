@@ -23,6 +23,7 @@ struct RoomHost: public Host{
 
 private:
     size_t current_room_size = 0;
+    int current_map_idx = 0;
     std::vector<ENetPeer*> members;
     char names[Networking::Message::Room::MAX_ROOM_SIZE][Networking::Message::Room::NAME_SIZE];
 };

@@ -59,7 +59,7 @@ void Communication::Client::run(const bool& should_cancel)
     is_running = true;
     on_run();
     ENetEvent event;
-    while (is_running && (!should_cancel)){
+    while (is_running && (!should_cancel) && host != nullptr){
         if (enet_host_service(host, &event, timeout) <= 0) continue;
         switch (event.type){
             // In the future we must handle the case when disconnects happen (for now assume nobody is malicious)

@@ -41,6 +41,17 @@ void Pages::LobbyWindowScene::_update()
     }
     EndDrawing();
     ui.poll_events();
+
+    if (ui.left_map_select->clicked || ui.right_map_select->clicked){
+        // Set map
+        Global::ServiceProviders::room_client.send_map_id(ui.current_map_idx);
+    }
+
+    if (ui.start_game_button->clicked){
+        // Start
+        Global::ServiceProviders::room_client.request_start();
+    }
+
 }
 
 
@@ -59,18 +70,36 @@ void Pages::LobbyWindowScene::_load()
     background.load_im();
     for (auto &map: map_images) map.load_im();
     
+    Global::ServiceProviders::room_client.game_start_callback = [](){
+        std::cout << "GAME START!" << std::endl;
+        return;
+    };
+    Global::ServiceProviders::room_client.disconnect_callback = [](){
+        SceneManagement::SceneManager::load_deferred(SceneManagement::SceneName::MAIN_PAGE);
+        return;
+    };
+    Global::ServiceProviders::room_client.set_map_callback = [this](int map){
+        if (Global::ServiceProviders::room_client.get_id() == 0) return;
+        ui.current_map_idx = map;
+        return;
+    };
+    Global::ServiceProviders::room_client.room_broadcast_callback = [this](std::vector<std::string> room_members_){
+        room_members = room_members_;
+        ui.update_room_members(room_members);
+        return;
+    };
     Global::ServiceProviders::room_client_worker.accomplish([](const bool &should_cancel){
         Global::ServiceProviders::room_client.run(should_cancel);
     });
-    ui.update_room_members(room_members);
     ui.make_ready({
         "Forest",
         "Catacombs"
-    });
+    }, Global::ServiceProviders::room_client.get_id() == 0);
 }
 
 void Pages::LobbyWindowScene::_load_with_context()
 {
+    
     background.load_tex();
     for (auto &map: map_images) map.load_tex();
 }
@@ -83,6 +112,8 @@ void Pages::LobbyWindowScene::_cleanup_with_context()
 
 void Pages::LobbyWindowScene::_cleanup()
 {
+    Global::ServiceProviders::room_client_worker.cancel();
+    Global::ServiceProviders::room_client_worker.await();
     background.unload_im();
     for (auto &map: map_images) map.unload_im();
 }

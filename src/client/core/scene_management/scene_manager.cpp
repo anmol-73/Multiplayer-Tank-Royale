@@ -33,7 +33,6 @@ void SceneManagement::SceneManager::cleanup()
 void SceneManagement::SceneManager::update()
 {
     if (_deferred_load_scene_request != SceneName::__NIL__){
-        std::cout << _deferred_load_scene_request << std::endl;
         load_scene(_deferred_load_scene_request);
         _deferred_load_scene_request = SceneName::__NIL__;
     }

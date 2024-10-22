@@ -25,7 +25,8 @@ namespace Networking
             enum Client{ // The type of messages a client would send while in the room
                 NAME_SET_REQUEST,
                 START_GAME_REQUEST,
-                REMOVE_PLAYER_REQUEST
+                REMOVE_PLAYER_REQUEST,
+                MAP_SET_REQUEST
             };
 
             struct NameSetRequest{
@@ -40,7 +41,8 @@ namespace Networking
                 CONNECT_DENIED,
                 ROOM_LIST_BROADCAST,
                 GAME_START,
-                DISCONNECT
+                DISCONNECT,
+                MAP_SET
             };
         } // namespace Room
 

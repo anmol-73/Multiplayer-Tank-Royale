@@ -24,9 +24,9 @@ void DragonLib::UI::Elements::Text::poll_events()
 {
     clear_state();
     hstate.hovered = CheckCollisionPointRec(GetMousePosition(), bounds);
-    clicked = hstate.hovered && IsMouseButtonPressed(MOUSE_BUTTON_LEFT);
-    mouse_down = hstate.hovered && IsMouseButtonDown(MOUSE_BUTTON_LEFT);
-    hstate.requested_pointer = hstate.hovered & interactable;
+    clicked = hstate.hovered && IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && interactable;
+    mouse_down = hstate.hovered && IsMouseButtonDown(MOUSE_BUTTON_LEFT) && interactable;
+    hstate.requested_pointer = hstate.hovered && interactable;
 }
 
 void DragonLib::UI::Elements::Text::clear_state()

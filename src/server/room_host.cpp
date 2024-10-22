@@ -69,6 +69,7 @@ void RoomHost::handle_message(ENetPeer *peer, size_t type, void *message)
             for (size_t i = 0; i < Structs::MAX_ROOM_SIZE; ++i){
                 std::cout << i << " " << names[i] << std::endl;
             }
+            send(ServerCommand::MAP_SET, &current_map_idx, sizeof(int), peer);
             send(ServerCommand::ROOM_LIST_BROADCAST, names, sizeof(char) * Structs::NAME_SIZE * Structs::MAX_ROOM_SIZE);
             break;
         }
@@ -97,6 +98,14 @@ void RoomHost::handle_message(ENetPeer *peer, size_t type, void *message)
             if (!is_in_game){
                 send(ServerCommand::GAME_START);
                 is_in_game = true;
+            }
+            break;
+        }
+        case ClientCommand::MAP_SET_REQUEST:
+        {
+            if (!is_in_game){
+                current_map_idx = *(int*)message;
+                send(ServerCommand::MAP_SET, message, sizeof(int));
             }
             break;
         }

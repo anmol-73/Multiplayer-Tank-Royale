@@ -3,7 +3,6 @@
 Pages::LobbyWindowUI::LobbyWindowUI()
 {
     using Mode = UI::DrawParameters::SizeMode;
-    name_ids = std::vector<size_t>(Networking::Message::Room::MAX_ROOM_SIZE, 0ll);
     room_members = std::vector<std::pair<size_t, std::string>>(Networking::Message::Room::MAX_ROOM_SIZE, {0, ""});
 
     register_element(
@@ -50,7 +49,7 @@ Pages::LobbyWindowUI::LobbyWindowUI()
     );
 
     for (size_t i = 0; i < Networking::Message::Room::MAX_ROOM_SIZE; ++i){ // The names of every player in the lobby
-        name_ids[i] = register_element(
+        register_element(
             new UI::Elements::Text(
                 [i, this](UI::Elements::Text* text){
                     return std::pair<UI::DrawParameters::Box, UI::DrawParameters::Text>{
@@ -66,7 +65,7 @@ Pages::LobbyWindowUI::LobbyWindowUI()
                                 .mode = {Mode::SCREEN_W, Mode::SCREEN_H}
                             },
                             .origin = {0},
-                            .fill = !this->room_members[i].second.empty() ? Color{0x92, 0x8d, 0x79, 0xc0} : Color{0x49, 0x47, 0x3f, 0x60}
+                            .fill = !this->room_members[i].second.empty() ? Color{0xb2, 0xad, 0x99, 0xc0} : Color{0x49, 0x47, 0x3f, 0x60}
                         },
                         {
                             .content = this->room_members[i].second,
@@ -101,8 +100,8 @@ Pages::LobbyWindowUI::LobbyWindowUI()
         })
     );
 
-    left_map_idx = register_element(
-        Components::create_text_button(
+    register_element(
+        left_map_select = Components::create_text_button(
             "<", {
                 .value = {0.65, 0.66},
                 .mode = {Mode::SCREEN_W, Mode::SCREEN_H},
@@ -115,8 +114,8 @@ Pages::LobbyWindowUI::LobbyWindowUI()
 
         )
     );
-    right_map_idx = register_element(
-        Components::create_text_button(
+    register_element(
+        right_map_select = Components::create_text_button(
             ">", {
                 .value = {0.83, 0.66},
                 .mode = {Mode::SCREEN_W, Mode::SCREEN_H},
@@ -130,8 +129,8 @@ Pages::LobbyWindowUI::LobbyWindowUI()
         )
     );
 
-    start_game_button_id = register_element(
-        Components::create_span_button(
+    register_element(
+        start_game_button = Components::create_span_button(
             "Start!",
             UI::DrawParameters::Measurement{
                 .value = {0.94, 0.85},
@@ -141,9 +140,11 @@ Pages::LobbyWindowUI::LobbyWindowUI()
     );
 }
 
-void Pages::LobbyWindowUI::make_ready(std::vector<std::string> map_names_)
+void Pages::LobbyWindowUI::make_ready(std::vector<std::string> map_names_, bool is_leader)
 {
     map_names = map_names_;
+    left_map_select->interactable = is_leader;
+    right_map_select->interactable = is_leader;
 }
 
 void Pages::LobbyWindowUI::poll_events()
@@ -151,10 +152,10 @@ void Pages::LobbyWindowUI::poll_events()
     if ((!visible) || (!events_enabled)) return;
     UI::Elements::PageView::poll_events();
 
-    if (dynamic_cast<UI::Elements::Text*>(elements[left_map_idx].get())->clicked){
+    if (left_map_select->clicked){
         current_map_idx -= 1;
         if (current_map_idx < 0) current_map_idx += map_names.size();
-    } else if (dynamic_cast<UI::Elements::Text*>(elements[right_map_idx].get())->clicked){
+    } else if (right_map_select->clicked){
         current_map_idx += 1;
         if (current_map_idx >= (int)map_names.size()) current_map_idx -= map_names.size();
     }

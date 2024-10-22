@@ -152,6 +152,8 @@ Pages::MainWindowUI::MainWindowUI()
             }
         )
     );
+    address_input->value = "127.0.0.1:3000";
+    name_input->value = "Ryu";
 }
 
 void Pages::MainWindowUI::show_info(std::string text, bool is_error)

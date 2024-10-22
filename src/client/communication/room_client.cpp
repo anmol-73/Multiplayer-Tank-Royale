@@ -5,6 +5,15 @@ inline bool Communication::RoomClient::connected()
     return connected_to_server;
 }
 
+
+void Communication::RoomClient::request_disconnection()
+{
+    if (host == nullptr || !connected_to_server) return;
+    send(Networking::Message::Room::Client::REMOVE_PLAYER_REQUEST, &id, sizeof(size_t));
+    enet_host_flush(host);
+    destroy_host();
+}
+
 void Communication::RoomClient::send_name_request(const std::string &name)
 {
     assert(name.size() < Networking::Message::Room::NAME_SIZE);
@@ -18,7 +27,24 @@ void Communication::RoomClient::send_name_request(const std::string &name)
     enet_host_flush(host);
 }
 
-std::pair<bool, std::string> Communication::RoomClient::handle_established_connection(const bool& cancel_requested)
+void Communication::RoomClient::send_map_id(int map)
+{
+    send(Networking::Message::Room::Client::MAP_SET_REQUEST, &map, sizeof(int));
+    enet_host_flush(host);
+}
+
+void Communication::RoomClient::request_start()
+{
+    send(Networking::Message::Room::Client::START_GAME_REQUEST);
+    enet_host_flush(host);
+}
+
+size_t Communication::RoomClient::get_id()
+{
+    return id;
+}
+
+std::pair<bool, std::string> Communication::RoomClient::handle_established_connection(const bool &cancel_requested)
 {
     const size_t timeout = 500;
     const size_t max_tries = 10;
@@ -34,6 +60,7 @@ std::pair<bool, std::string> Communication::RoomClient::handle_established_conne
             }
             if (type == Networking::Message::Room::Server::CONNECT_OK){
                 id = *(size_t*)data;
+                connected_to_server = true;
                 return {true, ""};
             }
             
@@ -50,17 +77,46 @@ void Communication::RoomClient::handle_message(size_t type, void *message)
     using ClientCommand = Structs::Client;
 
     switch(type){
-        case ServerCommand::ROOM_LIST_BROADCAST:
-            char names[Structs::MAX_ROOM_SIZE][Structs::NAME_SIZE];
-            memcpy(names, message, sizeof(char) * Structs::NAME_SIZE * Structs::MAX_ROOM_SIZE);
+        case ServerCommand::ROOM_LIST_BROADCAST:{
+            char (*names)[Structs::NAME_SIZE] = (char (*)[Structs::NAME_SIZE])message;
             
-            for (size_t i = 0; i < Structs::MAX_ROOM_SIZE; ++i){
-                std::cout << i << " " << names[i] << std::endl;   
+            if (room_broadcast_callback){
+            
+                std::vector<std::string> room_members;
+                room_members.reserve(Structs::MAX_ROOM_SIZE);
+                for (size_t i = 0; i < Structs::MAX_ROOM_SIZE; ++i){
+                    room_members.emplace_back(names[i]);
+                }
+                room_broadcast_callback(room_members);
             }
+            break;
+        }
+        case ServerCommand::DISCONNECT:{
+            destroy_host();
+            if (disconnect_callback){
+                disconnect_callback();
+            }
+            break;
+        }
+        case ServerCommand::MAP_SET:{
+            int map = *(int*)message;
+            
+            if (set_map_callback){
+                set_map_callback(map);
+            }
+            break;
+        }
+        case ServerCommand::GAME_START:{           
+            if (game_start_callback){
+                game_start_callback();
+            }
+            break;
+        }
     }
 }
 
 void Communication::RoomClient::on_stop()
 {
+    request_disconnection();
     connected_to_server = false;
 }
