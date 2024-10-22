@@ -59,11 +59,11 @@ class GameState
 
 /***
  * Making "MTR_Units"
- * 1 screen always 1920 units by 1080 units
- * 1 tile always 16 units by 16 units
- * So 1 screen always 120 tiles by 67.5 tiles
- * Tank always 160 units by 120 units
- * Map is 480 tiles by 270 tiles i.e. 7680 units by 4320 units
+ * 1 screen always 1024 units by 576 units
+ * 1 tile always 32 units by 32 units
+ * So 1 screen always 32 tiles by 18 tiles
+ * Tank always 128 units by 96 units
+ * Map is 64 tiles by 36 tiles i.e. 2048 units by 1152 units
  * Clients must send all the data in "MTR_Units"
  * Clients must scale to render according to their screen size and aspect ratio
  ***/
