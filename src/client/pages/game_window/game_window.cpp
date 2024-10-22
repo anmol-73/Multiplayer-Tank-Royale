@@ -64,6 +64,7 @@ void Pages::GameWindowScene::_load_with_context()
         );
     LogicUtils::gun_shot_idx = LogicUtils::gun_controller->register_animation(gun_shot);
 
+    LogicUtils::map = LoadTextureFromImage(LogicUtils::map_image);
 }
 
 void Pages::GameWindowScene::_loading_update()
@@ -105,6 +106,7 @@ void Pages::GameWindowScene::_load()
     LogicUtils::viewport_data.offset = Vector2();
 
     LogicUtils::player_spritesheet_image = LoadImage("resources/game_window/tank2_spritesheet.png");
+    LogicUtils::map_image = LoadImage("resources/game_window/defaultmap.png");
     LogicUtils::player_controller = new Utils::AnimationController();
     LogicUtils::gun_controller = new Utils::AnimationController();
 
@@ -162,7 +164,7 @@ void Pages::GameWindowScene::draw_game()
     LogicUtils::player_controller->update(delta_time);
     LogicUtils::gun_controller->update(delta_time);
 
-        // Handle gun animation
+    // Handle gun animation
     if(LogicUtils::gun_data.has_shot)
     {
         LogicUtils::gun_controller->play(LogicUtils::gun_shot_idx, true);
@@ -171,6 +173,15 @@ void Pages::GameWindowScene::draw_game()
     {
         LogicUtils::gun_controller->play(LogicUtils::gun_idle_idx, true);
     }
+
+    // Draw bg
+    DrawTexturePro(LogicUtils::map,
+        {LogicUtils::viewport_data.offset.x, LogicUtils::viewport_data.offset.y, 1024, 576},
+        {0, 0, 1024*(float)pixels_per_unit_x, 576*(float)pixels_per_unit_y},
+        {0,0},
+        0,
+        WHITE
+    );
 
    // Draw trace
     if (LogicUtils::gun_data.has_shot){

@@ -108,6 +108,9 @@ namespace LogicUtils{
     Utils::AnimationController extern *gun_controller;
     size_t extern gun_idle_idx;
     size_t extern gun_shot_idx;
+
+    Texture2D extern map;
+    Image extern map_image;
 };
 
 
