@@ -65,13 +65,15 @@ void Pages::LobbyWindowScene::_loading_update() {
 
 void Pages::LobbyWindowScene::_load()
 {
+    persist_connection = false;
     for (size_t i = 0; i < room_members.size(); ++i) room_members[i] = "";
     
     background.load_im();
     for (auto &map: map_images) map.load_im();
     
-    Global::ServiceProviders::room_client.game_start_callback = [](){
-        std::cout << "GAME START!" << std::endl;
+    Global::ServiceProviders::room_client.game_start_callback = [this](){
+        persist_connection = true;
+        SceneManagement::SceneManager::load_deferred(SceneManagement::GAME_PAGE);
         return;
     };
     Global::ServiceProviders::room_client.disconnect_callback = [](){
@@ -112,8 +114,11 @@ void Pages::LobbyWindowScene::_cleanup_with_context()
 
 void Pages::LobbyWindowScene::_cleanup()
 {
-    Global::ServiceProviders::room_client_worker.cancel();
-    Global::ServiceProviders::room_client_worker.await();
+    if(!persist_connection)
+    {
+        Global::ServiceProviders::room_client_worker.cancel();
+        Global::ServiceProviders::room_client_worker.await();
+    }
     background.unload_im();
     for (auto &map: map_images) map.unload_im();
 }

@@ -2,6 +2,7 @@
 #define HEADER_CLIENT_LOGIC
 #include "maps/maps.hpp"
 #include "core/utils/animation_controller.hpp"
+#include "collisions.hpp"
 #include <raylib.h>
 #include <stdlib.h>
 #include <string>
@@ -24,20 +25,21 @@ namespace LogicUtils{
         bool is_connected;
     } extern player_packet;
 
+    std::vector<PlayerPacket> extern old_state;
+
     /*
     * THe live player data used which updates every frame
     */
     
     struct LivePlayerData{
-        int ID;
         Vector2 position; // Tank top left in units (absoolute)
-        std::string name;
         double angle; // Angle with x axis
         int health;
-        int ammo;
-        int max_ammo;
+        // int ammo;
+        // int max_ammo;
         bool is_alive;
     } extern player_data;
+    LivePlayerData extern projected_data;
 
     /*
     * Define the Gun stats 
@@ -83,6 +85,8 @@ namespace LogicUtils{
         Vector2 offset; // Top left
     } extern viewport_data;
 
+    void init_state(int max_players);
+
     double normalize_angle(double angle);
     /**
      * To update player_position based on button presses after delta_time
@@ -97,6 +101,8 @@ namespace LogicUtils{
      * To update tracker circle to after delta_time
      */
     void set_tracker(float delta_time);
+
+    void handle_tank_collision();
 
     Texture2D extern player_spritesheet;
     Image extern player_spritesheet_image;

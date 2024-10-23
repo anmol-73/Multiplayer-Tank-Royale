@@ -50,7 +50,7 @@ void GameState::handle_tank_collision(PlayerPacket received_packet)
         for(size_t wall_x = pos_x-150; wall_x<pos_x+150; wall_x++)
         {
             size_t wall_idx = ((Maps::map1.map_width_tiles)*wall_y) + wall_x;
-            if((Vector2Distance({(float)wall_x, (float)wall_y}, {(float)pos_x, (float)pos_y})<=150) && Maps::map1.tiles[wall_idx]==0)
+            if((Vector2Distance({(float)wall_x, (float)wall_y}, {(float)pos_x, (float)pos_y})<=150) && Maps::map1.walls[wall_idx]==0)
             {
                 Rectangle wall = {
                     .x = (float)(wall_x)*(GameState::game_constants.wall_width),

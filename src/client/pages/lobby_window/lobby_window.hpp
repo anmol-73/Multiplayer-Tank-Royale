@@ -28,6 +28,8 @@ namespace Pages
         std::vector<DragonLib::DImage> map_images;
         
         std::vector<std::string> room_members;
+
+        bool persist_connection;
     };
 
 } // namespace Pages

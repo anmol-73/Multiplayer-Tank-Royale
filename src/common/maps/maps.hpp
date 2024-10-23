@@ -13,11 +13,13 @@
 namespace Maps{
 
     struct MapData{
+        size_t tiles_in_screen_x;
+        size_t tiles_in_screen_y;
         size_t map_width_tiles;
-        size_t map_length_tiles;
+        size_t map_height_tiles;
         double tile_width_units;
         int unique_tiles; // Walls always 0 for now
-        std::vector<int> tiles;
+        std::vector<int> walls;
     };
 
     extern MapData map1;

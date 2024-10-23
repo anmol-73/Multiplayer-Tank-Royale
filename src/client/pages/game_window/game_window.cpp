@@ -24,35 +24,36 @@ void Pages::GameWindowScene::_update()
 
 void Pages::GameWindowScene::_load_with_context()
 {
-    LogicUtils::player_spritesheet = LoadTextureFromImage(LogicUtils::player_spritesheet_image);
+    using namespace LogicUtils;
+    player_spritesheet = LoadTextureFromImage(player_spritesheet_image);
 
     Utils::Animation* player_idle = new Utils::Animation(
-            &LogicUtils::player_spritesheet,
+            &player_spritesheet,
             {
                 {0.3, Rectangle{.x = 32, .y = 0, .width = 32, .height = 24}},
             }
         );
-    LogicUtils::player_idle_idx = LogicUtils::player_controller->register_animation(player_idle);
+    player_idle_idx = player_controller->register_animation(player_idle);
 
     Utils::Animation* player_moving = new Utils::Animation(
-            &LogicUtils::player_spritesheet,
+            &player_spritesheet,
             {
                 {0.3, Rectangle{.x = 32, .y = 0, .width = 32, .height = 24}},
                 {0.3, Rectangle{.x = 32, .y = 24, .width = 32, .height = 24}}
             }
         );
-    LogicUtils::player_moving_idx = LogicUtils::player_controller->register_animation(player_moving);
+    player_moving_idx = player_controller->register_animation(player_moving);
     
     Utils::Animation* gun_idle = new Utils::Animation(
-            &LogicUtils::player_spritesheet,
+            &player_spritesheet,
             {
                 {0.1, Rectangle{.x = 0, .y = 0, .width = 32, .height = 8}},
             }
         );
-    LogicUtils::gun_idle_idx = LogicUtils::gun_controller->register_animation(gun_idle);
+    gun_idle_idx = gun_controller->register_animation(gun_idle);
 
     Utils::Animation* gun_shot = new Utils::Animation(
-            &LogicUtils::player_spritesheet,
+            &player_spritesheet,
             {
                 {0.05, Rectangle{.x = 0, .y = 0, .width = 32, .height = 8}},
                 {0.05, Rectangle{.x = 0, .y = 8, .width = 32, .height = 8}},
@@ -62,9 +63,9 @@ void Pages::GameWindowScene::_load_with_context()
                 {0.1, Rectangle{.x = 0, .y = 48, .width = 32, .height = 8}},
             }
         );
-    LogicUtils::gun_shot_idx = LogicUtils::gun_controller->register_animation(gun_shot);
+    gun_shot_idx = gun_controller->register_animation(gun_shot);
 
-    LogicUtils::map = LoadTextureFromImage(LogicUtils::map_image);
+    map = LoadTextureFromImage(map_image);
 }
 
 void Pages::GameWindowScene::_loading_update()
@@ -82,35 +83,41 @@ void Pages::GameWindowScene::_loading_update()
 
 void Pages::GameWindowScene::_load()
 {
+    using namespace LogicUtils;
     SetMouseCursor(MOUSE_CURSOR_CROSSHAIR);
 
-    LogicUtils::player_data.position = {512-LogicUtils::hull_data.player_rectangle.width/2, 288-LogicUtils::hull_data.player_rectangle.height/2};
-    LogicUtils::player_data.angle = 0;
-    LogicUtils::player_data.health = 5;
+    player_data.position = {(float)(Maps::map1.tiles_in_screen_x*Maps::map1.tile_width_units)-hull_data.player_rectangle.width/2,
+    (float)(Maps::map1.tiles_in_screen_y*Maps::map1.tile_width_units)-hull_data.player_rectangle.height/2};
+    player_data.angle = 0;
+    player_data.health = 5;
+    projected_data.position = {(float)(Maps::map1.tiles_in_screen_x*Maps::map1.tile_width_units)-hull_data.player_rectangle.width/2,
+    (float)(Maps::map1.tiles_in_screen_y*Maps::map1.tile_width_units)-hull_data.player_rectangle.height/2};
+    projected_data.angle = 0;
+    projected_data.health = 5;
 
-    LogicUtils::hull_data.player_speed = 120.0f;
-    LogicUtils::hull_data.player_rot_speed = PI/2;
-    LogicUtils::hull_data.player_colliding = false;
+    hull_data.player_speed = 120.0f;
+    hull_data.player_rot_speed = PI/2;
+    hull_data.player_colliding = false;
 
-    LogicUtils::gun_data.gun_angle = 0;
-    LogicUtils::gun_data.gun_rot_speed = 1;
-    LogicUtils::gun_data.gun_dmg = 1;
-    LogicUtils::gun_data.has_shot = false;
-    LogicUtils::gun_data.bullet_range = 1000;
+    gun_data.gun_angle = 0;
+    gun_data.gun_rot_speed = 1;
+    gun_data.gun_dmg = 1;
+    gun_data.has_shot = false;
+    gun_data.bullet_range = 1000;
 
-    LogicUtils::crosshair_data.tracker_position = Vector2();
-    LogicUtils::crosshair_data.tracker_radial_speed = 500;
-    LogicUtils::crosshair_data.tracker_radius = 10;
-    LogicUtils::crosshair_data.tracker_distance = 0;
+    crosshair_data.tracker_position = Vector2();
+    crosshair_data.tracker_radial_speed = 500;
+    crosshair_data.tracker_radius = 10;
+    crosshair_data.tracker_distance = 0;
 
-    LogicUtils::viewport_data.offset = Vector2();
+    viewport_data.offset = Vector2();
 
-    LogicUtils::player_spritesheet_image = LoadImage("resources/game_window/tank2_spritesheet.png");
-    LogicUtils::map_image = LoadImage("resources/game_window/defaultmap.png");
-    LogicUtils::player_controller = new Utils::AnimationController();
-    LogicUtils::gun_controller = new Utils::AnimationController();
+    player_spritesheet_image = LoadImage("resources/game_window/tank2_spritesheet.png");
+    map_image = LoadImage("resources/game_window/defaultmap.png");
+    player_controller = new Utils::AnimationController();
+    gun_controller = new Utils::AnimationController();
 
-    Global::ServiceProviders::room_client_worker.await();
+    init_state(8);
 }
 
 void Pages::GameWindowScene::_cleanup()
@@ -127,32 +134,34 @@ void Pages::GameWindowScene::_cleanup_with_context()
 
 void Pages::GameWindowScene::logic_update()
 {
-    pixels_per_unit_x = (float)GetScreenWidth()/(float)1024;
-    pixels_per_unit_y = (float)GetScreenHeight()/(float)576;
-    LogicUtils::crosshair_data.mouse_position = {GetMousePosition().x/(float)pixels_per_unit_x, GetMousePosition().y/(float)pixels_per_unit_x};
+    using namespace LogicUtils;
+    pixels_per_unit_x = (float)GetScreenWidth()/(Maps::map1.map_width_tiles*(float)Maps::map1.tile_width_units);
+    pixels_per_unit_y = (float)GetScreenHeight()/(Maps::map1.map_height_tiles*(float)Maps::map1.tile_width_units);
+    crosshair_data.mouse_position = {GetMousePosition().x/(float)pixels_per_unit_x, GetMousePosition().y/(float)pixels_per_unit_x};
     // set_position(); // For drawing
-    LogicUtils::gun_data.has_shot = IsMouseButtonPressed(MOUSE_BUTTON_LEFT);
+    gun_data.has_shot = IsMouseButtonPressed(MOUSE_BUTTON_LEFT);
 
     float delta_time = GetFrameTime();
 
     // Handle movement of gun
-    LogicUtils::set_gun_angle(delta_time);
+    set_gun_angle(delta_time);
 
     // Handle movement of tracker circle
-    LogicUtils::set_tracker(delta_time);
+    set_tracker(delta_time);
 
     // Handle movement
-    LogicUtils::handle_movement(delta_time);  
+    handle_movement(delta_time);  
 
+    handle_tank_collision();
 
     // Handle gun animation
-    if(LogicUtils::gun_data.has_shot)
+    if(gun_data.has_shot)
     {
-        LogicUtils::gun_controller->play(LogicUtils::gun_shot_idx, true);
+        gun_controller->play(gun_shot_idx, true);
     }
-    else if(LogicUtils::gun_controller->current_iteration_count>0)
+    else if(gun_controller->current_iteration_count>0)
     {
-        LogicUtils::gun_controller->play(LogicUtils::gun_idle_idx, true);
+        gun_controller->play(gun_idle_idx, true);
     }
 }
 
@@ -160,75 +169,78 @@ void Pages::GameWindowScene::logic_update()
 
 void Pages::GameWindowScene::draw_game()
 {
+    using namespace LogicUtils;
     float delta_time = GetFrameTime();
-    LogicUtils::player_controller->update(delta_time);
-    LogicUtils::gun_controller->update(delta_time);
+    player_controller->update(delta_time);
+    gun_controller->update(delta_time);
 
     // Handle gun animation
-    if(LogicUtils::gun_data.has_shot)
+    if(gun_data.has_shot)
     {
-        LogicUtils::gun_controller->play(LogicUtils::gun_shot_idx, true);
+        gun_controller->play(gun_shot_idx, true);
     }
-    else if(LogicUtils::gun_controller->current_iteration_count>0)
+    else if(gun_controller->current_iteration_count>0)
     {
-        LogicUtils::gun_controller->play(LogicUtils::gun_idle_idx, true);
+        gun_controller->play(gun_idle_idx, true);
     }
-
-    std::printf("%f",576*(float)pixels_per_unit_y);
 
     // Draw bg
-    DrawTexturePro(LogicUtils::map,
-        {LogicUtils::viewport_data.offset.x, LogicUtils::viewport_data.offset.y, 1024, 576},
-        {0, 0, 1024*(float)pixels_per_unit_x, 576*(float)pixels_per_unit_y},
+    DrawTexturePro(map,
+        {viewport_data.offset.x, viewport_data.offset.y, Maps::map1.tiles_in_screen_x*(float)Maps::map1.tile_width_units, Maps::map1.tiles_in_screen_y*(float)Maps::map1.tile_width_units},
+        {0, 0, Maps::map1.tiles_in_screen_x*(float)Maps::map1.tile_width_units*(float)pixels_per_unit_x, Maps::map1.tiles_in_screen_y*(float)Maps::map1.tile_width_units*(float)pixels_per_unit_y},
         {0,0},
         0,
         WHITE
     );
 
    // Draw trace
-    if (LogicUtils::gun_data.has_shot){
+    if (gun_data.has_shot){
         DrawLineEx(
             {
-                512,
-                288  
+                (float)(Maps::map1.tiles_in_screen_x*Maps::map1.tile_width_units)
+,
+                (float)(Maps::map1.tiles_in_screen_y*Maps::map1.tile_width_units)
+  
             }, {
-                (512 + (float)((LogicUtils::gun_data.bullet_range) * cos(LogicUtils::gun_data.gun_angle)))*(float)pixels_per_unit_x,
-                (288 + (float)((LogicUtils::gun_data.bullet_range) * sin(LogicUtils::gun_data.gun_angle)))*(float)pixels_per_unit_y    
+                (float)((Maps::map1.tiles_in_screen_x*Maps::map1.tile_width_units) + (float)((gun_data.bullet_range) * cos(gun_data.gun_angle)))*(float)pixels_per_unit_x,
+                (float)((Maps::map1.tiles_in_screen_y*Maps::map1.tile_width_units) + (float)((gun_data.bullet_range) * sin(gun_data.gun_angle)))*(float)pixels_per_unit_y    
             }, 4, RAYWHITE
         );
     }
 
     // Draw player
     // Color tank_color = player_data.player_colliding ? RED:WHITE;
-    Texture* player_texture = LogicUtils::player_controller->get_sprite().first;
-    Rectangle* player_source = LogicUtils::player_controller->get_sprite().second;
+    Texture* player_texture = player_controller->get_sprite().first;
+    Rectangle* player_source = player_controller->get_sprite().second;
     DrawTexturePro(*player_texture,
     *player_source,
-    {(512)*(float)pixels_per_unit_x, (288)*(float)pixels_per_unit_y, LogicUtils::hull_data.player_rectangle.width*(float)pixels_per_unit_x, LogicUtils::hull_data.player_rectangle.height*(float)pixels_per_unit_y},
-    {LogicUtils::hull_data.player_rectangle.width/2*(float)pixels_per_unit_x, LogicUtils::hull_data.player_rectangle.height/2*(float)pixels_per_unit_y},
+    {(float)((Maps::map1.tiles_in_screen_x*Maps::map1.tile_width_units))*(float)pixels_per_unit_x, (float)((Maps::map1.tiles_in_screen_y*Maps::map1.tile_width_units))*(float)pixels_per_unit_y, hull_data.player_rectangle.width*(float)pixels_per_unit_x, hull_data.player_rectangle.height*(float)pixels_per_unit_y},
+    {hull_data.player_rectangle.width/2*(float)pixels_per_unit_x, hull_data.player_rectangle.height/2*(float)pixels_per_unit_y},
     
-    (LogicUtils::player_data.angle)*RAD2DEG, WHITE
+    (player_data.angle)*RAD2DEG, WHITE
     );
     
     // Draw gun
-    Texture* gun_texture = LogicUtils::gun_controller->get_sprite().first;
-    Rectangle* gun_source = LogicUtils::gun_controller->get_sprite().second;
+    Texture* gun_texture = gun_controller->get_sprite().first;
+    Rectangle* gun_source = gun_controller->get_sprite().second;
     DrawTexturePro(*gun_texture,
         *gun_source,
-        {   (512)*(float)pixels_per_unit_x, (288)*(float)pixels_per_unit_y,
-            (LogicUtils::gun_data.gun_rectangle.width)*(float)pixels_per_unit_x, (LogicUtils::gun_data.gun_rectangle.height)*(float)pixels_per_unit_y},
+        {   (float)((Maps::map1.tiles_in_screen_x*Maps::map1.tile_width_units))*(float)pixels_per_unit_x, (float)((Maps::map1.tiles_in_screen_y*Maps::map1.tile_width_units))*(float)pixels_per_unit_y,
+            (gun_data.gun_rectangle.width)*(float)pixels_per_unit_x, (gun_data.gun_rectangle.height)*(float)pixels_per_unit_y},
         {
             0,
-            (LogicUtils::gun_data.gun_rectangle.height/2)*(float)pixels_per_unit_y
+            (gun_data.gun_rectangle.height/2)*(float)pixels_per_unit_y
         }, 
-        (LogicUtils::gun_data.gun_angle)*RAD2DEG, WHITE
+        (gun_data.gun_angle)*RAD2DEG, WHITE
     );
 
     // Draw gun crosshair circle
-    DrawCircleLines((LogicUtils::crosshair_data.tracker_position.x)*(float)pixels_per_unit_x+512, 
-        (LogicUtils::crosshair_data.tracker_position.y)*(float)pixels_per_unit_x+288,
-        LogicUtils::crosshair_data.tracker_radius,
-        LogicUtils::crosshair_data.circle_color
+    DrawCircleLines((crosshair_data.tracker_position.x)*(float)pixels_per_unit_x+(Maps::map1.tiles_in_screen_x*Maps::map1.tile_width_units)
+, 
+        (crosshair_data.tracker_position.y)*(float)pixels_per_unit_x+(Maps::map1.tiles_in_screen_y*Maps::map1.tile_width_units)
+,
+        crosshair_data.tracker_radius,
+        crosshair_data.circle_color
         );
 }
 
