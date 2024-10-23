@@ -48,6 +48,7 @@ void RoomHost::handle_disconnection(ENetPeer *peer)
                 send(ServerCommand::ROOM_LIST_BROADCAST, names, sizeof(char) * Structs::NAME_SIZE * Structs::MAX_ROOM_SIZE);
                 enet_host_flush(host);
             }
+            --current_room_size;
             break;
         }
     }
@@ -81,7 +82,7 @@ void RoomHost::handle_message(ENetPeer *peer, size_t type, void *message)
                 send(ServerCommand::DISCONNECT, reason, sizeof(char) * Structs::STRING_MESSAGE_SIZE, members[client_id]);
                 
                 std::cout << "Client(" << client_id << ") has been removed!";
-                
+                --current_room_size;
                 enet_host_flush(host);
                 enet_peer_reset(members[client_id]);
                 

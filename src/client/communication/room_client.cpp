@@ -14,6 +14,20 @@ void Communication::RoomClient::request_disconnection()
     destroy_host();
 }
 
+void Communication::RoomClient::request_disconnection(size_t client_id)
+{
+    if (host == nullptr || !connected_to_server) return;
+    send(Networking::Message::Room::Client::REMOVE_PLAYER_REQUEST, &client_id, sizeof(size_t));
+}
+
+void Communication::RoomClient::reset_callbacks()
+{
+    room_broadcast_callback = {};
+    set_map_callback = {};
+    game_start_callback = {};
+    disconnect_callback = {};
+}
+
 void Communication::RoomClient::send_name_request(const std::string &name)
 {
     assert(name.size() < Networking::Message::Room::NAME_SIZE);
@@ -74,14 +88,12 @@ void Communication::RoomClient::handle_message(size_t type, void *message)
 {
     namespace Structs = Networking::Message::Room;
     using ServerCommand = Structs::Server;
-    using ClientCommand = Structs::Client;
 
     switch(type){
         case ServerCommand::ROOM_LIST_BROADCAST:{
             char (*names)[Structs::NAME_SIZE] = (char (*)[Structs::NAME_SIZE])message;
             
-            if (room_broadcast_callback){
-            
+            if (room_broadcast_callback){            
                 std::vector<std::string> room_members;
                 room_members.reserve(Structs::MAX_ROOM_SIZE);
                 for (size_t i = 0; i < Structs::MAX_ROOM_SIZE; ++i){
@@ -92,6 +104,7 @@ void Communication::RoomClient::handle_message(size_t type, void *message)
             break;
         }
         case ServerCommand::DISCONNECT:{
+            std::cout << "DC came in" << std::endl;
             destroy_host();
             if (disconnect_callback){
                 disconnect_callback();

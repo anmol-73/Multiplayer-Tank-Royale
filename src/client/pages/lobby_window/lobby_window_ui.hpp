@@ -12,7 +12,7 @@ namespace Pages
     public:
         LobbyWindowUI();
 
-        void make_ready(std::vector<std::string> map_names_, bool is_leader);
+        void make_ready(std::vector<std::string> map_names_, bool is_leader_);
         void poll_events();
 
         void update_room_members(std::vector<std::string>& room_members_);
@@ -21,11 +21,14 @@ namespace Pages
         UI::Elements::Span* start_game_button;
         UI::Elements::Text* left_map_select;
         UI::Elements::Text* right_map_select;
+        
+        UI::Elements::Text* remove_player_button[Networking::Message::Room::MAX_ROOM_SIZE];
     private:
         
-        std::vector<std::pair<size_t, std::string>> room_members;
+        std::vector<std::string> room_members;
         
         std::vector<std::string> map_names;
+        bool is_leader;
         
 
         

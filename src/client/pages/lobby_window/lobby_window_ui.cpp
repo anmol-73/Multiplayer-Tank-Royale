@@ -3,7 +3,7 @@
 Pages::LobbyWindowUI::LobbyWindowUI()
 {
     using Mode = UI::DrawParameters::SizeMode;
-    room_members = std::vector<std::pair<size_t, std::string>>(Networking::Message::Room::MAX_ROOM_SIZE, {0, ""});
+    room_members = std::vector<std::string>(Networking::Message::Room::MAX_ROOM_SIZE, "");
 
     register_element(
         new UI::Elements::Span(
@@ -65,10 +65,10 @@ Pages::LobbyWindowUI::LobbyWindowUI()
                                 .mode = {Mode::SCREEN_W, Mode::SCREEN_H}
                             },
                             .origin = {0},
-                            .fill = !this->room_members[i].second.empty() ? Color{0xb2, 0xad, 0x99, 0xc0} : Color{0x49, 0x47, 0x3f, 0x60}
+                            .fill = !this->room_members[i].empty() ? Color{0xb2, 0xad, 0x99, 0xc0} : Color{0x49, 0x47, 0x3f, 0x60}
                         },
                         {
-                            .content = this->room_members[i].second,
+                            .content = this->room_members[i],
                             .font_size = Global::rem,
                             .font_color = {0x45, 0x41, 0x39, 0xc0},
                             .position = {
@@ -81,6 +81,25 @@ Pages::LobbyWindowUI::LobbyWindowUI()
                             }
                         }
                     };
+                }
+            )
+        );
+        register_element(
+            remove_player_button[i] = Components::create_text_button(
+                "X",
+                {
+                    .value = {
+                        i < Networking::Message::Room::MAX_ROOM_SIZE/2 ? 0.25f : 0.55f, 0.28f + (i % (Networking::Message::Room::MAX_ROOM_SIZE/2)) * 0.1f
+                    },
+                    .mode = {Mode::SCREEN_W, Mode::SCREEN_H}
+                },
+                {
+                    .value = {0.03f, 0.03f},
+                    .mode = {Mode::SCREEN_H, Mode::SCREEN_H}
+                },
+                {
+                    .value = {0, 0.5f},
+                    .mode = {Mode::SELF_H, Mode::SELF_H}
                 }
             )
         );
@@ -140,11 +159,16 @@ Pages::LobbyWindowUI::LobbyWindowUI()
     );
 }
 
-void Pages::LobbyWindowUI::make_ready(std::vector<std::string> map_names_, bool is_leader)
+void Pages::LobbyWindowUI::make_ready(std::vector<std::string> map_names_, bool is_leader_)
 {
+    is_leader = is_leader_;
     map_names = map_names_;
     left_map_select->interactable = is_leader;
     right_map_select->interactable = is_leader;
+
+    for (size_t i = 0; i < Networking::Message::Room::MAX_ROOM_SIZE; ++i){
+        remove_player_button[i]->interactable = is_leader && !room_members[i].empty();
+    }
 }
 
 void Pages::LobbyWindowUI::poll_events()
@@ -163,10 +187,8 @@ void Pages::LobbyWindowUI::poll_events()
 
 void Pages::LobbyWindowUI::update_room_members(std::vector<std::string> &room_members_)
 {
-    room_members = std::vector<std::pair<size_t, std::string>>(Networking::Message::Room::MAX_ROOM_SIZE, {0, ""});
-    
-    for (size_t i = 0; i < room_members_.size(); ++i){
-        room_members[i].first = i;
-        room_members[i].second = room_members_[i];
+    room_members = room_members_;
+    for (size_t i = 0; i < Networking::Message::Room::MAX_ROOM_SIZE; ++i){
+        remove_player_button[i]->interactable = is_leader && !room_members[i].empty();
     }
 }

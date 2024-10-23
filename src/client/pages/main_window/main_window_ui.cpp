@@ -2,6 +2,7 @@
 
 Pages::MainWindowUI::MainWindowUI()
 {
+    // TODO: Show reason of disconnection when player gets kicked, or player manually disconnects or when server dies
     using Mode = UI::DrawParameters::SizeMode;
     
     register_element(

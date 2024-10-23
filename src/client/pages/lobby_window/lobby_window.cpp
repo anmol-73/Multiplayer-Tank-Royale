@@ -52,6 +52,12 @@ void Pages::LobbyWindowScene::_update()
         Global::ServiceProviders::room_client.request_start();
     }
 
+    for (size_t i = 0; i < Networking::Message::Room::MAX_ROOM_SIZE; ++i){
+        if (ui.remove_player_button[i]->clicked){
+            Global::ServiceProviders::room_client.request_disconnection(i);
+        }
+    }
+
 }
 
 
@@ -65,6 +71,7 @@ void Pages::LobbyWindowScene::_loading_update() {
 
 void Pages::LobbyWindowScene::_load()
 {
+    Global::ServiceProviders::room_client_worker.await();
     persist_connection = false;
     for (size_t i = 0; i < room_members.size(); ++i) room_members[i] = "";
     
@@ -73,6 +80,7 @@ void Pages::LobbyWindowScene::_load()
     
     Global::ServiceProviders::room_client.game_start_callback = [this](){
         persist_connection = true;
+        Global::ServiceProviders::room_client.reset_callbacks();
         SceneManagement::SceneManager::load_deferred(SceneManagement::GAME_PAGE);
         return;
     };
@@ -117,7 +125,6 @@ void Pages::LobbyWindowScene::_cleanup()
     if(!persist_connection)
     {
         Global::ServiceProviders::room_client_worker.cancel();
-        Global::ServiceProviders::room_client_worker.await();
     }
     background.unload_im();
     for (auto &map: map_images) map.unload_im();
