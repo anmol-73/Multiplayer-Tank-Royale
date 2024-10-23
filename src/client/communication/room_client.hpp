@@ -18,7 +18,9 @@ namespace Communication
         void send_map_id(int map);
         void request_start();
         void request_disconnection();
+        void request_disconnection(size_t client_id);
 
+        void reset_callbacks();
         std::function<void(std::vector<std::string>)> room_broadcast_callback;
         std::function<void(int)> set_map_callback;
         std::function<void()> game_start_callback;
