@@ -1,5 +1,5 @@
 #include "game_window.hpp"
-
+bool player_colliding;
 void Pages::GameWindowScene::_update()
 {
     
@@ -135,9 +135,9 @@ void Pages::GameWindowScene::_cleanup_with_context()
 void Pages::GameWindowScene::logic_update()
 {
     using namespace LogicUtils;
-    pixels_per_unit_x = (float)GetScreenWidth()/(Maps::map1.map_width_tiles*(float)Maps::map1.tile_width_units);
-    pixels_per_unit_y = (float)GetScreenHeight()/(Maps::map1.map_height_tiles*(float)Maps::map1.tile_width_units);
-    crosshair_data.mouse_position = {GetMousePosition().x/(float)pixels_per_unit_x, GetMousePosition().y/(float)pixels_per_unit_x};
+    pixels_per_unit_x = (float)GetScreenWidth()/(Maps::map1.tiles_in_screen_x*(float)Maps::map1.tile_width_units);
+    pixels_per_unit_y = (float)GetScreenHeight()/(Maps::map1.tiles_in_screen_y*(float)Maps::map1.tile_width_units);
+    crosshair_data.mouse_position = {GetMousePosition().x/(float)pixels_per_unit_x, GetMousePosition().y/(float)pixels_per_unit_y};
     // set_position(); // For drawing
     gun_data.has_shot = IsMouseButtonPressed(MOUSE_BUTTON_LEFT);
 
@@ -152,7 +152,7 @@ void Pages::GameWindowScene::logic_update()
     // Handle movement
     handle_movement(delta_time);  
 
-    handle_tank_collision();
+    player_colliding = handle_tank_collision();
 
     // Handle gun animation
     if(gun_data.has_shot)
@@ -193,31 +193,17 @@ void Pages::GameWindowScene::draw_game()
         WHITE
     );
 
-   // Draw trace
-    if (gun_data.has_shot){
-        DrawLineEx(
-            {
-                (float)(Maps::map1.tiles_in_screen_x*Maps::map1.tile_width_units)
-,
-                (float)(Maps::map1.tiles_in_screen_y*Maps::map1.tile_width_units)
-  
-            }, {
-                (float)((Maps::map1.tiles_in_screen_x*Maps::map1.tile_width_units) + (float)((gun_data.bullet_range) * cos(gun_data.gun_angle)))*(float)pixels_per_unit_x,
-                (float)((Maps::map1.tiles_in_screen_y*Maps::map1.tile_width_units) + (float)((gun_data.bullet_range) * sin(gun_data.gun_angle)))*(float)pixels_per_unit_y    
-            }, 4, RAYWHITE
-        );
-    }
 
     // Draw player
-    // Color tank_color = player_data.player_colliding ? RED:WHITE;
+    Color tank_color = player_colliding ? RED:WHITE;
     Texture* player_texture = player_controller->get_sprite().first;
     Rectangle* player_source = player_controller->get_sprite().second;
     DrawTexturePro(*player_texture,
     *player_source,
-    {(float)((Maps::map1.tiles_in_screen_x*Maps::map1.tile_width_units))*(float)pixels_per_unit_x, (float)((Maps::map1.tiles_in_screen_y*Maps::map1.tile_width_units))*(float)pixels_per_unit_y, hull_data.player_rectangle.width*(float)pixels_per_unit_x, hull_data.player_rectangle.height*(float)pixels_per_unit_y},
+    {(float)((Maps::map1.tiles_in_screen_x*Maps::map1.tile_width_units)/2)*(float)pixels_per_unit_x, (float)((Maps::map1.tiles_in_screen_y*Maps::map1.tile_width_units)/2)*(float)pixels_per_unit_y, hull_data.player_rectangle.width*(float)pixels_per_unit_x, hull_data.player_rectangle.height*(float)pixels_per_unit_y},
     {hull_data.player_rectangle.width/2*(float)pixels_per_unit_x, hull_data.player_rectangle.height/2*(float)pixels_per_unit_y},
     
-    (player_data.angle)*RAD2DEG, WHITE
+    (player_data.angle)*RAD2DEG, tank_color
     );
     
     // Draw gun
@@ -225,7 +211,7 @@ void Pages::GameWindowScene::draw_game()
     Rectangle* gun_source = gun_controller->get_sprite().second;
     DrawTexturePro(*gun_texture,
         *gun_source,
-        {   (float)((Maps::map1.tiles_in_screen_x*Maps::map1.tile_width_units))*(float)pixels_per_unit_x, (float)((Maps::map1.tiles_in_screen_y*Maps::map1.tile_width_units))*(float)pixels_per_unit_y,
+        {   (float)((Maps::map1.tiles_in_screen_x*Maps::map1.tile_width_units)/2)*(float)pixels_per_unit_x, (float)((Maps::map1.tiles_in_screen_y*Maps::map1.tile_width_units)/2)*(float)pixels_per_unit_y,
             (gun_data.gun_rectangle.width)*(float)pixels_per_unit_x, (gun_data.gun_rectangle.height)*(float)pixels_per_unit_y},
         {
             0,
@@ -235,13 +221,25 @@ void Pages::GameWindowScene::draw_game()
     );
 
     // Draw gun crosshair circle
-    DrawCircleLines((crosshair_data.tracker_position.x)*(float)pixels_per_unit_x+(Maps::map1.tiles_in_screen_x*Maps::map1.tile_width_units)
-, 
-        (crosshair_data.tracker_position.y)*(float)pixels_per_unit_x+(Maps::map1.tiles_in_screen_y*Maps::map1.tile_width_units)
-,
+    DrawCircleLines((crosshair_data.tracker_position.x)*(float)pixels_per_unit_x+(Maps::map1.tiles_in_screen_x*Maps::map1.tile_width_units)/2, 
+        (crosshair_data.tracker_position.y)*(float)pixels_per_unit_y+(Maps::map1.tiles_in_screen_y*Maps::map1.tile_width_units)/2,
         crosshair_data.tracker_radius,
         crosshair_data.circle_color
         );
+   // Draw trace
+    if (true){
+        DrawLineEx(
+            {
+                ((float)(Maps::map1.tiles_in_screen_x*Maps::map1.tile_width_units)/2)*(float)pixels_per_unit_x,
+                ((float)(Maps::map1.tiles_in_screen_y*Maps::map1.tile_width_units)/2)*(float)pixels_per_unit_y
+  
+            }, {
+                (float)((Maps::map1.tiles_in_screen_x*Maps::map1.tile_width_units)/2 + (float)((gun_data.bullet_range) * cos(gun_data.gun_angle)))*(float)pixels_per_unit_x,
+                (float)((Maps::map1.tiles_in_screen_y*Maps::map1.tile_width_units)/2 + (float)((gun_data.bullet_range) * sin(gun_data.gun_angle)))*(float)pixels_per_unit_y    
+            }, 4, RAYWHITE
+        );
+    }
+std::cout<<(float)(Maps::map1.tiles_in_screen_x*Maps::map1.tile_width_units)/2<<std::endl;
 }
 
 void Pages::GameWindowScene::draw_hud()

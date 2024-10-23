@@ -83,6 +83,7 @@ namespace LogicUtils{
     struct ViewportData
     {
         Vector2 offset; // Top left
+        Vector2 projected_offset;
     } extern viewport_data;
 
     void init_state(int max_players);
@@ -102,7 +103,7 @@ namespace LogicUtils{
      */
     void set_tracker(float delta_time);
 
-    void handle_tank_collision();
+    bool handle_tank_collision();
 
     Texture2D extern player_spritesheet;
     Image extern player_spritesheet_image;

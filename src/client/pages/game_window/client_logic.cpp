@@ -1,4 +1,5 @@
 #include "client_logic.hpp"
+#include <iostream>
 
 LogicUtils::PlayerPacket LogicUtils::player_packet;
 LogicUtils::LivePlayerData LogicUtils::player_data;
@@ -54,16 +55,16 @@ void LogicUtils::handle_movement(float delta_time)
             double displacement = (hull_data.player_speed * delta_time);
             projected_data.position.x += (displacement*cos(projected_data.angle));
             projected_data.position.y += (displacement*sin(projected_data.angle));
-            viewport_data.offset.x += (displacement*cos(projected_data.angle));
-            viewport_data.offset.y += (displacement*sin(projected_data.angle));
+            viewport_data.projected_offset.x += (displacement*cos(projected_data.angle));
+            viewport_data.projected_offset.y += (displacement*sin(projected_data.angle));
         }
         if (IsKeyDown(KEY_S))
         {
             double displacement = (hull_data.player_speed * delta_time);
             projected_data.position.x -= (displacement*cos(projected_data.angle));
             projected_data.position.y -= (displacement*sin(projected_data.angle));
-            viewport_data.offset.x -= (displacement*cos(projected_data.angle));
-            viewport_data.offset.y -= (displacement*sin(projected_data.angle));
+            viewport_data.projected_offset.x -= (displacement*cos(projected_data.angle));
+            viewport_data.projected_offset.y -= (displacement*sin(projected_data.angle));
         }
     }
     else
@@ -81,7 +82,7 @@ double LogicUtils::normalize_angle(double angle)
 
 void LogicUtils::set_gun_angle(float delta_time)
 {
-    gun_data.expected_gun_angle = normalize_angle(atan2(crosshair_data.mouse_position.y - (Maps::map1.tiles_in_screen_x*Maps::map1.tile_width_units)/2, crosshair_data.mouse_position.x - (Maps::map1.tiles_in_screen_y*Maps::map1.tile_width_units)/2));
+    gun_data.expected_gun_angle = normalize_angle(atan2(crosshair_data.mouse_position.y - (Maps::map1.tiles_in_screen_y*Maps::map1.tile_width_units)/2, crosshair_data.mouse_position.x - (Maps::map1.tiles_in_screen_x*Maps::map1.tile_width_units)/2));
     double angle_difference = normalize_angle(gun_data.expected_gun_angle - gun_data.gun_angle);
     
     // Take shortest path to targeted gun_angle
@@ -135,7 +136,7 @@ void LogicUtils::set_tracker(float delta_time)
     crosshair_data.tracker_position.y = crosshair_data.tracker_distance*sin(gun_data.gun_angle);
 }
 
-void LogicUtils::handle_tank_collision()
+bool LogicUtils::handle_tank_collision()
 {
     // Handle collision detection
     bool player_colliding=false;
@@ -151,14 +152,17 @@ void LogicUtils::handle_tank_collision()
     size_t pos_y = (size_t)(projected_data.position.y/Maps::map1.tile_width_units);
     size_t pos_x = (size_t)(projected_data.position.x/Maps::map1.tile_width_units);
     size_t pos_idx = ((Maps::map1.map_width_tiles)*pos_y) + pos_x;
-    
-    for(size_t wall_y = pos_y-8*(Maps::map1.map_width_tiles); wall_y<pos_y+8*(Maps::map1.map_width_tiles); wall_y++)
+    size_t rad = (size_t)(1.5*sqrt(hull_data.player_rectangle.width*hull_data.player_rectangle.width + hull_data.player_rectangle.height*hull_data.player_rectangle.height));
+    std::cout << rad << std::endl;
+    for(size_t wall_y = pos_y-rad; wall_y<pos_y+rad; wall_y++)
     {
-        for(size_t wall_x = pos_x-8; wall_x<pos_x+8; wall_x++)
+        for(size_t wall_x = pos_x-rad; wall_x<pos_x+rad; wall_x++)
         {
             size_t wall_idx = ((Maps::map1.map_width_tiles)*wall_y) + wall_x;
-            if((Vector2Distance({(float)wall_x, (float)wall_y}, {(float)pos_x, (float)pos_y})<=8) && Maps::map1.walls[wall_idx]==0)
+            // if((Vector2Distance({(float)wall_x, (float)wall_y}, {(float)pos_x, (float)pos_y})<=rad) && Maps::map1.walls[wall_idx]==0)
+            if(Maps::map1.walls[wall_idx]==0)
             {
+                std::cout << wall_x << " " << wall_y << std::endl;
                 Rectangle wall = {
                     .x = (float)(wall_x)*(Maps::map1.tile_width_units),
                     .y = (float)(wall_y)*(Maps::map1.tile_width_units),
@@ -172,28 +176,30 @@ void LogicUtils::handle_tank_collision()
         }
         if(player_colliding){break;}
     }
-    if(!player_colliding)
-    {
-        // Player player
-        for(int i=0; i<8; i++)
-        {
-            if(i!=player_packet.ID)
-            {
-                Rectangle other_player_collider = {
-                    .x = old_state[i].position_absolute.x,
-                    .y = old_state[i].position_absolute.y,
-                    .width = hull_data.player_rectangle.width,
-                    .height = hull_data.player_rectangle.height,
-                };
-                player_colliding = Physics::sat_collision_detection(collider, projected_data.angle, other_player_collider, old_state[i].player_angle);
-                if(player_colliding){break;}
-            }
-            if(player_colliding){break;}
-        }
-    }
+    // if(!player_colliding)
+    // {
+    //     // Player player
+    //     for(int i=0; i<8; i++)
+    //     {
+    //         if(i!=player_packet.ID)
+    //         {
+    //             Rectangle other_player_collider = {
+    //                 .x = old_state[i].position_absolute.x,
+    //                 .y = old_state[i].position_absolute.y,
+    //                 .width = hull_data.player_rectangle.width,
+    //                 .height = hull_data.player_rectangle.height,
+    //             };
+    //             player_colliding = Physics::sat_collision_detection(collider, projected_data.angle, other_player_collider, old_state[i].player_angle);
+    //             if(player_colliding){break;}
+    //         }
+    //         if(player_colliding){break;}
+    //     }
+    // }
     if(!player_colliding)
     {
         player_data.position = projected_data.position;
+        viewport_data.offset = viewport_data.projected_offset;
         player_data.angle = projected_data.angle;
     }
+    return player_colliding;
 };
