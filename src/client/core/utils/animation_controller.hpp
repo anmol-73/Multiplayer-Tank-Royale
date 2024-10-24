@@ -3,7 +3,6 @@
 #define HEADER_ANIMATION_CONTROLLER
 
 #include <vector>
-#include <memory>
 #include <stdexcept>
 #include <raylib.h>
 
@@ -15,11 +14,6 @@ namespace Utils
          * The texture which contains the spritesheet
          */
         Texture2D* spritesheet;
-
-        /**
-         * The current frame being shown
-         */
-        size_t frame_idx = 0;
 
         /**
          * Pair of end time of keyframe and the rectangle on the spritesheet that needs to be shown
@@ -50,9 +44,14 @@ namespace Utils
         size_t current_anim = 0;
 
         /**
+         * The current frame being shown
+         */
+        size_t frame_idx = 0;
+
+        /**
          * All animation used by the animation controller
          */
-        std::vector<std::unique_ptr<Animation>> animations;
+        std::vector<Animation*> animations;
         
         /**
          * Basically the timer
@@ -89,6 +88,8 @@ namespace Utils
          * Registers the animation and returns the idx
          */
         size_t register_animation(Animation *anim);
+
+        AnimationController();
 
     };
 } // namespace Utils
