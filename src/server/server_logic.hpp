@@ -38,7 +38,7 @@ class GameState
         {
             std::vector<Vector2> spawnpoints = {
                 {448, 240},
-                {0, 0},
+                {33, 33},
                 {0, 0},
                 {0, 0},
                 {0, 0},

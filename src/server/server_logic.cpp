@@ -1,4 +1,5 @@
 #include "server_logic.hpp"
+#include <iostream>
 
 void GameState::init_state(int max_players)
 {
@@ -22,6 +23,9 @@ void GameState::init_state(int max_players)
 std::vector<PlayerPacket> GameState::update_state(PlayerPacket* received_packet)
 {
     handle_tank_collision(received_packet);
+    std::cout<<received_packet->position_absolute_units.x<<" "<<received_packet->position_absolute_units.y<<std::endl;
+    old_state[received_packet->ID].gun_angle = received_packet->gun_angle;
+    old_state[received_packet->ID].has_shot = received_packet->has_shot;
     return old_state;
 };
 

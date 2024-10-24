@@ -47,7 +47,7 @@ void LogicUtils::update_state(PlayerPacket *received_state)
     old_state = std::vector(received_state, received_state + 12);
 }
 void LogicUtils::set_packet() {
-    player_packet.gun_angle = player_data.angle;
+    player_packet.gun_angle = gun_data.gun_angle;
     player_packet.has_shot = gun_data.has_shot;
     player_packet.health = player_data.health;
     player_packet.ID = Global::ServiceProviders::room_client.get_id();
