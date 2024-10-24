@@ -16,6 +16,7 @@ void Pages::GameWindowScene::_update()
         ClearBackground(SKYBLUE);
         draw_game();
         draw_hud();
+        draw_leaderboard();
     }
     EndDrawing();
 
@@ -108,6 +109,10 @@ void Pages::GameWindowScene::_load()
         return;
     };
 
+    leaderboard.push_back({"Player1", 150});
+    leaderboard.push_back({"Player2", 120});
+    leaderboard.push_back({"Player3", 100});
+
     // TODO: Send a start ready message
     // Recieve data like spawn point, map etc.
 
@@ -137,6 +142,34 @@ void Pages::GameWindowScene::_load()
     time_since_last_send = 0;
     init_state(Networking::Message::Room::MAX_ROOM_SIZE);
 }
+
+void Pages::GameWindowScene::draw_leaderboard() {
+    
+    int screenWidth = GetScreenWidth();
+    int screenHeight = GetScreenHeight();
+
+    // Define the position and size of the leaderboard window
+    int leaderboardWidth = 200;
+    int leaderboardHeight = 200;
+    int padding = 10;
+    int xPos = screenWidth - leaderboardWidth - padding; // Top-right corner
+    int yPos = padding;
+
+    // Draw a semi-transparent background for the leaderboard
+    DrawRectangle(xPos, yPos, leaderboardWidth, leaderboardHeight, Fade(DARKGRAY, 0.7f));
+
+    // Draw the title "Leaderboard"
+    DrawText("Leaderboard", xPos + 10, yPos + 10, 20, RAYWHITE);
+
+    // Draw each player's name and score
+    int textY = yPos + 40;
+    for (size_t i = 0; i < leaderboard.size(); i++) {
+        std::string playerText = leaderboard[i].name + ": " + std::to_string(leaderboard[i].score);
+        DrawText(playerText.c_str(), xPos + 10, textY, 18, RAYWHITE);
+        textY += 30;  // Move down for the next player
+    }
+}
+
 
 void Pages::GameWindowScene::_cleanup()
 {
@@ -292,4 +325,5 @@ void Pages::GameWindowScene::draw_game()
 
 void Pages::GameWindowScene::draw_hud()
 {
+    
 }

@@ -27,6 +27,15 @@ namespace LogicUtils{
 
     std::vector<PlayerPacket> extern old_state;
 
+    struct PlayerInfo {
+    std::string name;
+    int score;
+    };
+
+    std::vector<PlayerInfo> extern leaderboard;
+
+
+
     /*
     * THe live player data used which updates every frame
     */
