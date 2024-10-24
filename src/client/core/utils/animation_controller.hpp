@@ -41,7 +41,6 @@ namespace Utils
         /**
          * ID of the animation currently playing
         */
-        size_t current_anim = 0;
 
         /**
          * The current frame being shown
@@ -64,6 +63,7 @@ namespace Utils
         void reset();
 
     public:
+        size_t current_anim = 0;
         /**
          * The number of times the currently playing animation has looped
          */

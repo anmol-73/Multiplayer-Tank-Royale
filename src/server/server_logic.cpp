@@ -8,6 +8,7 @@ void GameState::init_state(int max_players)
         PlayerPacket packet;
         packet = {
             .ID=i,
+            .is_idle = true,
             .position_absolute_units = GameState::game_constants.spawnpoints[i],
             .player_angle = 0,
             .gun_angle = 0,
@@ -26,6 +27,7 @@ std::vector<PlayerPacket> GameState::update_state(PlayerPacket* received_packet)
     std::cout<<received_packet->position_absolute_units.x<<" "<<received_packet->position_absolute_units.y<<std::endl;
     old_state[received_packet->ID].gun_angle = received_packet->gun_angle;
     old_state[received_packet->ID].has_shot = received_packet->has_shot;
+    old_state[received_packet->ID].is_idle = received_packet->is_idle;
     return old_state;
 };
 
@@ -74,6 +76,7 @@ void GameState::handle_tank_collision(PlayerPacket* received_packet)
         // Player player
         for(int i=0; i<8; i++)
         {
+            if (!old_state[i].is_alive) continue;
             if(i!=current_ID)
             {
                 Rectangle other_player_collider = {

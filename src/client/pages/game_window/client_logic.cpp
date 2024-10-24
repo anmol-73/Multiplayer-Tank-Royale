@@ -33,6 +33,7 @@ void LogicUtils::init_state(int max_players)
     {
         PlayerPacket packet;
         packet = {
+            .is_idle = true,
             .ID=i,
             .position_absolute = {0,0},
             .player_angle = 0,
@@ -49,11 +50,14 @@ void LogicUtils::init_state(int max_players)
 void LogicUtils::update_state(PlayerPacket *received_state)
 {
     // TODO: Use proper constant here
-    old_state = std::vector(received_state, received_state);
+    old_state = std::vector(received_state, received_state + Networking::Message::Room::MAX_ROOM_SIZE);
+    
+    
 }
 void LogicUtils::set_packet() {
     player_packet.gun_angle = gun_data.gun_angle;
     player_packet.has_shot = gun_data.has_shot;
+    player_packet.is_idle = (Vector2Equals(player_data.position, player_packet.position_absolute));
     player_packet.health = player_data.health;
     player_packet.ID = Global::ServiceProviders::room_client.get_id();
     player_packet.is_alive = player_data.is_alive;
@@ -161,19 +165,21 @@ bool LogicUtils::handle_tank_collision()
 {
     // Handle collision detection
     bool player_colliding=false;
-
+    
     Rectangle collider = {
         .x = projected_data.position.x,
         .y = projected_data.position.y,
         .width = hull_data.player_rectangle.width,
         .height = hull_data.player_rectangle.height
     };
+    
 
     // Player wall
     size_t pos_y = (size_t)((projected_data.position.y+hull_data.player_rectangle.height/2)/Maps::maps[0].tile_width_units);
     size_t pos_x = (size_t)((projected_data.position.x+hull_data.player_rectangle.width/2)/Maps::maps[0].tile_width_units);
     size_t pos_idx = ((Maps::maps[0].map_width_tiles)*pos_y) + pos_x;
     size_t rad = (size_t)(sqrt((hull_data.player_rectangle.width*hull_data.player_rectangle.width)/(Maps::maps[0].tile_width_units*Maps::maps[0].tile_width_units) + (hull_data.player_rectangle.height*hull_data.player_rectangle.height)/(Maps::maps[0].tile_width_units*Maps::maps[0].tile_width_units)));
+    
     for(size_t wall_y = pos_y-std::min(rad, pos_y); wall_y<pos_y+rad; wall_y++)
     {
         for(size_t wall_x = pos_x-std::min(rad, pos_x); wall_x<pos_x+rad; wall_x++)
@@ -198,11 +204,13 @@ bool LogicUtils::handle_tank_collision()
         }
         if(player_colliding){break;}
     }
+    
     if(!player_colliding)
     {
         // Player player
-        for(int i=0; i<8; i++)
+        for(int i=0; i<12; i++)
         {
+            if (!old_state[i].is_alive)continue;
             if(i!=player_packet.ID)
             {
                 Rectangle other_player_collider = {
@@ -217,6 +225,7 @@ bool LogicUtils::handle_tank_collision()
             if(player_colliding){break;}
         }
     }
+    
     if(!player_colliding)
     {
         player_data.position = projected_data.position;
@@ -228,6 +237,7 @@ bool LogicUtils::handle_tank_collision()
         viewport_data.projected_offset = viewport_data.offset;
         projected_data.angle = player_data.angle;
     }
+    
     return player_colliding;
 };
 

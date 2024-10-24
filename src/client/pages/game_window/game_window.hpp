@@ -50,7 +50,7 @@ namespace Pages
         double time_since_last_send;
 
         Utils::Camera camera;
-        std::vector<LogicUtils::PlayerPacket> old_state;
+        // std::vector<LogicUtils::PlayerPacket> old_state;
         std::vector<LogicUtils::PlayerInfo> leaderboard;
     };
 

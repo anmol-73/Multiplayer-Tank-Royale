@@ -15,6 +15,7 @@ namespace LogicUtils{
     * The struct that enet will be using for communication  
     */
     struct PlayerPacket{
+        bool is_idle;
         int ID;
         Vector2 position_absolute;
         float player_angle;
