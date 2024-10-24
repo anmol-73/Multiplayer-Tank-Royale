@@ -9,13 +9,19 @@ void Pages::GameWindowScene::_update()
     }
 
     // Logic update
+    
+    
     logic_update();
+    
 
     // Drawing
     BeginDrawing();{
+        
         ClearBackground(SKYBLUE);
         draw_game();
+        
         draw_hud();
+        draw_leaderboard();
     }
     EndDrawing();
 
@@ -24,47 +30,53 @@ void Pages::GameWindowScene::_update()
 
 void Pages::GameWindowScene::_load_with_context()
 {
+    
     using namespace LogicUtils;
     player_spritesheet = LoadTextureFromImage(player_spritesheet_image);
-
-    Utils::Animation* player_idle = new Utils::Animation(
-            &player_spritesheet,
-            {
-                {0.3, Rectangle{.x = 32, .y = 0, .width = 32, .height = 24}},
-            }
-        );
-    player_idle_idx = player_controller->register_animation(player_idle);
-
-    Utils::Animation* player_moving = new Utils::Animation(
-            &player_spritesheet,
-            {
-                {0.3, Rectangle{.x = 32, .y = 0, .width = 32, .height = 24}},
-                {0.3, Rectangle{.x = 32, .y = 24, .width = 32, .height = 24}}
-            }
-        );
-    player_moving_idx = player_controller->register_animation(player_moving);
     
-    Utils::Animation* gun_idle = new Utils::Animation(
-            &player_spritesheet,
-            {
-                {0.1, Rectangle{.x = 0, .y = 0, .width = 32, .height = 8}},
-            }
-        );
-    gun_idle_idx = gun_controller->register_animation(gun_idle);
+    
+    player_idle = new Utils::Animation(
+        &player_spritesheet,
+        {
+            {0.3, Rectangle{.x = 32, .y = 0, .width = 32, .height = 24}},
+        }
+    );
+    player_moving = new Utils::Animation(
+        &player_spritesheet,
+        {
+            {0.3, Rectangle{.x = 32, .y = 0, .width = 32, .height = 24}},
+            {0.3, Rectangle{.x = 32, .y = 24, .width = 32, .height = 24}}
+        }
+    );
+    gun_idle = new Utils::Animation(
+        &player_spritesheet,
+        {
+            {0.1, Rectangle{.x = 0, .y = 0, .width = 32, .height = 8}},
+        }
+    );
+    gun_shot = new Utils::Animation(
+        &player_spritesheet,
+        {
+            {0.05, Rectangle{.x = 0, .y = 0, .width = 32, .height = 8}},
+            {0.05, Rectangle{.x = 0, .y = 8, .width = 32, .height = 8}},
+            {0.2, Rectangle{.x = 0, .y = 16, .width = 32, .height = 8}},
+            {0.05, Rectangle{.x = 0, .y = 32, .width = 32, .height = 8}},
+            {0.2, Rectangle{.x = 0, .y = 40, .width = 32, .height = 8}},
+            {0.1, Rectangle{.x = 0, .y = 48, .width = 32, .height = 8}},
+        }
+    );
+    
+    for (size_t i = 0; i < Networking::Message::Room::MAX_ROOM_SIZE; ++i){
+        
+        player_controllers.emplace_back(Utils::AnimationController{});
+        gun_controllers.emplace_back(Utils::AnimationController{});
+        player_idle_idx = player_controllers[i].register_animation(player_idle);
+        player_moving_idx = player_controllers[i].register_animation(player_moving);
+        gun_idle_idx = gun_controllers[i].register_animation(gun_idle);
+        gun_shot_idx = gun_controllers[i].register_animation(gun_shot);
 
-    Utils::Animation* gun_shot = new Utils::Animation(
-            &player_spritesheet,
-            {
-                {0.05, Rectangle{.x = 0, .y = 0, .width = 32, .height = 8}},
-                {0.05, Rectangle{.x = 0, .y = 8, .width = 32, .height = 8}},
-                {0.2, Rectangle{.x = 0, .y = 16, .width = 32, .height = 8}},
-                {0.05, Rectangle{.x = 0, .y = 32, .width = 32, .height = 8}},
-                {0.2, Rectangle{.x = 0, .y = 40, .width = 32, .height = 8}},
-                {0.1, Rectangle{.x = 0, .y = 48, .width = 32, .height = 8}},
-            }
-        );
-    gun_shot_idx = gun_controller->register_animation(gun_shot);
-
+    }
+    
     map = LoadTextureFromImage(map_image);
 }
 
@@ -87,7 +99,7 @@ void Pages::GameWindowScene::_load()
     SetMouseCursor(MOUSE_CURSOR_CROSSHAIR);
 
     Global::ServiceProviders::room_client.game_start_callback = [](){
-        std::cout << "SOMETHING BAD HAPPEND SIR" << std::endl;
+        
         return;
     };
     Global::ServiceProviders::room_client.disconnect_callback = [](){
@@ -95,11 +107,11 @@ void Pages::GameWindowScene::_load()
         return;
     };
     Global::ServiceProviders::room_client.set_map_callback = [](int map){
-        std::cout << "SOMETHING BAD HAPPEND SIR V2" << std::endl;
+        
         return;
     };
     Global::ServiceProviders::room_client.room_broadcast_callback = [](std::vector<std::string> room_members_){
-        std::cout << "SOMETHING BAD HAPPEND SIR V3" << std::endl;
+        
         return;
     };
     Global::ServiceProviders::room_client.game_update_callback = [this](void* data){
@@ -107,6 +119,10 @@ void Pages::GameWindowScene::_load()
         update_state(game_state);
         return;
     };
+
+    leaderboard.push_back({"Player1", 150});
+    leaderboard.push_back({"Player2", 120});
+    leaderboard.push_back({"Player3", 100});
 
     // TODO: Send a start ready message
     // Recieve data like spawn point, map etc.
@@ -117,42 +133,80 @@ void Pages::GameWindowScene::_load()
         Maps::maps[0].vwidth()/2-hull_data.player_rectangle.width/2,
         Maps::maps[0].vheight()/2-hull_data.player_rectangle.height/2
     };
+    
     camera.init({Maps::maps[0].width(), Maps::maps[0].height()}, {Maps::maps[0].vwidth(), Maps::maps[0].vheight()});
     projected_data.init(player_spawn_position);
     player_data.init(player_spawn_position);
     camera.follow(player_data.position);
+    
 
     crosshair_data.init();
     hull_data.init();
     gun_data.init();
+    
 
     viewport_data.offset = Vector2();
+    
 
     player_spritesheet_image = LoadImage("resources/game_window/tank2_spritesheet.png");
     map_image = LoadImage("resources/game_window/defaultmap.png");
-    player_controller = new Utils::AnimationController();
-    gun_controller = new Utils::AnimationController();
-
 
     time_since_last_send = 0;
+    
+    
     init_state(Networking::Message::Room::MAX_ROOM_SIZE);
+    
 }
+
+void Pages::GameWindowScene::draw_leaderboard() {
+    
+    int screenWidth = GetScreenWidth();
+    int screenHeight = GetScreenHeight();
+
+    // Define the position and size of the leaderboard window
+    int leaderboardWidth = 200;
+    int leaderboardHeight = 200;
+    int padding = 10;
+    int xPos = screenWidth - leaderboardWidth - padding; // Top-right corner
+    int yPos = padding;
+
+    // Draw a semi-transparent background for the leaderboard
+    DrawRectangle(xPos, yPos, leaderboardWidth, leaderboardHeight, Fade(DARKGRAY, 0.7f));
+
+    // Draw the title "Leaderboard"
+    DrawText("Leaderboard", xPos + 10, yPos + 10, 20, RAYWHITE);
+
+    // Draw each player's name and score
+    int textY = yPos + 40;
+    for (size_t i = 0; i < leaderboard.size(); i++) {
+        std::string playerText = leaderboard[i].name + ": " + std::to_string(leaderboard[i].score);
+        DrawText(playerText.c_str(), xPos + 10, textY, 18, RAYWHITE);
+        textY += 30;  // Move down for the next player
+    }
+}
+
 
 void Pages::GameWindowScene::_cleanup()
 {
     UnloadImage(LogicUtils::player_spritesheet_image);
-    delete LogicUtils::player_controller;
-    delete LogicUtils::gun_controller;
 }
 
 void Pages::GameWindowScene::_cleanup_with_context()
 {
     UnloadTexture(LogicUtils::player_spritesheet);
+    delete LogicUtils::player_idle;
+    delete LogicUtils::player_moving;
+    delete LogicUtils::gun_idle;
+    delete LogicUtils::gun_shot;
+    LogicUtils::gun_controllers.clear();
+    LogicUtils::player_controllers.clear();
 }
 
 void Pages::GameWindowScene::logic_update()
 {
     using namespace LogicUtils;
+    
+    size_t self = Global::ServiceProviders::room_client.get_id();
     pixels_per_unit_x = (float)GetScreenWidth()/(Maps::maps[0].vwidth());
     pixels_per_unit_y = (float)GetScreenHeight()/(Maps::maps[0].vheight());
     crosshair_data.mouse_position = {GetMousePosition().x/(float)pixels_per_unit_x, GetMousePosition().y/(float)pixels_per_unit_y};
@@ -160,37 +214,56 @@ void Pages::GameWindowScene::logic_update()
     gun_data.has_shot = IsMouseButtonPressed(MOUSE_BUTTON_LEFT);
 
     float delta_time = GetFrameTime();
+    
 
     // Handle movement of gun
+    
     set_gun_angle(delta_time);
+    
 
+    
     // Handle movement of tracker circle
     set_tracker(delta_time);
+    
 
+    
     // Handle movement
     handle_movement(delta_time); 
-     
-
+    
+    for (size_t i = 0; i < old_state.size(); ++i){
+        if (!old_state[i].is_alive) continue;
+        std::cout << "BRUH" <<  old_state[i].is_idle << (old_state[i].is_idle ? player_idle_idx : player_moving_idx) << std::endl;
+        player_controllers[i].play(old_state[i].is_idle ? player_idle_idx : player_moving_idx, false);
+    }
+    
     player_colliding = handle_tank_collision();
+    
 
     // Handle gun animation
+    
     if(gun_data.has_shot)
     {
-        gun_controller->play(gun_shot_idx, true);
+        gun_controllers[self].play(gun_shot_idx, true);
     }
-    else if(gun_controller->current_iteration_count>0)
+    else if(gun_controllers[self].current_iteration_count>0)
     {
-        gun_controller->play(gun_idle_idx, true);
+        gun_controllers[self].play(gun_idle_idx, true);
     }
-
+    
+    std::cout << player_packet.position_absolute.x << " " << player_packet.position_absolute.y << " " << player_data.position.x << " " << player_data.position.y << std::endl;
     set_packet();
+    std::cout << player_packet.is_idle << std::endl;
     time_since_last_send += delta_time;
+    
     if(time_since_last_send>0.017)
     {
+    
         time_since_last_send = 0;
         Global::ServiceProviders::room_client.request_game_update(&player_packet, sizeof(PlayerPacket));
+    
     }
 
+    
     camera.follow(player_data.position);
 
     bullet_colliding = false;
@@ -250,18 +323,13 @@ void Pages::GameWindowScene::draw_game()
 {
     using namespace LogicUtils;
     float delta_time = GetFrameTime();
-    player_controller->update(delta_time);
-    gun_controller->update(delta_time);
 
-    // Handle gun animation
-    if(gun_data.has_shot)
-    {
-        gun_controller->play(gun_shot_idx, true);
-    }
-    else if(gun_controller->current_iteration_count>0)
-    {
-        gun_controller->play(gun_idle_idx, true);
-    }
+    
+    for (auto& controller: player_controllers) controller.update(delta_time);
+    for (auto& controller: gun_controllers) controller.update(delta_time);
+    size_t self = Global::ServiceProviders::room_client.get_id();
+
+    
 
     // Draw bg
     DrawTexturePro(
@@ -272,35 +340,70 @@ void Pages::GameWindowScene::draw_game()
         0,
         WHITE
     );
+    if (gun_data.has_shot){
+        DrawLineEx(
+            {
+                ((float)(Maps::maps[0].tiles_in_screen_x*Maps::maps[0].tile_width_units)/2)*(float)pixels_per_unit_x,
+                ((float)(Maps::maps[0].tiles_in_screen_y*Maps::maps[0].tile_width_units)/2)*(float)pixels_per_unit_y
+  
+            }, {
+                (float)((Maps::maps[0].tiles_in_screen_x*Maps::maps[0].tile_width_units)/2 + (float)((gun_data.bullet_range) * cos(gun_data.gun_angle)))*(float)pixels_per_unit_x,
+                (float)((Maps::maps[0].tiles_in_screen_y*Maps::maps[0].tile_width_units)/2 + (float)((gun_data.bullet_range) * sin(gun_data.gun_angle)))*(float)pixels_per_unit_y    
+            }, 4, RAYWHITE
+        );
+    }
 
 
     // Draw player
     Color tank_color = player_colliding ? RED:WHITE;
     Color gun_color = bullet_colliding ? SKYBLUE:WHITE;
     
-    for (auto& pp: LogicUtils::old_state){
+    for (size_t i = 0; i < old_state.size(); ++i){
+        if (i == self) continue;
+        auto& pp = old_state[i];
         if (!pp.is_alive) continue;
-        Texture* player_texture = player_controller->get_sprite().first;
-        Rectangle* player_source = player_controller->get_sprite().second;
-
+        Texture* player_texture = player_controllers[i].get_sprite().first;
+        Rectangle* player_source = player_controllers[i].get_sprite().second;
+        
+        std::cout << pp.position_absolute.x<<  "HII" << player_controllers[i].current_anim << std::endl;
         hull_data.player_rectangle.x = pp.position_absolute.x;
         hull_data.player_rectangle.y = pp.position_absolute.y;
-        std::cout << hull_data.player_rectangle.x << " " << hull_data.player_rectangle.y << std::endl;
-        std::cout << "!!!" << player_data.position.x << " " << player_data.position.y << std::endl;
         DrawTexturePro(
             *player_texture,
             *player_source,
             camera.transform(hull_data.player_rectangle),
             camera.scale(Vector2Scale({hull_data.player_rectangle.width, hull_data.player_rectangle.height}, 0.5f)),    
-            (pp.player_angle)*RAD2DEG, tank_color
+            (pp.player_angle)*RAD2DEG, PURPLE
         );
     }
-    for (auto& pp: LogicUtils::old_state){
-        if (!pp.is_alive) continue;
+    
+    if (old_state[self].is_alive){
+    
+        Texture* player_texture = player_controllers[self].get_sprite().first;
+    
+        Rectangle* player_source = player_controllers[self].get_sprite().second;
+    
 
+        hull_data.player_rectangle.x = player_data.position.x;
+        hull_data.player_rectangle.y = player_data.position.y;
+        DrawTexturePro(
+            *player_texture,
+            *player_source,
+            camera.transform(hull_data.player_rectangle),
+            camera.scale(Vector2Scale({hull_data.player_rectangle.width, hull_data.player_rectangle.height}, 0.5f)),    
+            (player_data.angle)*RAD2DEG, tank_color
+        );
+    
+    }
+
+    
+    for (size_t i = 0; i < old_state.size(); ++i){
+        if (i == self) continue;
+        auto& pp = old_state[i];
         // Draw gun
-        Texture* gun_texture = gun_controller->get_sprite().first;
-        Rectangle* gun_source = gun_controller->get_sprite().second;
+        if (!pp.is_alive) continue;
+        Texture* gun_texture = gun_controllers[i].get_sprite().first;
+        Rectangle* gun_source = gun_controllers[i].get_sprite().second;
         DrawTexturePro(*gun_texture,
             *gun_source,
             camera.transform(Rectangle{
@@ -311,19 +414,20 @@ void Pages::GameWindowScene::draw_game()
             }), 
             (pp.gun_angle)*RAD2DEG, gun_color
         );
+
     }
     
-    
 
+    
     // Draw gun crosshair circle
     DrawCircleLinesV(
-        Vector2Add(
-            camera.scale(crosshair_data.tracker_position),
-            {Maps::maps[0].vwidth() / 2, Maps::maps[0].vheight() / 2}
+        camera.transform(
+            Vector2Add(crosshair_data.tracker_position, player_data.position)
         ),
         crosshair_data.tracker_radius,
         crosshair_data.circle_color
     );
+    
     
    // Draw trace
     if (true){
@@ -340,4 +444,5 @@ void Pages::GameWindowScene::draw_game()
 
 void Pages::GameWindowScene::draw_hud()
 {
+    
 }

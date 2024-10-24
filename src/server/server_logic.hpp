@@ -11,6 +11,7 @@
 
 struct PlayerPacket
 {
+    bool is_idle;
     int ID;
     Vector2 position_absolute_units; // Top left of tank
     float player_angle; // Angle with x axis from tank center in rads

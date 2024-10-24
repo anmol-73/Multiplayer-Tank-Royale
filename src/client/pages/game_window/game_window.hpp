@@ -11,6 +11,8 @@
 #include "core/utils/camera.hpp"
 #include "core/dragonlib.hpp"
 
+
+
 namespace Pages
 {
     class GameWindowScene: public SceneManagement::Scene{
@@ -22,6 +24,8 @@ namespace Pages
         void _cleanup_with_context();
         void _load();
         void _cleanup();
+        void draw_leaderboard();
+        
 
         /**
          * Handles updating game logic each frame
@@ -47,6 +51,8 @@ namespace Pages
         Vector2 contact_point;
         bool bullet_colliding;
         Utils::Camera camera;
+        // std::vector<LogicUtils::PlayerPacket> old_state;
+        std::vector<LogicUtils::PlayerInfo> leaderboard;
     };
 
 } // namespace Pages
