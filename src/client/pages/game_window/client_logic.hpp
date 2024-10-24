@@ -38,6 +38,8 @@ namespace LogicUtils{
         // int ammo;
         // int max_ammo;
         bool is_alive;
+
+        void init(Vector2 position);
     } extern player_data;
     LivePlayerData extern projected_data;
 
@@ -56,6 +58,7 @@ namespace LogicUtils{
         double gun_rot_speed;
         double bullet_range;
         // int gun_type;
+        void init();
     } extern gun_data;
 
     struct HullStats{
@@ -67,6 +70,8 @@ namespace LogicUtils{
         double player_rot_speed;
         bool player_colliding;
         // int hull_type;
+
+        void init();
     } extern hull_data;
 
     struct CrosshairData
@@ -78,6 +83,8 @@ namespace LogicUtils{
         double tracker_radius;
         double tracker_radial_speed;
         Color circle_color = WHITE; 
+
+        void init();
     } extern crosshair_data;
 
     struct ViewportData

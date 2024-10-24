@@ -41,22 +41,22 @@ void GameState::handle_tank_collision(PlayerPacket* received_packet)
     };
 
     // Player wall
-    size_t pos_y = (size_t)(received_packet->position_absolute_units.y/Maps::map1.tile_width_units);
-    size_t pos_x = (size_t)(received_packet->position_absolute_units.x/Maps::map1.tile_width_units);
-    size_t pos_idx = ((Maps::map1.map_width_tiles)*pos_y) + pos_x;
+    size_t pos_y = (size_t)(received_packet->position_absolute_units.y/Maps::maps[0].tile_width_units);
+    size_t pos_x = (size_t)(received_packet->position_absolute_units.x/Maps::maps[0].tile_width_units);
+    size_t pos_idx = ((Maps::maps[0].map_width_tiles)*pos_y) + pos_x;
     
-    for(size_t wall_y = pos_y-150*(Maps::map1.map_width_tiles); wall_y<pos_y+150*(Maps::map1.map_width_tiles); wall_y++)
+    for(size_t wall_y = pos_y-150*(Maps::maps[0].map_width_tiles); wall_y<pos_y+150*(Maps::maps[0].map_width_tiles); wall_y++)
     {
         for(size_t wall_x = pos_x-150; wall_x<pos_x+150; wall_x++)
         {
-            size_t wall_idx = ((Maps::map1.map_width_tiles)*wall_y) + wall_x;
-            if((Vector2Distance({(float)wall_x, (float)wall_y}, {(float)pos_x, (float)pos_y})<=150) && Maps::map1.walls[wall_idx]==0)
+            size_t wall_idx = ((Maps::maps[0].map_width_tiles)*wall_y) + wall_x;
+            if((Vector2Distance({(float)wall_x, (float)wall_y}, {(float)pos_x, (float)pos_y})<=150) && Maps::maps[0].walls[wall_idx]==0)
             {
                 Rectangle wall = {
-                    .x = (float)(wall_x)*(Maps::map1.tile_width_units),
-                    .y = (float)(wall_y)*(Maps::map1.tile_width_units),
-                    .width = (Maps::map1.tile_width_units),
-                    .height = (Maps::map1.tile_width_units),
+                    .x = (float)(wall_x)*(Maps::maps[0].tile_width_units),
+                    .y = (float)(wall_y)*(Maps::maps[0].tile_width_units),
+                    .width = (Maps::maps[0].tile_width_units),
+                    .height = (Maps::maps[0].tile_width_units),
                 };
                 player_colliding = Physics::sat_collision_detection(wall, 0, collider, received_packet->player_angle);
                 if(player_colliding){break;}

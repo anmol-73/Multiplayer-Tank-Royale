@@ -102,6 +102,7 @@ void RoomHost::handle_message(ENetPeer *peer, size_t type, void *message)
                 for (size_t i = 0; i < Networking::Message::Room::MAX_ROOM_SIZE; ++i){
                     
                     game_state.get()->old_state[i].is_connected = strcmp(names[i], "") != 0;
+                    game_state.get()->old_state[i].is_alive = strcmp(names[i], "") != 0;
                     
                 }
                 send(ServerCommand::GAME_START);

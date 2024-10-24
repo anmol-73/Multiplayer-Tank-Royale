@@ -108,29 +108,23 @@ void Pages::GameWindowScene::_load()
         return;
     };
 
-    player_data.position = {(float)(Maps::map1.tiles_in_screen_x*Maps::map1.tile_width_units)/2-hull_data.player_rectangle.width/2,
-    (float)(Maps::map1.tiles_in_screen_y*Maps::map1.tile_width_units)/2-hull_data.player_rectangle.height/2};
-    player_data.angle = 0;
-    player_data.health = 5;
-    projected_data.position = {(float)(Maps::map1.tiles_in_screen_x*Maps::map1.tile_width_units)-hull_data.player_rectangle.width/2,
-    (float)(Maps::map1.tiles_in_screen_y*Maps::map1.tile_width_units)-hull_data.player_rectangle.height/2};
-    projected_data.angle = 0;
-    projected_data.health = 5;
+    // TODO: Send a start ready message
+    // Recieve data like spawn point, map etc.
 
-    hull_data.player_speed = 120.0f;
-    hull_data.player_rot_speed = PI/2;
-    hull_data.player_colliding = false;
+    size_t map_idx = 0;
 
-    gun_data.gun_angle = 0;
-    gun_data.gun_rot_speed = 1;
-    gun_data.gun_dmg = 1;
-    gun_data.has_shot = false;
-    gun_data.bullet_range = 1000;
+    Vector2 player_spawn_position = {
+        Maps::maps[0].vwidth()/2-hull_data.player_rectangle.width/2,
+        Maps::maps[0].vheight()/2-hull_data.player_rectangle.height/2
+    };
+    camera.init({Maps::maps[0].width(), Maps::maps[0].height()}, {Maps::maps[0].vwidth(), Maps::maps[0].vheight()});
+    projected_data.init(player_spawn_position);
+    player_data.init(player_spawn_position);
+    camera.follow(player_data.position);
 
-    crosshair_data.tracker_position = Vector2();
-    crosshair_data.tracker_radial_speed = 500;
-    crosshair_data.tracker_radius = 10;
-    crosshair_data.tracker_distance = 0;
+    crosshair_data.init();
+    hull_data.init();
+    gun_data.init();
 
     viewport_data.offset = Vector2();
 
@@ -138,6 +132,7 @@ void Pages::GameWindowScene::_load()
     map_image = LoadImage("resources/game_window/defaultmap.png");
     player_controller = new Utils::AnimationController();
     gun_controller = new Utils::AnimationController();
+
 
     time_since_last_send = 0;
     init_state(Networking::Message::Room::MAX_ROOM_SIZE);
@@ -158,8 +153,8 @@ void Pages::GameWindowScene::_cleanup_with_context()
 void Pages::GameWindowScene::logic_update()
 {
     using namespace LogicUtils;
-    pixels_per_unit_x = (float)GetScreenWidth()/(Maps::map1.tiles_in_screen_x*(float)Maps::map1.tile_width_units);
-    pixels_per_unit_y = (float)GetScreenHeight()/(Maps::map1.tiles_in_screen_y*(float)Maps::map1.tile_width_units);
+    pixels_per_unit_x = (float)GetScreenWidth()/(Maps::maps[0].vwidth());
+    pixels_per_unit_y = (float)GetScreenHeight()/(Maps::maps[0].vheight());
     crosshair_data.mouse_position = {GetMousePosition().x/(float)pixels_per_unit_x, GetMousePosition().y/(float)pixels_per_unit_y};
     // set_position(); // For drawing
     gun_data.has_shot = IsMouseButtonPressed(MOUSE_BUTTON_LEFT);
@@ -173,7 +168,8 @@ void Pages::GameWindowScene::logic_update()
     set_tracker(delta_time);
 
     // Handle movement
-    handle_movement(delta_time);  
+    handle_movement(delta_time); 
+     
 
     player_colliding = handle_tank_collision();
 
@@ -194,6 +190,8 @@ void Pages::GameWindowScene::logic_update()
         time_since_last_send = 0;
         Global::ServiceProviders::room_client.request_game_update(&player_packet, sizeof(PlayerPacket));
     }
+
+    camera.follow(player_data.position);
 }
 
 
@@ -216,9 +214,10 @@ void Pages::GameWindowScene::draw_game()
     }
 
     // Draw bg
-    DrawTexturePro(map,
-        {viewport_data.offset.x, viewport_data.offset.y, Maps::map1.tiles_in_screen_x*(float)Maps::map1.tile_width_units, Maps::map1.tiles_in_screen_y*(float)Maps::map1.tile_width_units},
-        {0, 0, Maps::map1.tiles_in_screen_x*(float)Maps::map1.tile_width_units*(float)pixels_per_unit_x, Maps::map1.tiles_in_screen_y*(float)Maps::map1.tile_width_units*(float)pixels_per_unit_y},
+    DrawTexturePro(
+        map,
+        {viewport_data.offset.x, viewport_data.offset.y, Maps::maps[0].tiles_in_screen_x*(float)Maps::maps[0].tile_width_units, Maps::maps[0].tiles_in_screen_y*(float)Maps::maps[0].tile_width_units},
+        {0, 0, (float)GetScreenWidth(), (float)GetScreenHeight()},
         {0,0},
         0,
         WHITE
@@ -227,47 +226,65 @@ void Pages::GameWindowScene::draw_game()
 
     // Draw player
     Color tank_color = player_colliding ? RED:WHITE;
-    Texture* player_texture = player_controller->get_sprite().first;
-    Rectangle* player_source = player_controller->get_sprite().second;
-    DrawTexturePro(*player_texture,
-    *player_source,
-    {(float)((Maps::map1.tiles_in_screen_x*Maps::map1.tile_width_units)/2)*(float)pixels_per_unit_x, (float)((Maps::map1.tiles_in_screen_y*Maps::map1.tile_width_units)/2)*(float)pixels_per_unit_y, hull_data.player_rectangle.width*(float)pixels_per_unit_x, hull_data.player_rectangle.height*(float)pixels_per_unit_y},
-    {hull_data.player_rectangle.width/2*(float)pixels_per_unit_x, hull_data.player_rectangle.height/2*(float)pixels_per_unit_y},
+
     
-    (player_data.angle)*RAD2DEG, tank_color
-    );
+    for (auto& pp: LogicUtils::old_state){
+        if (!pp.is_alive) continue;
+        Texture* player_texture = player_controller->get_sprite().first;
+        Rectangle* player_source = player_controller->get_sprite().second;
+
+        hull_data.player_rectangle.x = pp.position_absolute.x;
+        hull_data.player_rectangle.y = pp.position_absolute.y;
+        std::cout << hull_data.player_rectangle.x << " " << hull_data.player_rectangle.y << std::endl;
+        std::cout << "!!!" << player_data.position.x << " " << player_data.position.y << std::endl;
+        DrawTexturePro(
+            *player_texture,
+            *player_source,
+            camera.transform(hull_data.player_rectangle),
+            camera.scale(Vector2Scale({hull_data.player_rectangle.width, hull_data.player_rectangle.height}, 0.5f)),    
+            (pp.player_angle)*RAD2DEG, tank_color
+        );
+    }
+    for (auto& pp: LogicUtils::old_state){
+        if (!pp.is_alive) continue;
+
+        // Draw gun
+        Texture* gun_texture = gun_controller->get_sprite().first;
+        Rectangle* gun_source = gun_controller->get_sprite().second;
+        DrawTexturePro(*gun_texture,
+            *gun_source,
+            camera.transform(Rectangle{
+                pp.position_absolute.x, pp.position_absolute.y,
+                gun_data.gun_rectangle.width, gun_data.gun_rectangle.height
+            }), camera.scale(Vector2{
+                0, gun_data.gun_rectangle.height/2
+            }), 
+            (pp.gun_angle)*RAD2DEG, WHITE
+        );
+    }
     
-    // Draw gun
-    Texture* gun_texture = gun_controller->get_sprite().first;
-    Rectangle* gun_source = gun_controller->get_sprite().second;
-    DrawTexturePro(*gun_texture,
-        *gun_source,
-        {   (float)((Maps::map1.tiles_in_screen_x*Maps::map1.tile_width_units)/2)*(float)pixels_per_unit_x, (float)((Maps::map1.tiles_in_screen_y*Maps::map1.tile_width_units)/2)*(float)pixels_per_unit_y,
-            (gun_data.gun_rectangle.width)*(float)pixels_per_unit_x, (gun_data.gun_rectangle.height)*(float)pixels_per_unit_y},
-        {
-            0,
-            (gun_data.gun_rectangle.height/2)*(float)pixels_per_unit_y
-        }, 
-        (gun_data.gun_angle)*RAD2DEG, WHITE
-    );
+    
 
     // Draw gun crosshair circle
-    DrawCircleLines(
-        ((crosshair_data.tracker_position.x)+(Maps::map1.tiles_in_screen_x*Maps::map1.tile_width_units)/2)*(float)pixels_per_unit_x, 
-        ((crosshair_data.tracker_position.y)+(Maps::map1.tiles_in_screen_y*Maps::map1.tile_width_units)/2)*(float)pixels_per_unit_y,
+    DrawCircleLinesV(
+        Vector2Add(
+            camera.scale(crosshair_data.tracker_position),
+            {Maps::maps[0].vwidth() / 2, Maps::maps[0].vheight() / 2}
+        ),
         crosshair_data.tracker_radius,
         crosshair_data.circle_color
-        );
+    );
+    
    // Draw trace
     if (true){
         DrawLineEx(
             {
-                ((float)(Maps::map1.tiles_in_screen_x*Maps::map1.tile_width_units)/2)*(float)pixels_per_unit_x,
-                ((float)(Maps::map1.tiles_in_screen_y*Maps::map1.tile_width_units)/2)*(float)pixels_per_unit_y
+                ((float)(Maps::maps[0].tiles_in_screen_x*Maps::maps[0].tile_width_units)/2)*(float)pixels_per_unit_x,
+                ((float)(Maps::maps[0].tiles_in_screen_y*Maps::maps[0].tile_width_units)/2)*(float)pixels_per_unit_y
   
             }, {
-                (float)((Maps::map1.tiles_in_screen_x*Maps::map1.tile_width_units)/2 + (float)((gun_data.bullet_range) * cos(gun_data.gun_angle)))*(float)pixels_per_unit_x,
-                (float)((Maps::map1.tiles_in_screen_y*Maps::map1.tile_width_units)/2 + (float)((gun_data.bullet_range) * sin(gun_data.gun_angle)))*(float)pixels_per_unit_y    
+                (float)((Maps::maps[0].tiles_in_screen_x*Maps::maps[0].tile_width_units)/2 + (float)((gun_data.bullet_range) * cos(gun_data.gun_angle)))*(float)pixels_per_unit_x,
+                (float)((Maps::maps[0].tiles_in_screen_y*Maps::maps[0].tile_width_units)/2 + (float)((gun_data.bullet_range) * sin(gun_data.gun_angle)))*(float)pixels_per_unit_y    
             }, 4, RAYWHITE
         );
     }

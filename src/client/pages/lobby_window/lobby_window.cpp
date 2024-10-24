@@ -4,7 +4,7 @@ Pages::LobbyWindowScene::LobbyWindowScene()
 {
     background = DragonLib::DImage("resources/ui_background.png");
     map_images = {
-        DragonLib::DImage("resources/map1.png"),
+        DragonLib::DImage("resources/maps1.png"),
         DragonLib::DImage("resources/map2.png")
     };
     room_members.assign(Networking::Message::Room::MAX_ROOM_SIZE, {});

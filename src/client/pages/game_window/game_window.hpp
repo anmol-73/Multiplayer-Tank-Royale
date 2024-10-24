@@ -8,6 +8,7 @@
 #include "core/task.hpp"
 #include "client_logic.hpp"
 #include "core/utils/animation_controller.hpp"
+#include "core/utils/camera.hpp"
 #include "core/dragonlib.hpp"
 
 namespace Pages
@@ -44,6 +45,7 @@ namespace Pages
 
         double time_since_last_send;
 
+        Utils::Camera camera;
         std::vector<LogicUtils::PlayerPacket> old_state;
     };
 
