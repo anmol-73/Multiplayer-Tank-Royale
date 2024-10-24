@@ -288,19 +288,6 @@ void Pages::GameWindowScene::draw_game()
             }, 4, RAYWHITE
         );
     }
-
-    for(size_t wall_y = 0; wall_y<Maps::maps[0].map_height_tiles; wall_y++)
-    {
-        for(size_t wall_x = 0; wall_x<Maps::maps[0].map_width_tiles; wall_x++)
-        {
-            size_t wall_idx = ((Maps::maps[0].map_width_tiles)*wall_y) + wall_x;
-            if(Maps::maps[0].walls[wall_idx]==0)
-            {
-                Rectangle walltodraw = camera.transform({(float)(wall_x)*(Maps::maps[0].tile_width_units), (float)(wall_y)*(Maps::maps[0].tile_width_units), (Maps::maps[0].tile_width_units), (Maps::maps[0].tile_width_units)});
-                DrawRectangleLines(walltodraw.x, walltodraw.y, walltodraw.width, walltodraw.height, PINK);
-            }
-        }
-    }
 }
 
 void Pages::GameWindowScene::draw_hud()
