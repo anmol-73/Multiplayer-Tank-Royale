@@ -26,7 +26,8 @@ namespace Networking
                 NAME_SET_REQUEST,
                 START_GAME_REQUEST,
                 REMOVE_PLAYER_REQUEST,
-                MAP_SET_REQUEST
+                MAP_SET_REQUEST,
+                GAME_STATE_UPDATE_REQUEST
             };
 
             struct NameSetRequest{
@@ -42,7 +43,8 @@ namespace Networking
                 ROOM_LIST_BROADCAST,
                 GAME_START,
                 DISCONNECT,
-                MAP_SET
+                MAP_SET,
+                GAME_STATE_UPDATE
             };
         } // namespace Room
 

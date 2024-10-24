@@ -32,14 +32,29 @@ void LogicUtils::init_state(int max_players)
             .position_absolute = {0,0},
             .player_angle = 0,
             .gun_angle = 0,
-            .has_shot = false,
-            .gun_dmg = 1,
             .health = 5,
+            .has_shot = false,
             .is_alive = false,
             .is_connected = false,
         };
         old_state.push_back(packet);
     }
+};
+
+void LogicUtils::update_state(PlayerPacket *received_state)
+{
+    // TODO: Use proper constant here
+    old_state = std::vector(received_state, received_state + 12);
+}
+void LogicUtils::set_packet() {
+    player_packet.gun_angle = player_data.angle;
+    player_packet.has_shot = gun_data.has_shot;
+    player_packet.health = player_data.health;
+    player_packet.ID = Global::ServiceProviders::room_client.get_id();
+    player_packet.is_alive = player_data.is_alive;
+    player_packet.is_connected = true;
+    player_packet.player_angle = player_data.angle;
+    player_packet.position_absolute = player_data.position;
 };
 
 void LogicUtils::handle_movement(float delta_time)
@@ -149,20 +164,21 @@ bool LogicUtils::handle_tank_collision()
     };
 
     // Player wall
-    size_t pos_y = (size_t)(projected_data.position.y/Maps::map1.tile_width_units);
-    size_t pos_x = (size_t)(projected_data.position.x/Maps::map1.tile_width_units);
+    size_t pos_y = (size_t)((projected_data.position.y+hull_data.player_rectangle.height/2)/Maps::map1.tile_width_units);
+    size_t pos_x = (size_t)((projected_data.position.x+hull_data.player_rectangle.width/2)/Maps::map1.tile_width_units);
     size_t pos_idx = ((Maps::map1.map_width_tiles)*pos_y) + pos_x;
-    size_t rad = (size_t)(1.5*sqrt(hull_data.player_rectangle.width*hull_data.player_rectangle.width + hull_data.player_rectangle.height*hull_data.player_rectangle.height));
-    std::cout << rad << std::endl;
-    for(size_t wall_y = pos_y-rad; wall_y<pos_y+rad; wall_y++)
+    size_t rad = (size_t)(sqrt((hull_data.player_rectangle.width*hull_data.player_rectangle.width)/(Maps::map1.tile_width_units*Maps::map1.tile_width_units) + (hull_data.player_rectangle.height*hull_data.player_rectangle.height)/(Maps::map1.tile_width_units*Maps::map1.tile_width_units)));
+    for(size_t wall_y = pos_y-std::min(rad, pos_y); wall_y<pos_y+rad; wall_y++)
     {
-        for(size_t wall_x = pos_x-rad; wall_x<pos_x+rad; wall_x++)
+        for(size_t wall_x = pos_x-std::min(rad, pos_x); wall_x<pos_x+rad; wall_x++)
         {
             size_t wall_idx = ((Maps::map1.map_width_tiles)*wall_y) + wall_x;
-            // if((Vector2Distance({(float)wall_x, (float)wall_y}, {(float)pos_x, (float)pos_y})<=rad) && Maps::map1.walls[wall_idx]==0)
-            if(Maps::map1.walls[wall_idx]==0)
+            if (wall_idx >= Maps::map1.walls.size()){
+                continue;
+            }
+            if((Vector2Distance({(float)wall_x, (float)wall_y}, {(float)pos_x, (float)pos_y})<=rad) && Maps::map1.walls[wall_idx]==0)
+            // if(Maps::map1.walls[wall_idx]==0)
             {
-                std::cout << wall_x << " " << wall_y << std::endl;
                 Rectangle wall = {
                     .x = (float)(wall_x)*(Maps::map1.tile_width_units),
                     .y = (float)(wall_y)*(Maps::map1.tile_width_units),
@@ -176,30 +192,35 @@ bool LogicUtils::handle_tank_collision()
         }
         if(player_colliding){break;}
     }
-    // if(!player_colliding)
-    // {
-    //     // Player player
-    //     for(int i=0; i<8; i++)
-    //     {
-    //         if(i!=player_packet.ID)
-    //         {
-    //             Rectangle other_player_collider = {
-    //                 .x = old_state[i].position_absolute.x,
-    //                 .y = old_state[i].position_absolute.y,
-    //                 .width = hull_data.player_rectangle.width,
-    //                 .height = hull_data.player_rectangle.height,
-    //             };
-    //             player_colliding = Physics::sat_collision_detection(collider, projected_data.angle, other_player_collider, old_state[i].player_angle);
-    //             if(player_colliding){break;}
-    //         }
-    //         if(player_colliding){break;}
-    //     }
-    // }
+    if(!player_colliding)
+    {
+        // Player player
+        for(int i=0; i<8; i++)
+        {
+            if(i!=player_packet.ID)
+            {
+                Rectangle other_player_collider = {
+                    .x = old_state[i].position_absolute.x,
+                    .y = old_state[i].position_absolute.y,
+                    .width = hull_data.player_rectangle.width,
+                    .height = hull_data.player_rectangle.height,
+                };
+                player_colliding = Physics::sat_collision_detection(collider, projected_data.angle, other_player_collider, old_state[i].player_angle);
+                if(player_colliding){break;}
+            }
+            if(player_colliding){break;}
+        }
+    }
     if(!player_colliding)
     {
         player_data.position = projected_data.position;
         viewport_data.offset = viewport_data.projected_offset;
         player_data.angle = projected_data.angle;
+    }
+    else{
+        projected_data.position = player_data.position;
+        viewport_data.projected_offset = viewport_data.offset;
+        projected_data.angle = player_data.angle;
     }
     return player_colliding;
 };

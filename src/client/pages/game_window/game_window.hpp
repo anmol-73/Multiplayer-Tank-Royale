@@ -41,6 +41,10 @@ namespace Pages
 
         double pixels_per_unit_x;
         double pixels_per_unit_y;
+
+        double time_since_last_send;
+
+        std::vector<LogicUtils::PlayerPacket> old_state;
     };
 
 } // namespace Pages

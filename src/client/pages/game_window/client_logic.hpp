@@ -3,6 +3,7 @@
 #include "maps/maps.hpp"
 #include "core/utils/animation_controller.hpp"
 #include "collisions.hpp"
+#include "core/global.hpp"
 #include <raylib.h>
 #include <stdlib.h>
 #include <string>
@@ -18,9 +19,8 @@ namespace LogicUtils{
         Vector2 position_absolute;
         float player_angle;
         float gun_angle;
-        bool has_shot;
-        int gun_dmg;
         int health;
+        bool has_shot;
         bool is_alive;
         bool is_connected;
     } extern player_packet;
@@ -87,6 +87,10 @@ namespace LogicUtils{
     } extern viewport_data;
 
     void init_state(int max_players);
+
+    void update_state(PlayerPacket *received_state);
+
+    void set_packet();
 
     double normalize_angle(double angle);
     /**

@@ -3,6 +3,8 @@
 Pages::MainWindowUI::MainWindowUI()
 {
     // TODO: Show reason of disconnection when player gets kicked, or player manually disconnects or when server dies
+    // TODO: Make the page view only change mouse cursor when required (Only update cursor when like a change is required)
+    // Also like create a view that doesnt do this shit ig?
     using Mode = UI::DrawParameters::SizeMode;
     
     register_element(

@@ -20,6 +20,12 @@ void Communication::RoomClient::request_disconnection(size_t client_id)
     send(Networking::Message::Room::Client::REMOVE_PLAYER_REQUEST, &client_id, sizeof(size_t));
 }
 
+void Communication::RoomClient::request_game_update(void *pp, size_t psize)
+{
+    send(Networking::Message::Room::Client::GAME_STATE_UPDATE_REQUEST, pp, psize);
+    enet_host_flush(host);
+}
+
 void Communication::RoomClient::reset_callbacks()
 {
     room_broadcast_callback = {};
@@ -122,6 +128,12 @@ void Communication::RoomClient::handle_message(size_t type, void *message)
         case ServerCommand::GAME_START:{           
             if (game_start_callback){
                 game_start_callback();
+            }
+            break;
+        }
+        case ServerCommand::GAME_STATE_UPDATE:{
+            if (game_update_callback){
+                game_update_callback(message);
             }
             break;
         }

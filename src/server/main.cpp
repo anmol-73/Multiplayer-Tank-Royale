@@ -1,3 +1,4 @@
+#include <raylib.h>
 #include "room_host.hpp"
 #include <stdexcept>
 #if defined(_WIN32)           

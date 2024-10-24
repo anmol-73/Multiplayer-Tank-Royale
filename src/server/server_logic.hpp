@@ -1,10 +1,10 @@
 #ifndef HEADER_SERVER_LOGIC
 #define HEADER_SERVER_LOGIC
+#include <raylib.h>
 
 #include "maps/maps.hpp"
 #include "collisions.hpp"
 
-#include <raylib.h>
 #include <string>
 #include <utility>
 #include <vector>
@@ -16,7 +16,6 @@ struct PlayerPacket
     float player_angle; // Angle with x axis from tank center in rads
     float gun_angle; // Angle with x axis from tank center in rads
     int health=0;
-    int gun_dmg;
     bool has_shot;
     bool is_alive;
     bool is_connected;
@@ -24,21 +23,21 @@ struct PlayerPacket
 
 class GameState
 {
-    private:
+    public:
         int max_players=8;
 
         std::vector<PlayerPacket> old_state;
 
         void init_state(int max_players);
 
-        void update_state(PlayerPacket received_packet);
+        std::vector<PlayerPacket> update_state(PlayerPacket* received_packet);
 
-        void handle_tank_collision(PlayerPacket received_packet);
+        void handle_tank_collision(PlayerPacket* received_packet);
 
         struct GameConstants
         {
             std::vector<Vector2> spawnpoints = {
-                {0, 0},
+                {448, 240},
                 {0, 0},
                 {0, 0},
                 {0, 0},
@@ -48,9 +47,9 @@ class GameState
                 {0, 0},
             }; // 8 Spawns in MTR_Units
 
-            float player_height = 120; // MTR_Units
-            float player_width = 160; // MTR_Units
-            float wall_width = 16; // MTR_Units
+            float player_height = 96; // MTR_Units
+            float player_width = 128; // MTR_Units
+            int gun_dmg = 1;
         } game_constants;
 };
 

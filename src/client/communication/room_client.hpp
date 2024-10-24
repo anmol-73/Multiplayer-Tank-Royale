@@ -19,9 +19,11 @@ namespace Communication
         void request_start();
         void request_disconnection();
         void request_disconnection(size_t client_id);
+        void request_game_update(void* pp, size_t psize);
 
         void reset_callbacks();
         std::function<void(std::vector<std::string>)> room_broadcast_callback;
+        std::function<void(void*)> game_update_callback;
         std::function<void(int)> set_map_callback;
         std::function<void()> game_start_callback;
         std::function<void()> disconnect_callback;

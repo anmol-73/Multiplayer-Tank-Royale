@@ -86,8 +86,30 @@ void Pages::GameWindowScene::_load()
     using namespace LogicUtils;
     SetMouseCursor(MOUSE_CURSOR_CROSSHAIR);
 
-    player_data.position = {(float)(Maps::map1.tiles_in_screen_x*Maps::map1.tile_width_units)-hull_data.player_rectangle.width/2,
-    (float)(Maps::map1.tiles_in_screen_y*Maps::map1.tile_width_units)-hull_data.player_rectangle.height/2};
+    Global::ServiceProviders::room_client.game_start_callback = [](){
+        std::cout << "SOMETHING BAD HAPPEND SIR" << std::endl;
+        return;
+    };
+    Global::ServiceProviders::room_client.disconnect_callback = [](){
+        SceneManagement::SceneManager::load_deferred(SceneManagement::SceneName::MAIN_PAGE);
+        return;
+    };
+    Global::ServiceProviders::room_client.set_map_callback = [](int map){
+        std::cout << "SOMETHING BAD HAPPEND SIR V2" << std::endl;
+        return;
+    };
+    Global::ServiceProviders::room_client.room_broadcast_callback = [](std::vector<std::string> room_members_){
+        std::cout << "SOMETHING BAD HAPPEND SIR V3" << std::endl;
+        return;
+    };
+    Global::ServiceProviders::room_client.game_update_callback = [this](void* data){
+        PlayerPacket* game_state = (PlayerPacket*)data;
+        update_state(game_state);
+        return;
+    };
+
+    player_data.position = {(float)(Maps::map1.tiles_in_screen_x*Maps::map1.tile_width_units)/2-hull_data.player_rectangle.width/2,
+    (float)(Maps::map1.tiles_in_screen_y*Maps::map1.tile_width_units)/2-hull_data.player_rectangle.height/2};
     player_data.angle = 0;
     player_data.health = 5;
     projected_data.position = {(float)(Maps::map1.tiles_in_screen_x*Maps::map1.tile_width_units)-hull_data.player_rectangle.width/2,
@@ -117,7 +139,8 @@ void Pages::GameWindowScene::_load()
     player_controller = new Utils::AnimationController();
     gun_controller = new Utils::AnimationController();
 
-    init_state(8);
+    time_since_last_send = 0;
+    init_state(Networking::Message::Room::MAX_ROOM_SIZE);
 }
 
 void Pages::GameWindowScene::_cleanup()
@@ -162,6 +185,14 @@ void Pages::GameWindowScene::logic_update()
     else if(gun_controller->current_iteration_count>0)
     {
         gun_controller->play(gun_idle_idx, true);
+    }
+
+    set_packet();
+    time_since_last_send += delta_time;
+    if(time_since_last_send>0.017)
+    {
+        time_since_last_send = 0;
+        Global::ServiceProviders::room_client.request_game_update(&player_packet, sizeof(PlayerPacket));
     }
 }
 
@@ -221,8 +252,9 @@ void Pages::GameWindowScene::draw_game()
     );
 
     // Draw gun crosshair circle
-    DrawCircleLines((crosshair_data.tracker_position.x)*(float)pixels_per_unit_x+(Maps::map1.tiles_in_screen_x*Maps::map1.tile_width_units)/2, 
-        (crosshair_data.tracker_position.y)*(float)pixels_per_unit_y+(Maps::map1.tiles_in_screen_y*Maps::map1.tile_width_units)/2,
+    DrawCircleLines(
+        ((crosshair_data.tracker_position.x)+(Maps::map1.tiles_in_screen_x*Maps::map1.tile_width_units)/2)*(float)pixels_per_unit_x, 
+        ((crosshair_data.tracker_position.y)+(Maps::map1.tiles_in_screen_y*Maps::map1.tile_width_units)/2)*(float)pixels_per_unit_y,
         crosshair_data.tracker_radius,
         crosshair_data.circle_color
         );
@@ -239,7 +271,6 @@ void Pages::GameWindowScene::draw_game()
             }, 4, RAYWHITE
         );
     }
-std::cout<<(float)(Maps::map1.tiles_in_screen_x*Maps::map1.tile_width_units)/2<<std::endl;
 }
 
 void Pages::GameWindowScene::draw_hud()

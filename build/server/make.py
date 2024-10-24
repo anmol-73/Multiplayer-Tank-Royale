@@ -23,7 +23,7 @@ CC = "g++" # The compiler to use
 LINK_LIBS = "-lraylib -lopengl32 -lgdi32 -lwinmm -lenet"
 LINK_DIRS = f"-L{LIB_DIR} -L{RAYLIB_DIR}/src"
 INCLUDE_DIRS = f"-I{SRC_DIR} -I{COM_DIR} -I{INC_DIR} -I{RAYLIB_DIR}/src/ -I{RAYLIB_DIR}/src/external/"
-CFLAGS = "-Wall -std=c++17 -D_DEFAULT_SOURCE -Wno-missing-braces"
+CFLAGS = "-Wall -std=c++23 -D_DEFAULT_SOURCE -Wno-missing-braces"
 PLATFORM = "PLATFORM_DESKTOP"
 
 if len(sys.argv) > 1 and (sys.argv[1] == "clean" or sys.argv[1] == "test"):

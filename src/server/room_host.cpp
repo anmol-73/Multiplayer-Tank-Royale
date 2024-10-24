@@ -97,8 +97,15 @@ void RoomHost::handle_message(ENetPeer *peer, size_t type, void *message)
         case ClientCommand::START_GAME_REQUEST:
         {
             if (!is_in_game){
+                game_state.reset(new GameState());
+                game_state.get()->init_state(Structs::MAX_ROOM_SIZE);
+                for (size_t i = 0; i < Networking::Message::Room::MAX_ROOM_SIZE; ++i){
+                    
+                    game_state.get()->old_state[i].is_connected = strcmp(names[i], "") != 0;
+                    
+                }
                 send(ServerCommand::GAME_START);
-                is_in_game = true;
+                // is_in_game = true;
             }
             break;
         }
@@ -108,6 +115,15 @@ void RoomHost::handle_message(ENetPeer *peer, size_t type, void *message)
                 current_map_idx = *(int*)message;
                 send(ServerCommand::MAP_SET, message, sizeof(int));
             }
+            break;
+        }
+        case ClientCommand::GAME_STATE_UPDATE_REQUEST:
+        {
+            // if (!is_in_game){break;}
+            PlayerPacket* pp = (PlayerPacket*)message;
+            
+            game_state.get()->update_state(pp);
+            send(ServerCommand::GAME_STATE_UPDATE, game_state.get()->update_state(pp).data(), sizeof(PlayerPacket) * Networking::Message::Room::MAX_ROOM_SIZE);
             break;
         }
     
