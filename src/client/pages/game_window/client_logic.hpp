@@ -128,13 +128,19 @@ namespace LogicUtils{
     Texture2D extern player_spritesheet;
     Image extern player_spritesheet_image;
 
-    Utils::AnimationController extern *player_controller;
+    
+    extern std::vector<Utils::AnimationController> player_controllers;
     size_t extern player_idle_idx;
     size_t extern player_moving_idx;
 
-    Utils::AnimationController extern *gun_controller;
+    extern std::vector<Utils::AnimationController> gun_controllers;
     size_t extern gun_idle_idx;
     size_t extern gun_shot_idx;
+
+    extern Utils::Animation *player_idle;
+    extern Utils::Animation *player_moving;
+    extern Utils::Animation *gun_idle;
+    extern Utils::Animation *gun_shot;
 
     Texture2D extern map;
     Image extern map_image;

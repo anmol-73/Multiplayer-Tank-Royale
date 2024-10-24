@@ -9,14 +9,19 @@ LogicUtils::HullStats LogicUtils::hull_data;
 LogicUtils::ViewportData LogicUtils::viewport_data;
 LogicUtils::CrosshairData LogicUtils::crosshair_data;
 
+Utils::Animation* LogicUtils::player_idle;
+Utils::Animation* LogicUtils::player_moving;
+Utils::Animation* LogicUtils::gun_idle;
+Utils::Animation* LogicUtils::gun_shot;
+
 std::vector<LogicUtils::PlayerPacket> LogicUtils::old_state;
 
 Texture2D LogicUtils::player_spritesheet;
 Image LogicUtils::player_spritesheet_image;
-Utils::AnimationController *LogicUtils::player_controller;
+std::vector<Utils::AnimationController> LogicUtils::player_controllers;
+std::vector<Utils::AnimationController> LogicUtils::gun_controllers;
 size_t LogicUtils::player_idle_idx;
 size_t LogicUtils::player_moving_idx;
-Utils::AnimationController *LogicUtils::gun_controller;
 size_t LogicUtils::gun_idle_idx;
 size_t LogicUtils::gun_shot_idx;
 Texture2D LogicUtils::map;
@@ -44,7 +49,7 @@ void LogicUtils::init_state(int max_players)
 void LogicUtils::update_state(PlayerPacket *received_state)
 {
     // TODO: Use proper constant here
-    old_state = std::vector(received_state, received_state + 12);
+    old_state = std::vector(received_state, received_state);
 }
 void LogicUtils::set_packet() {
     player_packet.gun_angle = gun_data.gun_angle;
@@ -59,9 +64,10 @@ void LogicUtils::set_packet() {
 
 void LogicUtils::handle_movement(float delta_time)
 {
+    size_t self = Global::ServiceProviders::room_client.get_id();
     if(IsKeyDown(KEY_A) || IsKeyDown(KEY_D) || IsKeyDown(KEY_W) || IsKeyDown(KEY_S))
     {
-        player_controller->play(player_moving_idx, false);
+        player_controllers[self].play(player_moving_idx, false);
         if (IsKeyDown(KEY_A)) projected_data.angle -= hull_data.player_rot_speed * delta_time;
         if (IsKeyDown(KEY_D)) projected_data.angle += hull_data.player_rot_speed * delta_time;
 
@@ -84,7 +90,7 @@ void LogicUtils::handle_movement(float delta_time)
     }
     else
     {
-        player_controller->play(player_idle_idx);
+        player_controllers[self].play(player_idle_idx);
     }
 }
 
