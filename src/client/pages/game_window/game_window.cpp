@@ -192,6 +192,56 @@ void Pages::GameWindowScene::logic_update()
     }
 
     camera.follow(player_data.position);
+
+    bullet_colliding = false;
+    // contact_point = {(float)gun_data.bullet_range*(float)cos(gun_data.gun_angle), (float)gun_data.bullet_range*(float)sin(gun_data.gun_angle)};
+    // Vector2 curr_contact_point = contact_point;
+    for(size_t wall_y = 0; wall_y<Maps::maps[0].map_height_tiles; wall_y++)
+    {
+        for(size_t wall_x = 0; wall_x<Maps::maps[0].map_width_tiles; wall_x++)
+        {
+            size_t wall_idx = ((Maps::maps[0].map_width_tiles)*wall_y) + wall_x;
+            if (wall_idx >= Maps::maps[0].walls.size()){
+                continue;
+            }
+            if(Maps::maps[0].walls[wall_idx]==0)
+            {
+                Rectangle wall = {
+                    .x = (float)(wall_x)*(Maps::maps[0].tile_width_units),
+                    .y = (float)(wall_y)*(Maps::maps[0].tile_width_units),
+                    .width = (Maps::maps[0].tile_width_units),
+                    .height = (Maps::maps[0].tile_width_units),
+                };
+                bullet_colliding = Physics::RayVsRect2D(player_data.position, {(float)cos(gun_data.gun_angle), (float)sin(gun_data.gun_angle)}, wall, &contact_point);
+                if(bullet_colliding) break;
+                // if(bullet_colliding){
+                //     if(Vector2Distance(curr_contact_point, player_data.position)<Vector2Distance(contact_point, player_data.position))
+                //     {
+                //         contact_point = curr_contact_point;
+                //         bullet_colliding = false;
+                //     }
+                // }
+            }
+            if(bullet_colliding) break;
+        }
+        if(bullet_colliding) break;
+    }
+    // Player
+    // for(int i=0; i<8; i++)
+    // {
+    //     if(i!=player_packet.ID)
+    //     {
+    //         Rectangle other_player_collider = {
+    //             .x = old_state[i].position_absolute.x,
+    //             .y = old_state[i].position_absolute.y,
+    //             .width = hull_data.player_rectangle.width,
+    //             .height = hull_data.player_rectangle.height,
+    //         };
+    //         player_colliding = Physics::sat_collision_detection(collider, projected_data.angle, other_player_collider, old_state[i].player_angle);
+    //         if(player_colliding){break;}
+    //     }
+    //     if(player_colliding){break;}
+    // }
 }
 
 
@@ -226,7 +276,7 @@ void Pages::GameWindowScene::draw_game()
 
     // Draw player
     Color tank_color = player_colliding ? RED:WHITE;
-
+    Color gun_color = bullet_colliding ? SKYBLUE:WHITE;
     
     for (auto& pp: LogicUtils::old_state){
         if (!pp.is_alive) continue;
@@ -259,7 +309,7 @@ void Pages::GameWindowScene::draw_game()
             }), camera.scale(Vector2{
                 0, gun_data.gun_rectangle.height/2
             }), 
-            (pp.gun_angle)*RAD2DEG, WHITE
+            (pp.gun_angle)*RAD2DEG, gun_color
         );
     }
     
@@ -279,9 +329,7 @@ void Pages::GameWindowScene::draw_game()
     if (true){
         DrawLineEx(
             {
-                ((float)(Maps::maps[0].tiles_in_screen_x*Maps::maps[0].tile_width_units)/2)*(float)pixels_per_unit_x,
-                ((float)(Maps::maps[0].tiles_in_screen_y*Maps::maps[0].tile_width_units)/2)*(float)pixels_per_unit_y
-  
+                camera.transform(player_data.position),  
             }, {
                 (float)((Maps::maps[0].tiles_in_screen_x*Maps::maps[0].tile_width_units)/2 + (float)((gun_data.bullet_range) * cos(gun_data.gun_angle)))*(float)pixels_per_unit_x,
                 (float)((Maps::maps[0].tiles_in_screen_y*Maps::maps[0].tile_width_units)/2 + (float)((gun_data.bullet_range) * sin(gun_data.gun_angle)))*(float)pixels_per_unit_y    
