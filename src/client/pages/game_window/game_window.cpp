@@ -112,8 +112,7 @@ void Pages::GameWindowScene::_load()
         return;
     };
     Global::ServiceProviders::room_client.game_update_callback = [this](void* data){
-        PlayerPacket* game_state = (PlayerPacket*)data;
-        update_state(game_state);
+        update_state((PlayerPacket*)data);
         return;
     };
 
@@ -121,19 +120,34 @@ void Pages::GameWindowScene::_load()
     leaderboard.push_back({"Player2", 120});
     leaderboard.push_back({"Player3", 100});
 
-    // TODO: Send a start ready message
-    // Recieve data like spawn point, map etc.
+    std::mutex spawn_mutex;
+    std::unique_lock<std::mutex> lock(spawn_mutex);
+    std::condition_variable spawn_cv;
 
-    size_t map_idx = 0;
+    bool received_spawn_data = false;
+    Networking::Message::Room::SpawnData data;
+    Global::ServiceProviders::room_client.request_spawn([&spawn_cv, &received_spawn_data, &data](Networking::Message::Room::SpawnData* sdata){
+        received_spawn_data = true;
+        if (sdata != nullptr)
+        data = *sdata;
+        spawn_cv.notify_all();
+    });
 
-    Vector2 player_spawn_position = {
-        Maps::maps[0].vwidth()/2-hull_data.player_rectangle.width/2,
-        Maps::maps[0].vheight()/2-hull_data.player_rectangle.height/2
-    };
-    
-    camera.init({Maps::maps[0].width(), Maps::maps[0].height()}, {Maps::maps[0].vwidth(), Maps::maps[0].vheight()});
+    spawn_cv.wait(lock, [&received_spawn_data](){
+        return (received_spawn_data || !Global::ServiceProviders::room_client.connected());
+    });
+
+    map_idx = data.map_id;
+    Vector2 player_spawn_position = data.spawn;
+
+    std::cout << "GOT SPAWN DATA!" <<std::endl;
+
+    camera.init({Maps::maps[map_idx].width(), Maps::maps[map_idx].height()}, {Maps::maps[map_idx].vwidth(), Maps::maps[map_idx].vheight()});
+        
     projected_data.init(player_spawn_position);
     player_data.init(player_spawn_position);
+    player_data.angle = data.angle;
+
     camera.follow(player_data.position);
     
 
@@ -186,6 +200,8 @@ void Pages::GameWindowScene::draw_leaderboard() {
 void Pages::GameWindowScene::_cleanup()
 {
     UnloadImage(LogicUtils::player_spritesheet_image);
+    Global::ServiceProviders::room_client.stop();
+    Global::ServiceProviders::room_client_worker.cancel();
 }
 
 void Pages::GameWindowScene::_cleanup_with_context()
@@ -295,7 +311,7 @@ void Pages::GameWindowScene::draw_game()
     // Draw bg
     DrawTexturePro(
         map,
-        {viewport_data.offset.x, viewport_data.offset.y, Maps::maps[0].tiles_in_screen_x*(float)Maps::maps[0].tile_width_units, Maps::maps[0].tiles_in_screen_y*(float)Maps::maps[0].tile_width_units},
+        camera.viewport(),
         {0, 0, (float)GetScreenWidth(), (float)GetScreenHeight()},
         {0,0},
         0,

@@ -126,6 +126,19 @@ void RoomHost::handle_message(ENetPeer *peer, size_t type, void *message)
             send(ServerCommand::GAME_STATE_UPDATE, game_state.get()->update_state(pp).data(), sizeof(PlayerPacket) * Networking::Message::Room::MAX_ROOM_SIZE);
             break;
         }
+        case ClientCommand::REQUEST_SPAWN_DATA:
+        {
+            // if (!is_in_game) break;
+            size_t client_id = *(size_t*)message;
+            Structs::SpawnData sd;
+            sd.map_id = current_map_idx;
+            sd.spawn = game_state.get()->game_constants.spawnpoints[client_id];
+            sd.angle = 0;
+            
+            send(ServerCommand::SET_SPAWN_DATA, &sd, sizeof(Structs::SpawnData), peer);
+            
+            break;
+        }
     
         default:
             break;

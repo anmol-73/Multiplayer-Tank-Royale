@@ -1,6 +1,9 @@
 #ifndef HEADER_PAGES_GAME_WINDOW
 #define HEADER_PAGES_GAME_WINDOW
 
+#include <mutex>
+#include <condition_variable>
+
 #include "maps/maps.hpp"
 #include <raylib.h>
 #include "core/scene_management.hpp"

@@ -9,6 +9,7 @@ LogicUtils::HullStats LogicUtils::hull_data;
 LogicUtils::ViewportData LogicUtils::viewport_data;
 LogicUtils::CrosshairData LogicUtils::crosshair_data;
 float LogicUtils::timesince_lastshot;
+int LogicUtils::map_idx{};
 
 Utils::Animation* LogicUtils::player_idle;
 Utils::Animation* LogicUtils::player_moving;

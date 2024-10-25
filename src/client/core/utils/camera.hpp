@@ -9,7 +9,7 @@ namespace Utils
     struct Camera{
     public:
         /** Initialize the camera based on the map*/
-        void init(Vector2 map_size, Vector2 viewport_size);
+        void init(Vector2 map_size, Vector2 viewport_size, Vector2 player_size);
 
         /** Update the camera position based on the player position */
         void follow(Vector2 player_position);
@@ -24,6 +24,8 @@ namespace Utils
         Vector2 scale(Vector2 size);
         Rectangle scale(Rectangle size);
 
+        Rectangle viewport();
+
     private:
         /** The position of the camera in world space */
         Vector2 position;
@@ -35,6 +37,7 @@ namespace Utils
         Vector2 half_screen_size;
 
         Vector2 scaling_factor;
+        Vector2 player_size;
 
     };
     

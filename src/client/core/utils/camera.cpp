@@ -1,13 +1,16 @@
 #include "camera.hpp"
 
-void Utils::Camera::init(Vector2 map_size_, Vector2 viewport_size_)
+
+void Utils::Camera::init(Vector2 map_size_, Vector2 viewport_size_, Vector2 player_size_)
 {
     map_size = map_size_;
     viewport_size = viewport_size_;
+    player_size = player_size_;
     half_screen_size = Vector2Scale({(float)GetScreenWidth(), (float)GetScreenHeight()}, 0.5f);
     
     scaling_factor = Vector2Divide({(float)GetScreenWidth(), (float)GetScreenHeight()}, viewport_size);
     
+
 }
 
 void Utils::Camera::follow(Vector2 player_position)
@@ -21,7 +24,7 @@ Vector2 Utils::Camera::transform(Vector2 point)
     return Vector2Add(
         scale(Vector2Subtract(point, position)), // Position wrt to camera in screen units
         half_screen_size // Camera is at the middle of the screen always
-    );   
+    );
 }
 
 Rectangle Utils::Camera::transform(Rectangle rect)
@@ -45,5 +48,14 @@ Rectangle Utils::Camera::scale(Rectangle size)
         size.y * scaling_factor.y,
         size.width * scaling_factor.x,
         size.height * scaling_factor.y
+    };
+}
+
+Rectangle Utils::Camera::viewport()
+{
+    return {
+        position.x - viewport_size.x/2 - player_size.x/2,
+        position.y - viewport_size.y/2 - player_size.y/2,
+        viewport_size.x, viewport_size.y
     };
 }

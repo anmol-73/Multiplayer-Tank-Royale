@@ -24,11 +24,11 @@ namespace Pages
         UI::Elements::Text* right_map_select;
         
         UI::Elements::Text* remove_player_button[Networking::Message::Room::MAX_ROOM_SIZE];
+        
     private:
-        
         std::vector<std::string> room_members;
-        
         std::vector<std::string> map_names;
+        
         bool is_leader;
         
 

@@ -1,6 +1,6 @@
 #ifndef HEADER_COMMON_NETWORKING_MESSAGE
 #define HEADER_COMMON_NETWORKING_MESSAGE
-
+#include <raylib.h>
 #include <stdlib.h>
 
 namespace Networking
@@ -27,7 +27,8 @@ namespace Networking
                 START_GAME_REQUEST,
                 REMOVE_PLAYER_REQUEST,
                 MAP_SET_REQUEST,
-                GAME_STATE_UPDATE_REQUEST
+                GAME_STATE_UPDATE_REQUEST,
+                REQUEST_SPAWN_DATA
             };
 
             struct NameSetRequest{
@@ -37,6 +38,12 @@ namespace Networking
             
             typedef NameSetRequest LobbyNameBroadcast[MAX_ROOM_SIZE];
 
+            struct SpawnData{
+                size_t map_id;
+                Vector2 spawn;
+                float angle;
+            };
+
             enum Server{ // The type of messages the server can send while in the room
                 CONNECT_OK,
                 CONNECT_DENIED,
@@ -44,7 +51,8 @@ namespace Networking
                 GAME_START,
                 DISCONNECT,
                 MAP_SET,
-                GAME_STATE_UPDATE
+                GAME_STATE_UPDATE,
+                SET_SPAWN_DATA
             };
         } // namespace Room
 

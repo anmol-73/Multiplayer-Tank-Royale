@@ -1,6 +1,6 @@
 #include "room_client.hpp"
 
-inline bool Communication::RoomClient::connected()
+bool Communication::RoomClient::connected()
 {
     return connected_to_server;
 }
@@ -18,6 +18,16 @@ void Communication::RoomClient::request_disconnection(size_t client_id)
 {
     if (host == nullptr || !connected_to_server) return;
     send(Networking::Message::Room::Client::REMOVE_PLAYER_REQUEST, &client_id, sizeof(size_t));
+}
+
+void Communication::RoomClient::request_spawn(std::function<void(Networking::Message::Room::SpawnData *)> callback)
+{
+    __spawn_data_callback = [callback](Networking::Message::Room::SpawnData * sd){
+        callback(sd);
+    };
+    send(Networking::Message::Room::Client::REQUEST_SPAWN_DATA, &id, sizeof(size_t));
+    
+    enet_host_flush(host);
 }
 
 void Communication::RoomClient::request_game_update(void *pp, size_t psize)
@@ -112,6 +122,7 @@ void Communication::RoomClient::handle_message(size_t type, void *message)
         case ServerCommand::DISCONNECT:{
             std::cout << "DC came in" << std::endl;
             destroy_host();
+            connected_to_server = false;
             if (disconnect_callback){
                 disconnect_callback();
             }
@@ -137,11 +148,24 @@ void Communication::RoomClient::handle_message(size_t type, void *message)
             }
             break;
         }
+        case ServerCommand::SET_SPAWN_DATA:{
+            if (__spawn_data_callback){
+                __spawn_data_callback((Structs::SpawnData*)message);
+                __spawn_data_callback = {};
+            } else{
+                std::cout << "SOMETHING VERY BAD HAS HAPPEND SIR" << std::endl;
+            }
+            break;
+        }
     }
 }
 
 void Communication::RoomClient::on_stop()
 {
     request_disconnection();
+    if (__spawn_data_callback){
+        __spawn_data_callback(nullptr);
+        __spawn_data_callback = {};
+    };
     connected_to_server = false;
 }

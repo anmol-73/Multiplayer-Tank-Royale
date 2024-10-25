@@ -1,5 +1,6 @@
 #ifndef HEADER_COMMUNICATION_CLIENT
 #define HEADER_COMMUNICATION_CLIENT
+#include <raylib.h>
 
 #include <iostream>
 

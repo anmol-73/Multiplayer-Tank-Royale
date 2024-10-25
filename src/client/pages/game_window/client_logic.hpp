@@ -143,6 +143,8 @@ namespace LogicUtils{
     size_t extern gun_idle_idx;
     size_t extern gun_shot_idx;
 
+    extern int map_idx;
+
     extern Utils::Animation *player_idle;
     extern Utils::Animation *player_moving;
     extern Utils::Animation *gun_idle;

@@ -13,12 +13,13 @@ namespace Communication
 {
     struct RoomClient: public Client{
     public:
-        inline bool connected();
+        bool connected();
         void send_name_request(const std::string& name);
         void send_map_id(int map);
         void request_start();
         void request_disconnection();
         void request_disconnection(size_t client_id);
+        void request_spawn(std::function<void(Networking::Message::Room::SpawnData *)>);
         void request_game_update(void* pp, size_t psize);
 
         void reset_callbacks();
@@ -28,6 +29,7 @@ namespace Communication
         std::function<void()> game_start_callback;
         std::function<void()> disconnect_callback;
 
+        std::function<void(Networking::Message::Room::SpawnData *)> __spawn_data_callback;
         size_t get_id();
     private:
         std::pair<bool, std::string> handle_established_connection(const bool& cancel_requested);

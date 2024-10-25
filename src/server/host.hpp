@@ -1,6 +1,6 @@
 #ifndef HEADER_HOST
 #define HEADER_HOST
-
+#include <raylib.h>
 #include <iostream>
 #if defined(_WIN32)           
 	#define NOGDI             // All GDI defines and routines
