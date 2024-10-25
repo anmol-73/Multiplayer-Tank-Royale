@@ -48,7 +48,8 @@ namespace Pages
         double pixels_per_unit_y;
 
         double time_since_last_send;
-
+        Vector2 contact_point;
+        bool bullet_colliding;
         Utils::Camera camera;
         // std::vector<LogicUtils::PlayerPacket> old_state;
         std::vector<LogicUtils::PlayerInfo> leaderboard;

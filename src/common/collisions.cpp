@@ -1,4 +1,6 @@
 #include "collisions.hpp"
+#include <iostream>
+
 
 Vector2 Physics::rotate_point(Vector2 point, Vector2 center, float angle_rad)
 {
@@ -80,4 +82,66 @@ bool Physics::sat_collision_detection(Rectangle rec1, float angle_rad_1, Rectang
     }
 
     return true;  // No separating axis found, collision detected
+}
+
+void Physics::SwapFloatValue(float *a, float *b){
+    float t = *a;
+    *a = *b;
+    *b = t;
+}
+
+bool Physics::CheckCollisionRay2dRectEx(Vector2 origin, float dirn_angle, Rectangle rect, float rec_angle, Vector2 * intersection)
+{
+    Vector2 center = {rect.x + rect.width/2, rect.y + rect.height/2};
+    // rec_angle = 0;
+    Vector2 new_origin = rotate_point(origin, center, -rec_angle);
+    // std::cout << Vector2Subtract(new_origin, origin).x << " " << Vector2Subtract(new_origin, origin).y << std::endl;
+    Vector2 ixn;
+    bool is_ixn = CheckCollisionRay2dRect(new_origin, dirn_angle - rec_angle, rect, &ixn);
+
+    if (!is_ixn) return false;
+    *intersection = rotate_point(ixn, center, rec_angle);
+    return true;
+}
+
+bool Physics::CheckCollisionRay2dRect(Vector2 origin, float dirn_angle, Rectangle rect, Vector2* intersection)
+{
+    float minParam = -INFINITY, maxParam = INFINITY;
+    Vector2 direction = {cos(dirn_angle), sin(dirn_angle)};
+    if (direction.x != 0.0)
+    {
+        float txMin = (rect.x - origin.x) / direction.x;
+        float txMax = ((rect.x + rect.width) - origin.x) / direction.x;
+
+        minParam = fmax(minParam, fmin(txMin, txMax));
+        maxParam = fmin(maxParam, fmax(txMin, txMax));
+    }
+
+    if (direction.y != 0.0)
+    {
+        float tyMin = (rect.y - origin.y) / direction.y;
+        float tyMax = ((rect.y + rect.height) - origin.y) / direction.y;
+
+        minParam = fmax(minParam, fmin(tyMin, tyMax));
+        maxParam = fmin(maxParam, fmax(tyMin, tyMax));
+    }
+
+    // if maxParam < 0, ray is intersecting AABB, but the whole AABB is behind us
+    if (maxParam < 0)
+    {
+        return false;
+    }
+
+    // if minParam > maxParam, ray doesn't intersect AABB
+    if (minParam >= maxParam)
+    {
+        return false;
+    }
+
+    if (intersection != NULL)
+    {
+        *intersection = Vector2Add(origin, Vector2Scale(direction, minParam));
+    }
+
+    return true;
 }

@@ -261,7 +261,7 @@ void LogicUtils::GunStats::init()
     gun_rot_speed = 1;
     gun_dmg = 1;
     has_shot = false;
-    bullet_range = 1000;
+    bullet_range = 100000;
 }
 
 void LogicUtils::CrosshairData::init()

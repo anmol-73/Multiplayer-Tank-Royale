@@ -22,6 +22,10 @@ namespace Physics
     // SAT Collision Detection for two rectangles
     bool sat_collision_detection(Rectangle rec1, float angle_rad_1, Rectangle rec2, float angle_rad_2);
 
+    void SwapFloatValue(float *a, float *b);
+
+    bool CheckCollisionRay2dRectEx(Vector2 origin, float dirn_angle, Rectangle rect, float rec_angle,Vector2* intersection);
+    bool CheckCollisionRay2dRect(Vector2 origin, float dirn_angle, Rectangle rect, Vector2* intersection);
 } // namespace Physics
 
 
