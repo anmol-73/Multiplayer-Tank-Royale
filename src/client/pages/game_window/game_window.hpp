@@ -47,6 +47,11 @@ namespace Pages
          */
         void draw_hud();
 
+        
+        void draw_name_health(int i);
+        Rectangle health_bar;
+        int max_health = 400;
+
         double pixels_per_unit_x;
         double pixels_per_unit_y;
 

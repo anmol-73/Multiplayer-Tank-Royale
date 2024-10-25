@@ -446,6 +446,8 @@ void Pages::GameWindowScene::draw_game()
             camera.scale(Vector2Scale({hull_data.player_rectangle.width, hull_data.player_rectangle.height}, 0.5f)),    
             (pp.player_angle)*RAD2DEG, PURPLE
         );
+
+        draw_name_health(i);
     }
     
     if (old_state[self].is_alive){
@@ -464,8 +466,9 @@ void Pages::GameWindowScene::draw_game()
             camera.scale(Vector2Scale({hull_data.player_rectangle.width, hull_data.player_rectangle.height}, 0.5f)),    
             (player_data.angle)*RAD2DEG, tank_color
         );
-    
+        draw_name_health(self);
     }
+
 
     
     for (size_t i = 0; i < old_state.size(); ++i){
@@ -511,6 +514,28 @@ void Pages::GameWindowScene::draw_game()
         crosshair_data.tracker_radius,
         crosshair_data.circle_color
     );
+}
+
+void Pages::GameWindowScene::draw_name_health(int i){
+    using namespace LogicUtils;
+    float factor = old_state[i].health/max_health;
+
+    health_bar = {
+        .x = old_state[i].position_absolute.x,
+        .y = old_state[i].position_absolute.y,
+        .width = 100,
+        .height = 20
+    };
+
+    health_bar = camera.transform(health_bar);
+
+    health_bar.width *= factor; 
+    DrawRectangleRec(health_bar, GREEN);
+    
+    health_bar.x += health_bar.width;
+    health_bar.width *= (1-factor)/factor;
+    DrawRectangleRec(health_bar, RED);
+    
 }
 
 void Pages::GameWindowScene::draw_hud()
