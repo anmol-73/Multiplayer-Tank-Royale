@@ -305,7 +305,7 @@ void Pages::GameWindowScene::logic_update()
     
     time_since_last_send += delta_time;
     
-    if(time_since_last_send>=0.017)
+    if(time_since_last_send>=0.008)
     {   
         set_packet();
         time_since_last_send = 0;        
