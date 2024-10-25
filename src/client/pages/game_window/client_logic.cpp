@@ -8,6 +8,7 @@ LogicUtils::GunStats LogicUtils::gun_data;
 LogicUtils::HullStats LogicUtils::hull_data;
 LogicUtils::ViewportData LogicUtils::viewport_data;
 LogicUtils::CrosshairData LogicUtils::crosshair_data;
+float LogicUtils::timesince_lastshot;
 
 Utils::Animation* LogicUtils::player_idle;
 Utils::Animation* LogicUtils::player_moving;
@@ -51,12 +52,11 @@ void LogicUtils::update_state(PlayerPacket *received_state)
 {
     // TODO: Use proper constant here
     old_state = std::vector(received_state, received_state + Networking::Message::Room::MAX_ROOM_SIZE);
-    
-    
+    // memcpy(&player_packet ,&old_state[player_packet.ID], sizeof(player_packet));
 }
 void LogicUtils::set_packet() {
     player_packet.gun_angle = gun_data.gun_angle;
-    player_packet.has_shot = gun_data.has_shot;
+    // player_packet.has_shot = gun_data.has_shot;
     player_packet.is_idle = (Vector2Equals(player_data.position, player_packet.position_absolute));
     player_packet.health = player_data.health;
     player_packet.ID = Global::ServiceProviders::room_client.get_id();
@@ -64,6 +64,7 @@ void LogicUtils::set_packet() {
     player_packet.is_connected = true;
     player_packet.player_angle = player_data.angle;
     player_packet.position_absolute = player_data.position;
+    player_packet.player_dmg = 100;
 };
 
 void LogicUtils::handle_movement(float delta_time)

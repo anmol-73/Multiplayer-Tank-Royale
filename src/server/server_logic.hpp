@@ -16,11 +16,12 @@ struct PlayerPacket
     Vector2 position_absolute_units; // Top left of tank
     float player_angle; // Angle with x axis from tank center in rads
     float gun_angle; // Angle with x axis from tank center in rads
-    int health=400;
+    int health;
     int player_dmg;
     bool has_shot;
     bool is_alive;
     bool is_connected;
+    Vector2 closest_wall_hit;
 };
 
 class GameState

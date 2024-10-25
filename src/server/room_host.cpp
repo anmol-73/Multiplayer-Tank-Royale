@@ -60,7 +60,7 @@ void RoomHost::handle_message(ENetPeer *peer, size_t type, void *message)
     namespace Structs = Networking::Message::Room;
     using ServerCommand = Structs::Server;
     using ClientCommand = Structs::Client;
-    std::cout << type << std::endl;
+    // std::cout << type << std::endl;
     switch (type)
     {
         case ClientCommand::NAME_SET_REQUEST:
@@ -123,7 +123,6 @@ void RoomHost::handle_message(ENetPeer *peer, size_t type, void *message)
             // if (!is_in_game){break;}
             PlayerPacket* pp = (PlayerPacket*)message;
             
-            game_state.get()->update_state(pp);
             send(ServerCommand::GAME_STATE_UPDATE, game_state.get()->update_state(pp).data(), sizeof(PlayerPacket) * Networking::Message::Room::MAX_ROOM_SIZE);
             break;
         }

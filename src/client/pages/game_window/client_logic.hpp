@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 #include <math.h>
+#define SHOTCOOLDOWN 1
 
 namespace LogicUtils{
     /*
@@ -18,15 +19,16 @@ namespace LogicUtils{
     {
         bool is_idle;
         int ID;
-        Vector2 position_absolute_units; // Top left of tank
+        Vector2 position_absolute; // Top left of tank
         float player_angle; // Angle with x axis from tank center in rads
         float gun_angle; // Angle with x axis from tank center in rads
-        int health=400;
+        int health;
         int player_dmg;
         bool has_shot;
         bool is_alive;
         bool is_connected;
-    };
+        Vector2 closest_wall_hit;
+    } extern player_packet;
 
     std::vector<PlayerPacket> extern old_state;
 
@@ -46,7 +48,7 @@ namespace LogicUtils{
     struct LivePlayerData{
         Vector2 position; // Tank top left in units (absoolute)
         double angle; // Angle with x axis
-        int health;
+        int health ;
         // int ammo;
         // int max_ammo;
         bool is_alive;
@@ -72,8 +74,7 @@ namespace LogicUtils{
         // int gun_type;
         void init();
     } extern gun_data;
-
-    bool shot_intimeframe = false;
+    extern float timesince_lastshot;
 
     struct HullStats{
         Rectangle player_rectangle = {

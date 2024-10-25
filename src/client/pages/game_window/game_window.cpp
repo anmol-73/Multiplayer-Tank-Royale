@@ -11,7 +11,8 @@ void Pages::GameWindowScene::_update()
     // Logic update
     
     logic_update();
-    
+
+    std::cout<<"Health "<<LogicUtils::old_state[LogicUtils::player_packet.ID].health<<std::endl;
 
     // Drawing
     BeginDrawing();{
@@ -200,6 +201,7 @@ void Pages::GameWindowScene::_cleanup_with_context()
 
 void Pages::GameWindowScene::logic_update()
 {
+    
     using namespace LogicUtils;
     
     size_t self = Global::ServiceProviders::room_client.get_id();
@@ -208,7 +210,10 @@ void Pages::GameWindowScene::logic_update()
     crosshair_data.mouse_position = {GetMousePosition().x/(float)pixels_per_unit_x, GetMousePosition().y/(float)pixels_per_unit_y};
     // set_position(); // For drawing
     gun_data.has_shot = IsMouseButtonPressed(MOUSE_BUTTON_LEFT);
-
+    // while(IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){}
+    if(gun_data.has_shot){
+        player_packet.has_shot = true;
+    }
     float delta_time = GetFrameTime();
     
 
@@ -238,7 +243,6 @@ void Pages::GameWindowScene::logic_update()
     
     if(gun_data.has_shot)
     {   
-        player_packet.has_shot = true;
         gun_controllers[self].play(gun_shot_idx, true);
     }
     else if(gun_controllers[self].current_iteration_count>0)
@@ -249,13 +253,24 @@ void Pages::GameWindowScene::logic_update()
     set_packet();
 
     time_since_last_send += delta_time;
+    timesince_lastshot += delta_time;
     
-    if(time_since_last_send>0.017)
-    {
-    
+    if(time_since_last_send>=0.017)
+    {   
         time_since_last_send = 0;
+        if(player_packet.has_shot){
+            if(timesince_lastshot < SHOTCOOLDOWN){
+                player_packet.has_shot = false;
+            }
+            else{
+                timesince_lastshot = 0;
+            }
+        }
+        
         Global::ServiceProviders::room_client.request_game_update(&player_packet, sizeof(PlayerPacket));
+        
         player_packet.has_shot = false;
+        gun_data.has_shot = false;
     }
 
     
@@ -413,6 +428,7 @@ void Pages::GameWindowScene::draw_game()
             }
         }
     }
+    player_packet.closest_wall_hit = contact_point;
     // Player
     for(int i=0; i<12; i++)
     {
