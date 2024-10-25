@@ -84,7 +84,7 @@ Pages::LobbyWindowUI::LobbyWindowUI()
                 }
             )
         );
-        register_element(
+        register_element( // FF474C
             remove_player_button[i] = Components::create_text_button(
                 "X",
                 {

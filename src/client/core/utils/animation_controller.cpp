@@ -10,7 +10,6 @@ void Utils::Animation::add_keyframe(float duration, Rectangle frame_rectangle){
         }
 
 void Utils::AnimationController::reset(){
-            Animation* anim = animations[current_anim];
             frame_idx = 0;
             counter = 0;
             current_iteration_count = 0;

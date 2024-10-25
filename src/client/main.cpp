@@ -25,7 +25,7 @@ int main(int argc, char const *argv[])
     InitWindow(800, 450, "Multiplayer Tank Royal (Demo)");
     size_t window_width = std::min(GetMonitorWidth(GetCurrentMonitor()) - 200, 1600);
     SetWindowSize(window_width, (window_width * 9) / 16);
-    SetWindowPosition(0, 0);
+    SetWindowPosition(20, 20);
     SetTargetFPS(120);
 
     Global::init();
