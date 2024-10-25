@@ -173,5 +173,6 @@ void Communication::RoomClient::on_stop()
 void Communication::RoomClient::handle_random_disconnection()
 {
     std::cout << "USER HAS BEEN RANDOMLY KICKED!" << std::endl;
+    host = nullptr;
     destroy_host();
 }

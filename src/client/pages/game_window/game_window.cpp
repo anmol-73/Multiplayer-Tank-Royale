@@ -276,10 +276,11 @@ void Pages::GameWindowScene::logic_update()
     
     for (size_t i = 0; i < old_state.size(); ++i){
         if (i == self || !old_state[i].is_alive) continue;
+        
         if (old_timestamps[i] != old_state[i].last_shot){
-            gun_controllers[self].play(gun_shot_idx, true);
-        } else if(gun_controllers[self].current_iteration_count>0){
-            gun_controllers[self].play(gun_idle_idx, true);
+            gun_controllers[i].play(gun_shot_idx, true);
+        } else if(gun_controllers[i].current_iteration_count>0){
+            gun_controllers[i].play(gun_idle_idx, true);
         }
     }
     
@@ -295,6 +296,67 @@ void Pages::GameWindowScene::logic_update()
 
     
     camera.follow(player_data.position);
+
+    bullet_colliding = false;
+    contact_point = {player_data.position.x + (float)gun_data.bullet_range*(float)cos(gun_data.gun_angle), player_data.position.y + (float)gun_data.bullet_range*(float)sin(gun_data.gun_angle)};
+    Vector2 curr_contact_point = contact_point;
+    for(size_t wall_y = 0; wall_y<Maps::maps[0].map_height_tiles; wall_y++)
+    {
+        for(size_t wall_x = 0; wall_x<Maps::maps[0].map_width_tiles; wall_x++)
+        {
+            size_t wall_idx = ((Maps::maps[0].map_width_tiles)*wall_y) + wall_x;
+            if (wall_idx >= Maps::maps[0].walls.size()){
+                continue;
+            }
+            if(Maps::maps[0].walls[wall_idx]==0)
+            {
+                Rectangle wall = {
+                    .x = ((float)wall_x - 1.0f)*(Maps::maps[0].tile_width_units),
+                    .y = ((float)wall_y - 0.75f)*(Maps::maps[0].tile_width_units),
+                    .width = (Maps::maps[0].tile_width_units),
+                    .height = (Maps::maps[0].tile_width_units),
+                };
+                bullet_colliding = Physics::CheckCollisionRay2dRect(player_data.position, gun_data.gun_angle, wall, &curr_contact_point);
+                
+                if(bullet_colliding){
+                    
+                    if(Vector2Distance(curr_contact_point, player_data.position)<Vector2Distance(contact_point, player_data.position))
+                    {
+                        contact_point = curr_contact_point;
+                    }
+                }
+            }
+        }
+    }
+    player_packet.closest_wall_hit = contact_point;
+    // Player
+    if (player_packet.last_shot - LogicUtils::old_timestamps[self] > GUN_COOLDOWN_MAX){
+        // playe rhas shot
+        for(int i=0; i<12; i++)
+        {
+            if(i!=player_packet.ID && old_state[i].is_alive)
+            {
+                Rectangle other_player_collider = {
+                    .x = old_state[i].position_absolute.x - 1.0f*(Maps::maps[0].tile_width_units),
+                    .y = old_state[i].position_absolute.y - 0.75f * (Maps::maps[0].tile_width_units),
+                    .width = hull_data.player_rectangle.width,
+                    .height = hull_data.player_rectangle.height,
+                };
+
+                
+                bullet_colliding = Physics::CheckCollisionRay2dRectEx(player_data.position, gun_data.gun_angle, other_player_collider, old_state[i].player_angle, &curr_contact_point);
+                // bullet_colliding = Physics::CheckCollisionRay2dRect(player_data.position, gun_data.gun_angle, other_player_collider, &curr_contact_point);
+            
+                if(bullet_colliding){
+                    
+                    if(Vector2Distance(curr_contact_point, player_data.position)<Vector2Distance(contact_point, player_data.position))
+                    {
+                        contact_point = curr_contact_point;
+                    }
+                }
+            }
+        }
+    }
     
 }
 
@@ -321,6 +383,26 @@ void Pages::GameWindowScene::draw_game()
         0,
         WHITE
     );
+
+    for (size_t i = 0; i < old_state.size(); ++i){
+        if(old_state[i].last_shot - LogicUtils::old_timestamps[i] > GUN_COOLDOWN_MAX)
+        {
+            DrawLineEx(
+                camera.transform(old_state[i].position_absolute),
+                camera.transform(old_state[i].closest_wall_hit),
+                4, WHITE
+            );
+        }
+    }
+    
+
+    // if (player_packet.last_shot - LogicUtils::old_timestamps[self] > GUN_COOLDOWN_MAX){
+    //     DrawLineEx(
+    //         camera.transform(player_data.position),
+    //         camera.transform(contact_point),
+    //         4, WHITE
+    //     );
+    // }
 
     // Draw player
     Color tank_color = player_colliding ? RED:WHITE;
@@ -408,64 +490,6 @@ void Pages::GameWindowScene::draw_game()
         crosshair_data.tracker_radius,
         crosshair_data.circle_color
     );
-
-    bullet_colliding = false;
-    contact_point = {player_data.position.x + (float)gun_data.bullet_range*(float)cos(gun_data.gun_angle), player_data.position.y + (float)gun_data.bullet_range*(float)sin(gun_data.gun_angle)};
-    Vector2 curr_contact_point = contact_point;
-    for(size_t wall_y = 0; wall_y<Maps::maps[0].map_height_tiles; wall_y++)
-    {
-        for(size_t wall_x = 0; wall_x<Maps::maps[0].map_width_tiles; wall_x++)
-        {
-            size_t wall_idx = ((Maps::maps[0].map_width_tiles)*wall_y) + wall_x;
-            if (wall_idx >= Maps::maps[0].walls.size()){
-                continue;
-            }
-            if(Maps::maps[0].walls[wall_idx]==0)
-            {
-                Rectangle wall = {
-                    .x = ((float)wall_x - 2)*(Maps::maps[0].tile_width_units),
-                    .y = ((float)wall_y - 1.5)*(Maps::maps[0].tile_width_units),
-                    .width = (Maps::maps[0].tile_width_units),
-                    .height = (Maps::maps[0].tile_width_units),
-                };
-                bullet_colliding = Physics::CheckCollisionRay2dRect(player_data.position, gun_data.gun_angle, wall, &curr_contact_point);
-                
-                if(bullet_colliding){
-                    
-                    if(Vector2Distance(curr_contact_point, player_data.position)<Vector2Distance(contact_point, player_data.position))
-                    {
-                        contact_point = curr_contact_point;
-                    }
-                }
-            }
-        }
-    }
-    player_packet.closest_wall_hit = contact_point;
-    // Player
-    for(int i=0; i<12; i++)
-    {
-        if(i!=player_packet.ID && old_state[i].is_alive)
-        {
-            Rectangle other_player_collider = {
-                .x = old_state[i].position_absolute.x - 1.0f*(Maps::maps[0].tile_width_units),
-                .y = old_state[i].position_absolute.y - 0.75f * (Maps::maps[0].tile_width_units),
-                .width = hull_data.player_rectangle.width,
-                .height = hull_data.player_rectangle.height,
-            };
-
-            
-            bullet_colliding = Physics::CheckCollisionRay2dRectEx(player_data.position, gun_data.gun_angle, other_player_collider, old_state[i].player_angle, &curr_contact_point);
-            // bullet_colliding = Physics::CheckCollisionRay2dRect(player_data.position, gun_data.gun_angle, other_player_collider, &curr_contact_point);
-        
-            if(bullet_colliding){
-                
-                if(Vector2Distance(curr_contact_point, player_data.position)<Vector2Distance(contact_point, player_data.position))
-                {
-                    contact_point = curr_contact_point;
-                }
-            }
-        }
-    }
 }
 
 void Pages::GameWindowScene::draw_hud()

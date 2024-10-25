@@ -24,11 +24,13 @@ void GameState::init_state(int max_players)
 std::vector<PlayerPacket> GameState::update_state(PlayerPacket* received_packet)
 {
     // std::cout << received_packet->ID << " " << time(nullptr) << std::endl;
+    old_state[received_packet->ID].has_shot = received_packet->last_shot != old_state[received_packet->ID].last_shot;
+    received_packet->has_shot  = old_state[received_packet->ID].has_shot;
     handle_tank_collision(received_packet);
     handle_shots(received_packet);
     // std::cout<<received_packet->position_absolute_units.x<<" "<<received_packet->position_absolute_units.y<<std::endl;
     old_state[received_packet->ID].gun_angle = received_packet->gun_angle;
-    old_state[received_packet->ID].has_shot = received_packet->last_shot != old_state[received_packet->ID].last_shot;
+    old_state[received_packet->ID].closest_wall_hit = received_packet->closest_wall_hit;
     old_state[received_packet->ID].last_shot = received_packet->last_shot;
     old_state[received_packet->ID].is_idle = received_packet->is_idle;
     return old_state;
@@ -136,7 +138,7 @@ void GameState::handle_shots(PlayerPacket* player_packet){
             }
         }
         std::cout<<"Player"<<player_packet->ID<<" shit Player"<<hitting_idx<<std::endl;
-        if(hitting_idx){
+        if(hitting_idx >= 0){
             if(old_state[hitting_idx].health <= player_packet->player_dmg){
                 old_state[hitting_idx].is_alive = false;
                 old_state[hitting_idx].health = 0;
@@ -146,5 +148,6 @@ void GameState::handle_shots(PlayerPacket* player_packet){
             }
         }
     }
+    player_packet->closest_wall_hit = contact_point;
     player_packet->has_shot = false;
 }
