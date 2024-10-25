@@ -45,7 +45,7 @@ void RoomHost::handle_disconnection(ENetPeer *peer)
             enet_peer_reset(peer);
             strcpy(names[i], "");
             std::cout << "Client(" << i << ") has forcibly disconnected!" << std::endl;
-            if (!is_in_game){ // Update the players connected
+            if (1){ // Update the players connected
                 send(ServerCommand::ROOM_LIST_BROADCAST, names, sizeof(char) * Structs::NAME_SIZE * Structs::MAX_ROOM_SIZE);
                 enet_host_flush(host);
             }
@@ -100,6 +100,7 @@ void RoomHost::handle_message(ENetPeer *peer, size_t type, void *message)
             if (!is_in_game){
                 game_state.reset(new GameState());
                 game_state.get()->init_state(Structs::MAX_ROOM_SIZE);
+            }
                 for (size_t i = 0; i < Networking::Message::Room::MAX_ROOM_SIZE; ++i){
                     
                     game_state.get()->old_state[i].is_connected = strcmp(names[i], "") != 0;
@@ -107,9 +108,9 @@ void RoomHost::handle_message(ENetPeer *peer, size_t type, void *message)
                     
                 }
                 send(ServerCommand::GAME_START);
-                // is_in_game = true;
-            }
-            break;
+                is_in_game = true;
+            
+            // break;
         }
         case ClientCommand::MAP_SET_REQUEST:
         {

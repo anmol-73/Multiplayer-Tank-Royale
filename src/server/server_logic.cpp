@@ -3,7 +3,7 @@
 
 void GameState::init_state(int max_players)
 {
-    GameState::old_state.clear();
+    // GameState::old_state.clear();
     for(int i=0; i<max_players; i++)
     {
         PlayerPacket packet;
@@ -15,8 +15,8 @@ void GameState::init_state(int max_players)
             .gun_angle = 0,
             .health = 400,
             .has_shot = false,
-            .is_alive = false,
-            .is_connected = false,
+            .is_alive = true,
+            .is_connected = true,
         };
         GameState::old_state.push_back(packet);
     }
