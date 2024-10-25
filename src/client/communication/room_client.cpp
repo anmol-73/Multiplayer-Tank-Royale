@@ -169,3 +169,9 @@ void Communication::RoomClient::on_stop()
     };
     connected_to_server = false;
 }
+
+void Communication::RoomClient::handle_random_disconnection()
+{
+    std::cout << "USER HAS BEEN RANDOMLY KICKED!" << std::endl;
+    destroy_host();
+}

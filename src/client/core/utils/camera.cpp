@@ -54,8 +54,8 @@ Rectangle Utils::Camera::scale(Rectangle size)
 Rectangle Utils::Camera::viewport()
 {
     return {
-        position.x - viewport_size.x/2 - player_size.x/2,
-        position.y - viewport_size.y/2 - player_size.y/2,
+        position.x - viewport_size.x/2 + player_size.x/2,
+        position.y - viewport_size.y/2 + player_size.y/2,
         viewport_size.x, viewport_size.y
     };
 }

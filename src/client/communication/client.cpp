@@ -60,7 +60,11 @@ void Communication::Client::run(const bool& should_cancel)
     on_run();
     ENetEvent event;
     while (is_running && (!should_cancel) && host != nullptr){
-        if (enet_host_service(host, &event, timeout) <= 0) continue;
+        int valid = enet_host_service(host, &event, timeout);
+        if (valid == 0) continue;
+        if (valid < 0){
+            std::cout << "SEIHUGN BAD HAPPPENINNGINGIN" << std::endl;
+        };
         switch (event.type){
             // In the future we must handle the case when disconnects happen (for now assume nobody is malicious)
             case ENET_EVENT_TYPE_RECEIVE:
@@ -68,6 +72,11 @@ void Communication::Client::run(const bool& should_cancel)
                 auto [type, data] = Networking::decode_message(event.packet->data);
                 handle_message(type, data);
                 enet_packet_destroy(event.packet);
+                break;
+            }
+            case ENET_EVENT_TYPE_DISCONNECT:
+            {
+                handle_random_disconnection();
                 break;
             }
 
@@ -87,6 +96,7 @@ void Communication::Client::stop()
 void Communication::Client::destroy_host()
 {
     if (host != nullptr){
+
         enet_host_destroy(host);
         host = nullptr;
     }
@@ -106,6 +116,10 @@ void Communication::Client::on_run()
 }
 
 void Communication::Client::on_stop()
+{
+}
+
+void Communication::Client::handle_random_disconnection()
 {
 }
 

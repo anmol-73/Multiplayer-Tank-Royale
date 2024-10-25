@@ -77,6 +77,8 @@ namespace Communication
          */
         virtual void on_stop();
 
+        virtual void handle_random_disconnection();
+
         /**
          * Sends a command (along with the message data) to the server
          */

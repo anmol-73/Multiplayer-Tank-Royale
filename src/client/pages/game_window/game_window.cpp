@@ -142,7 +142,8 @@ void Pages::GameWindowScene::_load()
 
     std::cout << "GOT SPAWN DATA!" <<std::endl;
 
-    camera.init({Maps::maps[map_idx].width(), Maps::maps[map_idx].height()}, {Maps::maps[map_idx].vwidth(), Maps::maps[map_idx].vheight()});
+    hull_data.init();
+    camera.init({Maps::maps[map_idx].width(), Maps::maps[map_idx].height()}, {Maps::maps[map_idx].vwidth(), Maps::maps[map_idx].vheight()}, {hull_data.player_rectangle.width, hull_data.player_rectangle.height});
         
     projected_data.init(player_spawn_position);
     player_data.init(player_spawn_position);
@@ -152,7 +153,6 @@ void Pages::GameWindowScene::_load()
     
 
     crosshair_data.init();
-    hull_data.init();
     gun_data.init();
     
 

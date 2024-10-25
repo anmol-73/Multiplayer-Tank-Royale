@@ -35,6 +35,7 @@ namespace Communication
         std::pair<bool, std::string> handle_established_connection(const bool& cancel_requested);
         void handle_message(size_t type, void* message);
         void on_stop();
+        void handle_random_disconnection();
 
         size_t id;
         bool connected_to_server = false;
