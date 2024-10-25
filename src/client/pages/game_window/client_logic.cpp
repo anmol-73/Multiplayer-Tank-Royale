@@ -1,6 +1,7 @@
 #include "client_logic.hpp"
 #include <iostream>
 
+std::vector<float> LogicUtils::old_timestamps;
 LogicUtils::PlayerPacket LogicUtils::player_packet;
 LogicUtils::LivePlayerData LogicUtils::player_data;
 LogicUtils::LivePlayerData LogicUtils::projected_data;
@@ -51,13 +52,16 @@ void LogicUtils::init_state(int max_players)
 
 void LogicUtils::update_state(PlayerPacket *received_state)
 {
+    for (size_t i =0; i < old_state.size();++i){
+        old_timestamps[i] = old_state[i].last_shot;
+    }
     // TODO: Use proper constant here
     old_state = std::vector(received_state, received_state + Networking::Message::Room::MAX_ROOM_SIZE);
     // memcpy(&player_packet ,&old_state[player_packet.ID], sizeof(player_packet));
 }
 void LogicUtils::set_packet() {
     player_packet.gun_angle = gun_data.gun_angle;
-    // player_packet.has_shot = gun_data.has_shot;
+    // player_packet.has_shot = gun_data.has_shot; Tis is like set automagically
     player_packet.is_idle = (Vector2Equals(player_data.position, player_packet.position_absolute));
     player_packet.health = player_data.health;
     player_packet.ID = Global::ServiceProviders::room_client.get_id();

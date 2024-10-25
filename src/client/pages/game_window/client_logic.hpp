@@ -17,6 +17,7 @@ namespace LogicUtils{
     */
     struct PlayerPacket
     {
+        float last_shot;
         bool is_idle;
         int ID;
         Vector2 position_absolute; // Top left of tank
@@ -62,8 +63,8 @@ namespace LogicUtils{
     */
     struct GunStats{
         Rectangle gun_rectangle = {
-            .width = 128,
-            .height = 32
+            .width = 48,
+            .height = 12
         };
         bool has_shot;
         int gun_dmg = 100;
@@ -78,8 +79,8 @@ namespace LogicUtils{
 
     struct HullStats{
         Rectangle player_rectangle = {
-            .width = 128,
-            .height = 96,
+            .width = 64,
+            .height = 48,
         };
         double player_speed;
         double player_rot_speed;
@@ -129,6 +130,7 @@ namespace LogicUtils{
      */
     void set_tracker(float delta_time);
 
+    extern std::vector<float> old_timestamps;
     bool handle_tank_collision();
 
     Texture2D extern player_spritesheet;

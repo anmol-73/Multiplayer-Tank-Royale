@@ -23,7 +23,7 @@ int main(int argc, char const *argv[])
     SetConfigFlags(FLAG_WINDOW_HIGHDPI | FLAG_VSYNC_HINT | FLAG_MSAA_4X_HINT);
     
     InitWindow(800, 450, "Multiplayer Tank Royal (Demo)");
-    size_t window_width = std::min(GetMonitorWidth(GetCurrentMonitor()) - 200, 1600);
+    size_t window_width = std::min(GetMonitorWidth(GetCurrentMonitor()) - 200, 800);
     SetWindowSize(window_width, (window_width * 9) / 16);
     SetWindowPosition(20, 20);
     SetTargetFPS(120);

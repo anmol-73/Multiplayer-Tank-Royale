@@ -11,6 +11,7 @@
 
 struct PlayerPacket
 {
+    float last_shot;
     bool is_idle;
     int ID;
     Vector2 position_absolute_units; // Top left of tank
@@ -52,8 +53,8 @@ class GameState
                 {0, 0},
             }; // 8 Spawns in MTR_Units
 
-            float player_height = 96; // MTR_Units
-            float player_width = 128; // MTR_Units
+            float player_height = 48; // MTR_Units
+            float player_width = 64; // MTR_Units
             int gun_dmg = 1;
         } game_constants;
 };

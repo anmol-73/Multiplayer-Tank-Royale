@@ -56,6 +56,7 @@ namespace Pages
         Utils::Camera camera;
         // std::vector<LogicUtils::PlayerPacket> old_state;
         std::vector<LogicUtils::PlayerInfo> leaderboard;
+        
     };
 
 } // namespace Pages

@@ -28,7 +28,8 @@ std::vector<PlayerPacket> GameState::update_state(PlayerPacket* received_packet)
     handle_shots(received_packet);
     // std::cout<<received_packet->position_absolute_units.x<<" "<<received_packet->position_absolute_units.y<<std::endl;
     old_state[received_packet->ID].gun_angle = received_packet->gun_angle;
-    old_state[received_packet->ID].has_shot = received_packet->has_shot;
+    old_state[received_packet->ID].has_shot = received_packet->last_shot != old_state[received_packet->ID].last_shot;
+    old_state[received_packet->ID].last_shot = received_packet->last_shot;
     old_state[received_packet->ID].is_idle = received_packet->is_idle;
     return old_state;
 };
@@ -115,8 +116,8 @@ void GameState::handle_shots(PlayerPacket* player_packet){
             if(i!=player_packet->ID && old_state[i].is_alive)
             {
                 Rectangle other_player_collider = {
-                    .x = old_state[i].position_absolute_units.x - 2*(Maps::maps[0].tile_width_units),
-                    .y = old_state[i].position_absolute_units.y - 1.5f * (Maps::maps[0].tile_width_units),
+                    .x = old_state[i].position_absolute_units.x - 1.0f*(Maps::maps[0].tile_width_units),
+                    .y = old_state[i].position_absolute_units.y - 0.75f * (Maps::maps[0].tile_width_units),
                     .width = GameState::game_constants.player_width,
                     .height = GameState::game_constants.player_height,
                 };
@@ -135,11 +136,15 @@ void GameState::handle_shots(PlayerPacket* player_packet){
             }
         }
         std::cout<<"Player"<<player_packet->ID<<" shit Player"<<hitting_idx<<std::endl;
-        if(hitting_idx)
-            {if(old_state[hitting_idx].health <= player_packet->player_dmg)
+        if(hitting_idx){
+            if(old_state[hitting_idx].health <= player_packet->player_dmg){
                 old_state[hitting_idx].is_alive = false;
-            else
-                old_state[hitting_idx].health -= player_packet->player_dmg;}
+                old_state[hitting_idx].health = 0;
+            }
+            else{
+                old_state[hitting_idx].health -= player_packet->player_dmg;
+            }
+        }
     }
     player_packet->has_shot = false;
 }
