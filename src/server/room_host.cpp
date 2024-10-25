@@ -42,6 +42,7 @@ void RoomHost::handle_disconnection(ENetPeer *peer)
         // Handle the case where the client didn't properly disconnect also :)
         if (members[i] == peer){
             members[i] = nullptr;
+            enet_peer_reset(peer);
             strcpy(names[i], "");
             std::cout << "Client(" << i << ") has forcibly disconnected!" << std::endl;
             if (!is_in_game){ // Update the players connected

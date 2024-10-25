@@ -40,7 +40,7 @@ void Host::run()
             case ENET_EVENT_TYPE_DISCONNECT:
             {
                 handle_disconnection(event.peer);
-                enet_peer_reset(event.peer);
+                
                 break;
             }
 
