@@ -58,14 +58,23 @@ void Pages::LobbyWindowScene::_update()
         }
     }
 
+    if (ui.exit_button->clicked){
+        SceneManagement::SceneManager::load_deferred(SceneManagement::SceneName::MAIN_PAGE);   
+    }
+
 }
 
 
 void Pages::LobbyWindowScene::_loading_update() {
-    DragonLib::Utils::Drawing::draw_text({
-        .content = "Loading...",
-        .font_size = Global::rem * 2
-    });
+    BeginDrawing();{
+        ClearBackground({0xcb, 0xc6, 0xb2, 0xe0});
+        DragonLib::Utils::Drawing::draw_text({
+            .content = "Loading...",
+            .font_size = Global::rem * 2,
+            .font_color = {0, 0, 0, 0x60}
+        });
+    }
+    EndDrawing();
 }
 
 

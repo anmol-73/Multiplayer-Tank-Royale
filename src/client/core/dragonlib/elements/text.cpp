@@ -9,6 +9,7 @@ DragonLib::UI::Elements::Text::Text(std::function<std::pair<DrawParameters::Box,
 
 void DragonLib::UI::Elements::Text::draw()
 {
+    if (hidden) return;
     auto [box_params, text_params] = draw_param_provider(this);
     bounds = Utils::Drawing::draw_box(box_params);
 
@@ -23,6 +24,7 @@ void DragonLib::UI::Elements::Text::draw()
 void DragonLib::UI::Elements::Text::poll_events()
 {
     clear_state();
+    if (hidden) return;
     hstate.hovered = CheckCollisionPointRec(GetMousePosition(), bounds);
     clicked = hstate.hovered && IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && interactable;
     mouse_down = hstate.hovered && IsMouseButtonDown(MOUSE_BUTTON_LEFT) && interactable;

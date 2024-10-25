@@ -19,6 +19,7 @@ namespace Pages
         
         int current_map_idx = 0;
         UI::Elements::Span* start_game_button;
+        UI::Elements::Span* exit_button;
         UI::Elements::Text* left_map_select;
         UI::Elements::Text* right_map_select;
         

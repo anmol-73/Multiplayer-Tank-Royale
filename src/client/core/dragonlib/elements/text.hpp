@@ -23,6 +23,7 @@ namespace DragonLib
                 bool clicked = false;
                 bool mouse_down = false;
                 bool interactable;
+                bool hidden = false;
             private:
                 Rectangle bounds = {};
                 std::function<std::pair<DrawParameters::Box, DrawParameters::Text>(Text*)> draw_param_provider = {};
