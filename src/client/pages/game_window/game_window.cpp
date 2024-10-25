@@ -1,5 +1,5 @@
 #include "game_window.hpp"
-#define GUN_COOLDOWN_MAX 0.5
+#define GUN_COOLDOWN_MAX 2
 bool player_colliding;
 void Pages::GameWindowScene::_update()
 {
@@ -98,6 +98,8 @@ void Pages::GameWindowScene::_load()
     
     for (size_t i = 0; i < Networking::Message::Room::MAX_ROOM_SIZE; ++i){
         old_timestamps.emplace_back(0);
+        did_shoots.emplace_back(false);
+        contact_pointsss.emplace_back(Vector2{0, 0});
     }
     Global::ServiceProviders::room_client.game_start_callback = [](){
         
@@ -203,7 +205,9 @@ void Pages::GameWindowScene::draw_leaderboard() {
 
 void Pages::GameWindowScene::_cleanup()
 {
+    LogicUtils::did_shoots.clear();
     LogicUtils::old_timestamps.clear();
+    LogicUtils::contact_pointsss.clear();
     UnloadImage(LogicUtils::player_spritesheet_image);
     Global::ServiceProviders::room_client.stop();
     Global::ServiceProviders::room_client_worker.cancel();
@@ -264,27 +268,31 @@ void Pages::GameWindowScene::logic_update()
         player_controllers[i].play(old_state[i].is_idle ? player_idle_idx : player_moving_idx, false);
     }
     float time = GetTime();
-    if(gun_data.has_shot && time - LogicUtils::old_timestamps[self] > GUN_COOLDOWN_MAX)
+    gun_data.has_shot = gun_data.has_shot && time - LogicUtils::old_timestamps[self] > GUN_COOLDOWN_MAX;
+    if(gun_data.has_shot)
     {
         player_packet.last_shot = time;
         gun_controllers[self].play(gun_shot_idx, true);
+     
     }
     else if(gun_controllers[self].current_iteration_count>0)
     {
         gun_controllers[self].play(gun_idle_idx, true);
+
     }
+
     
     for (size_t i = 0; i < old_state.size(); ++i){
         if (i == self || !old_state[i].is_alive) continue;
         
-        if (old_timestamps[i] != old_state[i].last_shot){
+        if (did_shoots[i]){
             gun_controllers[i].play(gun_shot_idx, true);
         } else if(gun_controllers[i].current_iteration_count>0){
             gun_controllers[i].play(gun_idle_idx, true);
         }
     }
     
-
+    
     time_since_last_send += delta_time;
     
     if(time_since_last_send>=0.017)
@@ -300,37 +308,39 @@ void Pages::GameWindowScene::logic_update()
     bullet_colliding = false;
     contact_point = {player_data.position.x + (float)gun_data.bullet_range*(float)cos(gun_data.gun_angle), player_data.position.y + (float)gun_data.bullet_range*(float)sin(gun_data.gun_angle)};
     Vector2 curr_contact_point = contact_point;
-    for(size_t wall_y = 0; wall_y<Maps::maps[0].map_height_tiles; wall_y++)
-    {
-        for(size_t wall_x = 0; wall_x<Maps::maps[0].map_width_tiles; wall_x++)
+    if (gun_data.has_shot){
+        for(size_t wall_y = 0; wall_y<Maps::maps[0].map_height_tiles; wall_y++)
         {
-            size_t wall_idx = ((Maps::maps[0].map_width_tiles)*wall_y) + wall_x;
-            if (wall_idx >= Maps::maps[0].walls.size()){
-                continue;
-            }
-            if(Maps::maps[0].walls[wall_idx]==0)
+            for(size_t wall_x = 0; wall_x<Maps::maps[0].map_width_tiles; wall_x++)
             {
-                Rectangle wall = {
-                    .x = ((float)wall_x - 1.0f)*(Maps::maps[0].tile_width_units),
-                    .y = ((float)wall_y - 0.75f)*(Maps::maps[0].tile_width_units),
-                    .width = (Maps::maps[0].tile_width_units),
-                    .height = (Maps::maps[0].tile_width_units),
-                };
-                bullet_colliding = Physics::CheckCollisionRay2dRect(player_data.position, gun_data.gun_angle, wall, &curr_contact_point);
-                
-                if(bullet_colliding){
+                size_t wall_idx = ((Maps::maps[0].map_width_tiles)*wall_y) + wall_x;
+                if (wall_idx >= Maps::maps[0].walls.size()){
+                    continue;
+                }
+                if(Maps::maps[0].walls[wall_idx]==0)
+                {
+                    Rectangle wall = {
+                        .x = ((float)wall_x - 1.0f)*(Maps::maps[0].tile_width_units),
+                        .y = ((float)wall_y - 0.75f)*(Maps::maps[0].tile_width_units),
+                        .width = (Maps::maps[0].tile_width_units),
+                        .height = (Maps::maps[0].tile_width_units),
+                    };
+                    bullet_colliding = Physics::CheckCollisionRay2dRect(player_data.position, gun_data.gun_angle, wall, &curr_contact_point);
                     
-                    if(Vector2Distance(curr_contact_point, player_data.position)<Vector2Distance(contact_point, player_data.position))
-                    {
-                        contact_point = curr_contact_point;
+                    if(bullet_colliding){
+                        
+                        if(Vector2Distance(curr_contact_point, player_data.position)<Vector2Distance(contact_point, player_data.position))
+                        {
+                            contact_point = curr_contact_point;
+                        }
                     }
                 }
             }
         }
+        player_packet.closest_wall_hit = contact_point;
     }
-    player_packet.closest_wall_hit = contact_point;
     // Player
-    if (player_packet.last_shot - LogicUtils::old_timestamps[self] > GUN_COOLDOWN_MAX){
+    if (gun_data.has_shot){
         // playe rhas shot
         for(int i=0; i<12; i++)
         {
@@ -385,11 +395,11 @@ void Pages::GameWindowScene::draw_game()
     );
 
     for (size_t i = 0; i < old_state.size(); ++i){
-        if(old_state[i].last_shot - LogicUtils::old_timestamps[i] > GUN_COOLDOWN_MAX)
+        if(did_shoots[i])
         {
             DrawLineEx(
                 camera.transform(old_state[i].position_absolute),
-                camera.transform(old_state[i].closest_wall_hit),
+                camera.transform(contact_pointsss[i]),
                 4, WHITE
             );
         }

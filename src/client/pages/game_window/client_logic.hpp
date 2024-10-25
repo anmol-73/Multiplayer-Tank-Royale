@@ -131,6 +131,8 @@ namespace LogicUtils{
     void set_tracker(float delta_time);
 
     extern std::vector<float> old_timestamps;
+    extern std::vector<bool> did_shoots;
+    extern std::vector<Vector2> contact_pointsss;
     bool handle_tank_collision();
 
     Texture2D extern player_spritesheet;

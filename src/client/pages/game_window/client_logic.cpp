@@ -9,6 +9,8 @@ LogicUtils::GunStats LogicUtils::gun_data;
 LogicUtils::HullStats LogicUtils::hull_data;
 LogicUtils::ViewportData LogicUtils::viewport_data;
 LogicUtils::CrosshairData LogicUtils::crosshair_data;
+std::vector<bool> LogicUtils::did_shoots;
+std::vector<Vector2> LogicUtils::contact_pointsss;
 float LogicUtils::timesince_lastshot;
 int LogicUtils::map_idx{};
 
@@ -58,6 +60,11 @@ void LogicUtils::update_state(PlayerPacket *received_state)
     // TODO: Use proper constant here
     old_state = std::vector(received_state, received_state + Networking::Message::Room::MAX_ROOM_SIZE);
     // memcpy(&player_packet ,&old_state[player_packet.ID], sizeof(player_packet));
+    for (size_t i =0; i < old_state.size();++i){
+        did_shoots[i] = old_state[i].last_shot != old_timestamps[i];
+        if (did_shoots[i])
+        contact_pointsss[i] = old_state[i].closest_wall_hit;
+    }
 }
 void LogicUtils::set_packet() {
     player_packet.gun_angle = gun_data.gun_angle;
