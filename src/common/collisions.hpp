@@ -24,7 +24,8 @@ namespace Physics
 
     void SwapFloatValue(float *a, float *b);
 
-    bool RayVsRect2D(const Vector2 ray_origin, const Vector2 ray_dir, const Rectangle targetRect, Vector2* contact_point);
+    bool CheckCollisionRay2dRectEx(Vector2 origin, float dirn_angle, Rectangle rect, float rec_angle,Vector2* intersection);
+    bool CheckCollisionRay2dRect(Vector2 origin, float dirn_angle, Rectangle rect, Vector2* intersection);
 } // namespace Physics
 
 

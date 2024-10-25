@@ -7,8 +7,8 @@ void GameState::init_state(int max_players)
     {
         PlayerPacket packet;
         packet = {
-            .ID=i,
             .is_idle = true,
+            .ID=i,
             .position_absolute_units = GameState::game_constants.spawnpoints[i],
             .player_angle = 0,
             .gun_angle = 0,
