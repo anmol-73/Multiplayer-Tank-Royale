@@ -32,6 +32,7 @@ namespace LogicUtils{
     } extern player_packet;
 
     std::vector<PlayerPacket> extern old_state;
+    std::vector<PlayerPacket> extern old_state_buffer;
 
     struct PlayerInfo {
     std::string name;

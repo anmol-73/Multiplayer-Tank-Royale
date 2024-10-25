@@ -20,6 +20,7 @@ Utils::Animation* LogicUtils::gun_idle;
 Utils::Animation* LogicUtils::gun_shot;
 
 std::vector<LogicUtils::PlayerPacket> LogicUtils::old_state;
+std::vector<LogicUtils::PlayerPacket> LogicUtils::old_state_buffer;
 
 Texture2D LogicUtils::player_spritesheet;
 Image LogicUtils::player_spritesheet_image;
@@ -55,13 +56,15 @@ void LogicUtils::init_state(int max_players)
 void LogicUtils::update_state(PlayerPacket *received_state)
 {
     // TODO: Use proper constant here
-    old_state = std::vector(received_state, received_state + Networking::Message::Room::MAX_ROOM_SIZE);
+    old_state_buffer = std::vector(received_state, received_state + Networking::Message::Room::MAX_ROOM_SIZE);
     // memcpy(&player_packet ,&old_state[player_packet.ID], sizeof(player_packet));
-    for (size_t i =0; i < old_state.size();++i){
-        if (old_state[i].last_shot != old_timestamps[i])
-        contact_pointsss[i] = old_state[i].closest_wall_hit;
-        did_shoots[i] = old_state[i].last_shot != old_timestamps[i];
+    for (size_t i =0; i < old_state_buffer.size();++i){
+        if (old_state_buffer[i].last_shot != old_timestamps[i])
+        contact_pointsss[i] = old_state_buffer[i].closest_wall_hit;
+        did_shoots[i] = old_state_buffer[i].last_shot != old_timestamps[i];
     }
+
+    std::swap(old_state, old_state_buffer);
 }
 void LogicUtils::set_packet() {
     player_packet.gun_angle = gun_data.gun_angle;
