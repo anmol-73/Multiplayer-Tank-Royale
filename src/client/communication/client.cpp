@@ -64,6 +64,7 @@ void Communication::Client::run(const bool& should_cancel)
         if (valid == 0) continue;
         if (valid < 0){
             std::cout << "SEIHUGN BAD HAPPPENINNGINGIN" << std::endl;
+            break;
         };
         switch (event.type){
             // In the future we must handle the case when disconnects happen (for now assume nobody is malicious)
