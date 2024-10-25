@@ -24,7 +24,7 @@ void Host::bind(int port)
 void Host::run()
 {
     on_run();
-    const size_t timeout = 3000;
+    const size_t timeout = 50;
     is_running = true;
     
     ENetEvent event;

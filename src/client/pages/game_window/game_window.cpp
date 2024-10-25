@@ -13,7 +13,8 @@ void Pages::GameWindowScene::_update()
     
     logic_update();
 
-    std::cout<<"Health "<<LogicUtils::old_state[LogicUtils::player_packet.ID].last_shot << " "<<LogicUtils::old_timestamps[LogicUtils::player_packet.ID] <<std::endl;
+    std::cout<<"Health "<<LogicUtils::old_state[0].closest_wall_hit.x << " "<<LogicUtils::old_state[0].closest_wall_hit.y <<std::endl;
+    std::cout<<"GEEEE "<<LogicUtils::old_state[1].closest_wall_hit.x << " "<<LogicUtils::old_state[1].closest_wall_hit.y <<std::endl;
 
     // Drawing
     BeginDrawing();{
@@ -394,7 +395,15 @@ void Pages::GameWindowScene::draw_game()
         WHITE
     );
 
+    if (gun_data.has_shot){
+        DrawLineEx(
+            camera.transform(player_data.position),
+            camera.transform(contact_point),
+            4, WHITE
+        );
+    }
     for (size_t i = 0; i < old_state.size(); ++i){
+        if (i == self) continue;
         if(did_shoots[i])
         {
             DrawLineEx(

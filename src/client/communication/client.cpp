@@ -31,7 +31,7 @@ std::pair<bool, std::string> Communication::Client::connect(std::string server_a
     }
 
     ENetEvent event;
-    const size_t connection_timeout = 300;
+    const size_t connection_timeout = 500;
     const size_t max_tries = 10;
 
 
@@ -55,7 +55,7 @@ void Communication::Client::cleanup()
 
 void Communication::Client::run(const bool& should_cancel)
 {
-    const size_t timeout = 500;
+    const size_t timeout = 50;
     is_running = true;
     on_run();
     ENetEvent event;

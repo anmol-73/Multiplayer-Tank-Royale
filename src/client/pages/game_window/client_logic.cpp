@@ -61,9 +61,9 @@ void LogicUtils::update_state(PlayerPacket *received_state)
     old_state = std::vector(received_state, received_state + Networking::Message::Room::MAX_ROOM_SIZE);
     // memcpy(&player_packet ,&old_state[player_packet.ID], sizeof(player_packet));
     for (size_t i =0; i < old_state.size();++i){
-        did_shoots[i] = old_state[i].last_shot != old_timestamps[i];
-        if (did_shoots[i])
+        if (old_state[i].last_shot != old_timestamps[i])
         contact_pointsss[i] = old_state[i].closest_wall_hit;
+        did_shoots[i] = old_state[i].last_shot != old_timestamps[i];
     }
 }
 void LogicUtils::set_packet() {
