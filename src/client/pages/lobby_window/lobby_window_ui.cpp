@@ -84,17 +84,17 @@ Pages::LobbyWindowUI::LobbyWindowUI()
                 }
             )
         );
-        register_element( // FF474C
-            remove_player_button[i] = Components::create_text_button(
+        register_element(
+            remove_player_button[i] = Components::create_red_text_button(
                 "X",
                 {
                     .value = {
-                        i < Networking::Message::Room::MAX_ROOM_SIZE/2 ? 0.25f : 0.55f, 0.28f + (i % (Networking::Message::Room::MAX_ROOM_SIZE/2)) * 0.1f
+                        i < Networking::Message::Room::MAX_ROOM_SIZE/2 ? 0.255f : 0.555f, 0.28f + (i % (Networking::Message::Room::MAX_ROOM_SIZE/2)) * 0.1f
                     },
                     .mode = {Mode::SCREEN_W, Mode::SCREEN_H}
                 },
                 {
-                    .value = {0.03f, 0.03f},
+                    .value = {0.027f, 0.027f},
                     .mode = {Mode::SCREEN_H, Mode::SCREEN_H}
                 },
                 {
@@ -130,7 +130,6 @@ Pages::LobbyWindowUI::LobbyWindowUI()
                 .mode = {Mode::SCREEN_W, Mode::SCREEN_H},
             },
             {0}
-
         )
     );
     register_element(
@@ -157,17 +156,26 @@ Pages::LobbyWindowUI::LobbyWindowUI()
             }
         )
     );
+    register_element(
+        exit_button = Components::create_red_span_button(
+            " Exit ",
+            UI::DrawParameters::Measurement{
+                .value = {0.94, 0.12},
+                .mode = {Mode::SCREEN_W, Mode::SCREEN_H},
+            }
+        )
+    );
 }
 
 void Pages::LobbyWindowUI::make_ready(std::vector<std::string> map_names_, bool is_leader_)
 {
     is_leader = is_leader_;
     map_names = map_names_;
-    left_map_select->interactable = is_leader;
-    right_map_select->interactable = is_leader;
+    left_map_select->hidden = !is_leader;
+    right_map_select->hidden = !is_leader;
 
     for (size_t i = 0; i < Networking::Message::Room::MAX_ROOM_SIZE; ++i){
-        remove_player_button[i]->interactable = is_leader && !room_members[i].empty();
+        remove_player_button[i]->hidden = room_members[i].empty() || !is_leader;
     }
 }
 
@@ -189,6 +197,6 @@ void Pages::LobbyWindowUI::update_room_members(std::vector<std::string> &room_me
 {
     room_members = room_members_;
     for (size_t i = 0; i < Networking::Message::Room::MAX_ROOM_SIZE; ++i){
-        remove_player_button[i]->interactable = is_leader && !room_members[i].empty();
+        remove_player_button[i]->hidden = room_members[i].empty() || !is_leader;
     }
 }

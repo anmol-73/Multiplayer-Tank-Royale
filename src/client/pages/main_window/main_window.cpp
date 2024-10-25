@@ -48,10 +48,15 @@ void Pages::MainWindowScene::_update()
 }
 
 void Pages::MainWindowScene::_loading_update() {
-    DragonLib::Utils::Drawing::draw_text({
-        .content = "Loading...",
-        .font_size = Global::rem * 2
-    });
+    BeginDrawing();{
+        ClearBackground({0xcb, 0xc6, 0xb2, 0xe0});
+        DragonLib::Utils::Drawing::draw_text({
+            .content = "Loading...",
+            .font_size = Global::rem * 2,
+            .font_color = {0, 0, 0, 0x60}
+        });
+    }
+    EndDrawing();
 }
 
 void Pages::MainWindowScene::_load_with_context()
