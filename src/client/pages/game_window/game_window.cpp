@@ -71,7 +71,6 @@ void Pages::GameWindowScene::_load_with_context()
         player_moving_idx = player_controllers[i].register_animation(player_moving);
         gun_idle_idx = gun_controllers[i].register_animation(gun_idle);
         gun_shot_idx = gun_controllers[i].register_animation(gun_shot);
-
     }
     
     map = LoadTextureFromImage(map_image);
@@ -238,7 +237,8 @@ void Pages::GameWindowScene::logic_update()
     // Handle gun animation
     
     if(gun_data.has_shot)
-    {
+    {   
+        player_packet.has_shot = true;
         gun_controllers[self].play(gun_shot_idx, true);
     }
     else if(gun_controllers[self].current_iteration_count>0)
@@ -255,7 +255,7 @@ void Pages::GameWindowScene::logic_update()
     
         time_since_last_send = 0;
         Global::ServiceProviders::room_client.request_game_update(&player_packet, sizeof(PlayerPacket));
-    
+        player_packet.has_shot = false;
     }
 
     
@@ -288,7 +288,7 @@ void Pages::GameWindowScene::draw_game()
     );
     if (true){
         DrawLineEx(
-            camera.transform(player_data.position), camera.transform(contact_point) , 4, RAYWHITE
+            camera.transform(player_data.position), camera.transform(contact_point) , 4, GREEN
         );
     }
 

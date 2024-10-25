@@ -24,6 +24,7 @@ void GameState::init_state(int max_players)
 std::vector<PlayerPacket> GameState::update_state(PlayerPacket* received_packet)
 {
     handle_tank_collision(received_packet);
+    handle_shots(received_packet);
     std::cout<<received_packet->position_absolute_units.x<<" "<<received_packet->position_absolute_units.y<<std::endl;
     old_state[received_packet->ID].gun_angle = received_packet->gun_angle;
     old_state[received_packet->ID].has_shot = received_packet->has_shot;
@@ -97,3 +98,33 @@ void GameState::handle_tank_collision(PlayerPacket* received_packet)
         old_state[current_ID].player_angle = received_packet->player_angle;
     }
 };
+
+void GameState::handle_shots(PlayerPacket* received_packet){
+    if(received_packet->has_shot){
+        for(int i=0; i<12; i++)
+        {   
+            Vector2 contact_point;
+            bool bullet_colliding;
+            if(i!=player_packet.ID && old_state[i].is_alive)
+            {
+                Rectangle other_player_collider = {
+                    .x = old_state[i].position_absolute.x - 2*(Maps::maps[0].tile_width_units),
+                    .y = old_state[i].position_absolute.y - 1.5f * (Maps::maps[0].tile_width_units),
+                    .width = hull_data.player_rectangle.width,
+                    .height = hull_data.player_rectangle.height,
+                };
+
+                DrawRectangleLinesEx(camera.transform(other_player_collider), 2, PINK);
+                bullet_colliding = Physics::CheckCollisionRay2dRectEx(player_data.position, gun_data.gun_angle, other_player_collider, old_state[i].player_angle, &contact_point);
+                // bullet_colliding = Physics::CheckCollisionRay2dRect(player_data.position, gun_data.gun_angle, other_player_collider, &curr_contact_point);
+            
+                if(bullet_colliding){
+                    if(old_state[i].health <= received_packet->player_dmg)
+                        old_state[i].is_alive = false;
+                    else
+                        old_state[i].health -= received_packet->player_dmg;
+                }
+            }
+        }
+    }
+}

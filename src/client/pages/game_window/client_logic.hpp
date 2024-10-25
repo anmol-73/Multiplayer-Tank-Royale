@@ -14,17 +14,19 @@ namespace LogicUtils{
     /*
     * The struct that enet will be using for communication  
     */
-    struct PlayerPacket{
+    struct PlayerPacket
+    {
         bool is_idle;
         int ID;
-        Vector2 position_absolute;
-        float player_angle;
-        float gun_angle;
-        int health;
+        Vector2 position_absolute_units; // Top left of tank
+        float player_angle; // Angle with x axis from tank center in rads
+        float gun_angle; // Angle with x axis from tank center in rads
+        int health=400;
+        int player_dmg;
         bool has_shot;
         bool is_alive;
         bool is_connected;
-    } extern player_packet;
+    };
 
     std::vector<PlayerPacket> extern old_state;
 
@@ -62,7 +64,7 @@ namespace LogicUtils{
             .height = 32
         };
         bool has_shot;
-        int gun_dmg;
+        int gun_dmg = 100;
         double gun_angle;
         double expected_gun_angle;
         double gun_rot_speed;
@@ -70,6 +72,8 @@ namespace LogicUtils{
         // int gun_type;
         void init();
     } extern gun_data;
+
+    bool shot_intimeframe = false;
 
     struct HullStats{
         Rectangle player_rectangle = {

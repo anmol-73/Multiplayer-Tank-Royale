@@ -98,6 +98,7 @@ void LogicUtils::handle_movement(float delta_time)
     }
 }
 
+
 double LogicUtils::normalize_angle(double angle)
 {
     while (angle >= 2 * PI) angle -= 2.0 * PI;
