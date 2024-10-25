@@ -3,6 +3,7 @@
 
 void GameState::init_state(int max_players)
 {
+    GameState::old_state.clear();
     for(int i=0; i<max_players; i++)
     {
         PlayerPacket packet;
@@ -21,7 +22,7 @@ void GameState::init_state(int max_players)
     }
 }
 
-std::vector<PlayerPacket> GameState::update_state(PlayerPacket* received_packet)
+std::vector<PlayerPacket>& GameState::update_state(PlayerPacket* received_packet)
 {
     // std::cout << received_packet->ID << " " << time(nullptr) << std::endl;
     old_state[received_packet->ID].has_shot = received_packet->last_shot != old_state[received_packet->ID].last_shot;
@@ -132,6 +133,7 @@ void GameState::handle_shots(PlayerPacket* player_packet){
                     if(cur_dis < min_dis)
                     {
                         min_dis = cur_dis;
+                        contact_point = curr_contact_point;
                         hitting_idx = i;
                     }
                 }

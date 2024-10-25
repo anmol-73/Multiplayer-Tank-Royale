@@ -30,6 +30,7 @@ std::pair<bool, std::string> Communication::Client::connect(std::string server_a
         return {false, "Could not create peer to connect to server!"};
     }
 
+
     ENetEvent event;
     const size_t connection_timeout = 500;
     const size_t max_tries = 10;

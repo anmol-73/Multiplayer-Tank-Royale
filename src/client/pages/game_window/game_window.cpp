@@ -13,8 +13,17 @@ void Pages::GameWindowScene::_update()
     
     logic_update();
 
-    std::cout<<"Health "<<LogicUtils::old_state[0].closest_wall_hit.x << " "<<LogicUtils::old_state[0].closest_wall_hit.y <<std::endl;
-    std::cout<<"GEEEE "<<LogicUtils::old_state[1].closest_wall_hit.x << " "<<LogicUtils::old_state[1].closest_wall_hit.y <<std::endl;
+    if (LogicUtils::did_shoots[0]){
+
+        std::cout<<"Health "<<LogicUtils::old_state[0].closest_wall_hit.x << " "<<LogicUtils::old_state[0].closest_wall_hit.y <<std::endl;
+        
+    } 
+    if (LogicUtils::did_shoots[1]){
+
+        
+        std::cout<<"GEEEE "<<LogicUtils::old_state[1].closest_wall_hit.x << " "<<LogicUtils::old_state[1].closest_wall_hit.y <<std::endl;
+    } 
+
 
     // Drawing
     BeginDrawing();{
@@ -406,6 +415,7 @@ void Pages::GameWindowScene::draw_game()
         if (i == self) continue;
         if(did_shoots[i])
         {
+            old_timestamps[i] = old_state[i].last_shot;
             DrawLineEx(
                 camera.transform(old_state[i].position_absolute),
                 camera.transform(contact_pointsss[i]),
@@ -414,14 +424,6 @@ void Pages::GameWindowScene::draw_game()
         }
     }
     
-
-    // if (player_packet.last_shot - LogicUtils::old_timestamps[self] > GUN_COOLDOWN_MAX){
-    //     DrawLineEx(
-    //         camera.transform(player_data.position),
-    //         camera.transform(contact_point),
-    //         4, WHITE
-    //     );
-    // }
 
     // Draw player
     Color tank_color = player_colliding ? RED:WHITE;

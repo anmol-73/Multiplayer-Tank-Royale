@@ -123,8 +123,11 @@ void RoomHost::handle_message(ENetPeer *peer, size_t type, void *message)
         {
             // if (!is_in_game){break;}
             PlayerPacket* pp = (PlayerPacket*)message;
-            
-            send(ServerCommand::GAME_STATE_UPDATE, game_state.get()->update_state(pp).data(), sizeof(PlayerPacket) * Networking::Message::Room::MAX_ROOM_SIZE);
+            auto xs = game_state.get()->update_state(pp).data();
+            if (pp->ID == 0){
+                    
+                send(ServerCommand::GAME_STATE_UPDATE, xs, sizeof(PlayerPacket) * Networking::Message::Room::MAX_ROOM_SIZE);
+            }
             break;
         }
         case ClientCommand::REQUEST_SPAWN_DATA:

@@ -34,7 +34,7 @@ class GameState
 
         void init_state(int max_players);
 
-        std::vector<PlayerPacket> update_state(PlayerPacket* received_packet);
+        std::vector<PlayerPacket>& update_state(PlayerPacket* received_packet);
 
         void handle_tank_collision(PlayerPacket* received_packet);
 
