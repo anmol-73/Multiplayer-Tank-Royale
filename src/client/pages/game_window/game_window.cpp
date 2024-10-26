@@ -1,4 +1,5 @@
 #include "game_window.hpp"
+#include <algorithm>
 #define GUN_COOLDOWN_MAX 0.5
 float time1;
 bool player_colliding;
@@ -87,9 +88,20 @@ void Pages::GameWindowScene::_update()
     BeginDrawing();{
         ClearBackground(SKYBLUE);
         draw_game();
-        std::cout<<GetFPS()<<std::endl;
+        
         draw_hud();
+        
+        if (dead_timer > 0){
+            DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), {0xcb, 0xc6, 0xb2, 0x90});
+            DragonLib::Utils::Drawing::draw_textbox({
+                .content = std::string("Respawning in....") + std::to_string((int)(6 - dead_timer)),
+                .font_size = Global::rem * 1.5f,
+                .font_color = BLACK,
+            });
+        }
         draw_leaderboard();
+
+
     }
     EndDrawing();
 
@@ -184,7 +196,7 @@ void Pages::GameWindowScene::_load()
         return;
     };
     Global::ServiceProviders::room_client.room_broadcast_callback = [](std::vector<std::string> room_members_){
-        
+        Global::names = room_members_;
         return;
     };
     Global::ServiceProviders::room_client.game_update_callback = [this](void* data){
@@ -284,7 +296,7 @@ void Pages::GameWindowScene::draw_leaderboard() {
     std::vector <std::pair<std::string,int>> arr;
 
     for(int i = 0; i<12; i ++){
-        if(LogicUtils::old_state[i].is_connected)
+        if(Global::names[i].empty())continue;
             arr.push_back(std::make_pair(Global::names[i],LogicUtils::old_state[i].score));
     } 
 
@@ -595,25 +607,39 @@ void Pages::GameWindowScene::draw_game()
 
 void Pages::GameWindowScene::draw_name_health(int i){
     using namespace LogicUtils;
+
     float factor = (float)old_state[i].health/(float)max_health;
 
+
+
     health_bar = {
-        .x = old_state[i].position_absolute.x - hull_data.player_rectangle.width/2 - 50,
-        .y = old_state[i].position_absolute.y - hull_data.player_rectangle.height/2 - 15,
+        .x = i == player_packet.ID ? player_data.position.x : old_state[i].position_absolute.x,
+        .y = i == player_packet.ID ? player_data.position.y : old_state[i].position_absolute.y,
         .width = 100,
         .height = 10
     };
 
-    health_bar = camera.transform(health_bar);
+    
 
+    health_bar = camera.transform(health_bar);
+    Vector2 offset = camera.scale(Vector2{-50, -hull_data.player_rectangle.height});
     
-    
-    DrawRectangleRec(health_bar, RED);
+    health_bar.x += offset.x;
+    health_bar.y += offset.y;
+    DrawRectangleRounded(health_bar, 1.0, 6, RED);
+
+    float actual_width = health_bar.width;
 
     health_bar.width *= factor; 
-    DrawRectangleRec(health_bar, GREEN);
+    DrawRectangleRounded(health_bar, 5, 6, GREEN);
     
-    
+    auto rec = DragonLib::Utils::Drawing::draw_text({
+        .content = Global::names[i],
+        .sdf=false,
+        .font_size = Global::rem * 0.5f,
+        .font_color = BLACK,
+        .position = {.value = {health_bar.x + actual_width/2, health_bar.y + health_bar.height/2}, .mode = {DragonLib::UI::DrawParameters::ABSOLUTE, DragonLib::UI::DrawParameters::ABSOLUTE}},
+    });
 }
 
 void Pages::GameWindowScene::draw_hud()

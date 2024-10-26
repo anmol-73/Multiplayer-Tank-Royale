@@ -43,6 +43,10 @@ void RoomHost::handle_disconnection(ENetPeer *peer)
         if (members[i] == peer){
             members[i] = nullptr;
             enet_peer_reset(peer);
+            if (game_state){
+                game_state.get()->old_state[i].is_alive = false;
+                game_state.get()->old_state[i].is_connected = false;
+            }
             strcpy(names[i], "");
             std::cout << "Client(" << i << ") has forcibly disconnected!" << std::endl;
             if (1){ // Update the players connected
@@ -81,7 +85,8 @@ void RoomHost::handle_message(ENetPeer *peer, size_t type, void *message)
             if (members[client_id] != nullptr){
                 char reason[Structs::STRING_MESSAGE_SIZE] = "You have been kicked!";
                 send(ServerCommand::DISCONNECT, reason, sizeof(char) * Structs::STRING_MESSAGE_SIZE, members[client_id]);
-                
+                game_state.get()->old_state[client_id].is_alive = false;
+                game_state.get()->old_state[client_id].is_connected = false;
                 std::cout << "Client(" << client_id << ") has been removed!";
                 --current_room_size;
                 enet_host_flush(host);
