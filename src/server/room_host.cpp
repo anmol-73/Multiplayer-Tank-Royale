@@ -143,6 +143,7 @@ void RoomHost::handle_message(ENetPeer *peer, size_t type, void *message)
             game_state.get()->old_state[client_id].health = 400;
             game_state.get()->old_state[client_id].is_alive = true;
             game_state.get()->old_state[client_id].is_connected = true;
+            game_state.get()->old_state[client_id].score = 0;
             
             
             send(ServerCommand::SET_SPAWN_DATA, &sd, sizeof(Structs::SpawnData), peer);

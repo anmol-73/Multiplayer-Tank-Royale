@@ -23,6 +23,7 @@ struct PlayerPacket
     bool is_alive;
     bool is_connected;
     Vector2 closest_wall_hit;
+    int score;
 };
 
 class GameState

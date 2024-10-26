@@ -54,6 +54,7 @@ namespace Global
      * Frees resources associated with global shit
      */
     void cleanup();  
+    extern std::vector <std::string> names;
 } // namespace Global
 
 #endif

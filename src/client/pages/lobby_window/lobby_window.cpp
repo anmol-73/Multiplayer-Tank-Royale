@@ -126,6 +126,8 @@ void Pages::LobbyWindowScene::_load_with_context()
 void Pages::LobbyWindowScene::_cleanup_with_context()
 {
     background.unload_tex();
+    
+    Global::names = ui.room_members;
     for (auto &map: map_images) map.unload_tex();
 }
 

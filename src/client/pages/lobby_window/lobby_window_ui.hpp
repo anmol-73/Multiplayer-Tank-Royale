@@ -25,8 +25,8 @@ namespace Pages
         
         UI::Elements::Text* remove_player_button[Networking::Message::Room::MAX_ROOM_SIZE];
         
-    private:
         std::vector<std::string> room_members;
+    private:
         std::vector<std::string> map_names;
         
         bool is_leader;

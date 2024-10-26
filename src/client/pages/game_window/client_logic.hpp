@@ -29,6 +29,7 @@ namespace LogicUtils{
         bool is_alive;
         bool is_connected;
         Vector2 closest_wall_hit;
+        int score;
     } extern player_packet;
 
     std::vector<PlayerPacket> extern old_state;

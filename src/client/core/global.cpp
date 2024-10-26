@@ -6,6 +6,7 @@ Font Global::Rendering::Fonts::main_sdf{};
 Communication::RoomClient Global::ServiceProviders::room_client{};
 Utils::Task Global::ServiceProviders::room_client_worker{};
 float Global::rem{};
+std::vector<std::string> Global::names;
 
 void Global::init()
 {

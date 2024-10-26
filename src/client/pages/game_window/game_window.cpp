@@ -1,5 +1,6 @@
 #include "game_window.hpp"
-#define GUN_COOLDOWN_MAX 2
+#define GUN_COOLDOWN_MAX 0.5
+float time1;
 bool player_colliding;
 void Pages::GameWindowScene::_update()
 {
@@ -20,6 +21,7 @@ void Pages::GameWindowScene::_update()
     BeginDrawing();{
         ClearBackground(SKYBLUE);
         draw_game();
+        std::cout<<GetFPS()<<std::endl;
         draw_hud();
         draw_leaderboard();
     }
@@ -123,9 +125,6 @@ void Pages::GameWindowScene::_load()
         return;
     };
 
-    leaderboard.push_back({"Player1", 150});
-    leaderboard.push_back({"Player2", 120});
-    leaderboard.push_back({"Player3", 100});
 
     std::mutex spawn_mutex;
     std::unique_lock<std::mutex> lock(spawn_mutex);
@@ -196,10 +195,26 @@ void Pages::GameWindowScene::draw_leaderboard() {
 
     // Draw each player's name and score
     int textY = yPos + 40;
-    for (size_t i = 0; i < leaderboard.size(); i++) {
-        std::string playerText = leaderboard[i].name + ": " + std::to_string(leaderboard[i].score);
+    // for (size_t i = 0; i < leaderboard.size(); i++) {
+    //     std::string playerText = leaderboard[i].name + ": " + std::to_string(leaderboard[i].score);
+    //     DrawText(playerText.c_str(), xPos + 10, textY, 18, RAYWHITE);
+    //     textY += 30;  // Move down for the next player
+    // }
+
+    std::vector <std::pair<std::string,int>> arr;
+
+    for(int i = 0; i<12; i ++){
+        if(LogicUtils::old_state[i].is_connected)
+            arr.push_back(std::make_pair(Global::names[i],LogicUtils::old_state[i].score));
+    } 
+
+    std::sort(arr.begin(), arr.end(), [](const auto& a, const auto& b) { return a.second > b.second;});
+
+    for(auto it: arr){
+        std::string playerText = it.first + " " + std::to_string(it.second);
         DrawText(playerText.c_str(), xPos + 10, textY, 18, RAYWHITE);
         textY += 30;  // Move down for the next player
+    
     }
 }
 
@@ -268,13 +283,13 @@ void Pages::GameWindowScene::logic_update()
         if (i == self || !old_state[i].is_alive) continue;
         player_controllers[i].play(old_state[i].is_idle ? player_idle_idx : player_moving_idx, false);
     }
+
     float time = GetTime();
     gun_data.has_shot = gun_data.has_shot && time - LogicUtils::old_timestamps[self] > GUN_COOLDOWN_MAX;
     if(gun_data.has_shot)
     {
         player_packet.last_shot = time;
         gun_controllers[self].play(gun_shot_idx, true);
-     
     }
     else if(gun_controllers[self].current_iteration_count>0)
     {

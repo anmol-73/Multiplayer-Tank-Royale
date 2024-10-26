@@ -18,6 +18,7 @@ void GameState::init_state(int max_players)
             .has_shot = false,
             .is_alive = true,
             .is_connected = true,
+            .score = 0
         };
         GameState::old_state.push_back(packet);
     }
@@ -145,6 +146,7 @@ void GameState::handle_shots(PlayerPacket* player_packet){
             if(old_state[hitting_idx].health <= player_packet->player_dmg){
                 old_state[hitting_idx].is_alive = false;
                 old_state[hitting_idx].health = 0;
+                old_state[player_packet->ID].score +=100;
             }
             else{
                 old_state[hitting_idx].health -= player_packet->player_dmg;
