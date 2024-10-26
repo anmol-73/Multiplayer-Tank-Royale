@@ -46,13 +46,10 @@ class GameState
             std::vector<Vector2> spawnpoints = {
                 {448, 240},
                 {40, 40},
-                {100, 200},
+                {1900, 1000},
                 {150, 180},
-                {150, 180},
-                {150, 180},
-                {150, 180},
-                {150, 180}
-            }; // 8 Spawns in MTR_Units
+                {1024, 600},
+            };
 
             float player_height = 48; // MTR_Units
             float player_width = 64; // MTR_Units
