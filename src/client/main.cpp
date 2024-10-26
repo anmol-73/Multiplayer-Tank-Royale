@@ -26,7 +26,7 @@ int main(int argc, char const *argv[])
     size_t window_width = std::min(GetMonitorWidth(GetCurrentMonitor()) - 200, 800);
     SetWindowSize(window_width, (window_width * 9) / 16);
     SetWindowPosition(20, 20);
-    SetTargetFPS(120);
+    SetTargetFPS(45);
 
     Global::init();
 

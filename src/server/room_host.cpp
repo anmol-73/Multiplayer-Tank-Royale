@@ -123,10 +123,11 @@ void RoomHost::handle_message(ENetPeer *peer, size_t type, void *message)
         case ClientCommand::GAME_STATE_UPDATE_REQUEST:
         {
             // if (!is_in_game){break;}
+            ++skipped_updates;
             PlayerPacket* pp = (PlayerPacket*)message;
             auto xs = game_state.get()->update_state(pp).data();
-            if (pp->ID == 0){
-
+            if (skipped_updates > 2){
+                skipped_updates = 0;
                 send(ServerCommand::GAME_STATE_UPDATE, xs, sizeof(PlayerPacket) * Networking::Message::Room::MAX_ROOM_SIZE);
             }
             break;
