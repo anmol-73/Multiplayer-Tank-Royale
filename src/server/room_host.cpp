@@ -126,7 +126,7 @@ void RoomHost::handle_message(ENetPeer *peer, size_t type, void *message)
             PlayerPacket* pp = (PlayerPacket*)message;
             auto xs = game_state.get()->update_state(pp).data();
             if (pp->ID == 0){
-                    
+
                 send(ServerCommand::GAME_STATE_UPDATE, xs, sizeof(PlayerPacket) * Networking::Message::Room::MAX_ROOM_SIZE);
             }
             break;
@@ -134,11 +134,16 @@ void RoomHost::handle_message(ENetPeer *peer, size_t type, void *message)
         case ClientCommand::REQUEST_SPAWN_DATA:
         {
             // if (!is_in_game) break;
+            
             size_t client_id = *(size_t*)message;
             Structs::SpawnData sd;
             sd.map_id = current_map_idx;
             sd.spawn = game_state.get()->game_constants.spawnpoints[client_id];
             sd.angle = 0;
+            game_state.get()->old_state[client_id].health = 400;
+            game_state.get()->old_state[client_id].is_alive = true;
+            game_state.get()->old_state[client_id].is_connected = true;
+            
             
             send(ServerCommand::SET_SPAWN_DATA, &sd, sizeof(Structs::SpawnData), peer);
             

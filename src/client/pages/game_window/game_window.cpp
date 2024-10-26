@@ -13,16 +13,7 @@ void Pages::GameWindowScene::_update()
     
     logic_update();
 
-    if (LogicUtils::did_shoots[0]){
-
-        std::cout<<"Health "<<LogicUtils::old_state[0].closest_wall_hit.x << " "<<LogicUtils::old_state[0].closest_wall_hit.y <<std::endl;
-        
-    } 
-    if (LogicUtils::did_shoots[1]){
-
-        
-        std::cout<<"GEEEE "<<LogicUtils::old_state[1].closest_wall_hit.x << " "<<LogicUtils::old_state[1].closest_wall_hit.y <<std::endl;
-    } 
+    
 
 
     // Drawing
@@ -447,6 +438,7 @@ void Pages::GameWindowScene::draw_game()
             (pp.player_angle)*RAD2DEG, PURPLE
         );
 
+        std::cout << LogicUtils::old_state[i].health << std::endl;
         draw_name_health(i);
     }
     
@@ -518,7 +510,7 @@ void Pages::GameWindowScene::draw_game()
 
 void Pages::GameWindowScene::draw_name_health(int i){
     using namespace LogicUtils;
-    float factor = old_state[i].health/max_health;
+    float factor = (float)old_state[i].health/(float)max_health;
 
     health_bar = {
         .x = old_state[i].position_absolute.x,
