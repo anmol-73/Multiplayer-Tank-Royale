@@ -19,6 +19,10 @@ void Pages::GameWindowScene::_update()
     }
     else {
         dead_timer += GetFrameTime();
+        if (dead_timer > 10){
+            SceneManagement::SceneManager::load_deferred(SceneManagement::MAIN_PAGE);
+            return;
+        }
     }
 
     if (dead_timer > 5 && !spawn_request_setter_worker.is_running()){
@@ -174,6 +178,7 @@ void Pages::GameWindowScene::_loading_update()
 
 void Pages::GameWindowScene::_load()
 {
+    dead_timer = 0;
     spawn_request_setter_worker.await();
     using namespace LogicUtils;
     SetMouseCursor(MOUSE_CURSOR_CROSSHAIR);
