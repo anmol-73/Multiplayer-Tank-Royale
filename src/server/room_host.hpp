@@ -38,6 +38,7 @@ struct RoomHost: public Host{
 
 
 private:
+    int skipped_updates = 0;
     std::unique_ptr<GameState> game_state;
     size_t current_room_size = 0;
     int current_map_idx = 0;

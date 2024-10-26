@@ -13,7 +13,7 @@
 #include "core/utils/animation_controller.hpp"
 #include "core/utils/camera.hpp"
 #include "core/dragonlib.hpp"
-
+#include "core/task.hpp"
 
 
 namespace Pages
@@ -61,6 +61,9 @@ namespace Pages
         Utils::Camera camera;
         // std::vector<LogicUtils::PlayerPacket> old_state;
         std::vector<LogicUtils::PlayerInfo> leaderboard;
+
+        float dead_timer = 0;
+        Utils::Task spawn_request_setter_worker;
         
     };
 

@@ -12,8 +12,74 @@ void Pages::GameWindowScene::_update()
 
     // Logic update
     
-    logic_update();
 
+    if (LogicUtils::old_state[LogicUtils::player_packet.ID].is_alive){
+        logic_update();
+    }
+    else {
+        dead_timer += GetFrameTime();
+    }
+
+    if (dead_timer > 5 && !spawn_request_setter_worker.is_running()){
+        using namespace LogicUtils;
+        
+        spawn_request_setter_worker.accomplish([this](const bool& cancelled){
+            std::mutex spawn_mutex;
+            std::unique_lock<std::mutex> lock(spawn_mutex);
+            std::condition_variable spawn_cv;
+            Networking::Message::Room::SpawnData data;
+            bool received_spawn_data = false;
+            Global::ServiceProviders::room_client.request_spawn([&spawn_cv, &received_spawn_data, &data](Networking::Message::Room::SpawnData* sdata){
+                received_spawn_data = true;
+                if (sdata != nullptr)
+                data = *sdata;
+                spawn_cv.notify_all();
+            });
+
+            spawn_cv.wait(lock, [&cancelled, &received_spawn_data](){
+                return (received_spawn_data || cancelled || !Global::ServiceProviders::room_client.connected());
+            });
+
+            hull_data.init();
+            camera.init({Maps::maps[map_idx].width(), Maps::maps[map_idx].height()}, {Maps::maps[map_idx].vwidth(), Maps::maps[map_idx].vheight()}, {hull_data.player_rectangle.width, hull_data.player_rectangle.height});
+            if (cancelled || !Global::ServiceProviders::room_client.connected()){
+                map_idx = 0;
+            } else{
+
+                map_idx = data.map_id;
+                Vector2 player_spawn_position = data.spawn;
+                projected_data.init(player_spawn_position);
+                player_data.init(player_spawn_position);
+                player_data.angle = data.angle;
+            }
+
+            std::cout << "GOT SPAWN DATA!" <<std::endl;
+
+            LogicUtils::old_state[LogicUtils::player_packet.ID].is_alive = true;
+
+            camera.follow(player_data.position);
+            
+
+            crosshair_data.init();
+            gun_data.init();
+            
+
+            viewport_data.offset = Vector2();
+            dead_timer = 0;
+        });
+        
+    }
+
+
+
+    time_since_last_send += GetFrameTime();
+    
+    if(time_since_last_send>=0.017)
+    {   
+        LogicUtils::set_packet();
+        time_since_last_send = 0;        
+        Global::ServiceProviders::room_client.request_game_update(&LogicUtils::player_packet, sizeof(LogicUtils::PlayerPacket));
+    }
     
 
 
@@ -96,6 +162,7 @@ void Pages::GameWindowScene::_loading_update()
 
 void Pages::GameWindowScene::_load()
 {
+    spawn_request_setter_worker.await();
     using namespace LogicUtils;
     SetMouseCursor(MOUSE_CURSOR_CROSSHAIR);
     
@@ -121,57 +188,70 @@ void Pages::GameWindowScene::_load()
         return;
     };
     Global::ServiceProviders::room_client.game_update_callback = [this](void* data){
+        
         update_state((PlayerPacket*)data);
         return;
     };
 
 
-    std::mutex spawn_mutex;
-    std::unique_lock<std::mutex> lock(spawn_mutex);
-    std::condition_variable spawn_cv;
-
-    bool received_spawn_data = false;
-    Networking::Message::Room::SpawnData data;
-    Global::ServiceProviders::room_client.request_spawn([&spawn_cv, &received_spawn_data, &data](Networking::Message::Room::SpawnData* sdata){
-        received_spawn_data = true;
-        if (sdata != nullptr)
-        data = *sdata;
-        spawn_cv.notify_all();
-    });
-
-    spawn_cv.wait(lock, [&received_spawn_data](){
-        return (received_spawn_data || !Global::ServiceProviders::room_client.connected());
-    });
-
-    map_idx = data.map_id;
-    Vector2 player_spawn_position = data.spawn;
-
-    std::cout << "GOT SPAWN DATA!" <<std::endl;
-
-    hull_data.init();
-    camera.init({Maps::maps[map_idx].width(), Maps::maps[map_idx].height()}, {Maps::maps[map_idx].vwidth(), Maps::maps[map_idx].vheight()}, {hull_data.player_rectangle.width, hull_data.player_rectangle.height});
-        
-    projected_data.init(player_spawn_position);
-    player_data.init(player_spawn_position);
-    player_data.angle = data.angle;
-
-    camera.follow(player_data.position);
-    
-
-    crosshair_data.init();
-    gun_data.init();
-    
-
-    viewport_data.offset = Vector2();
-    
-
     player_spritesheet_image = LoadImage("resources/game_window/tank2_spritesheet.png");
     map_image = LoadImage("resources/game_window/defaultmap.png");
+
+    spawn_request_setter_worker.accomplish([this](const bool& cancelled){
+        std::mutex spawn_mutex;
+        std::unique_lock<std::mutex> lock(spawn_mutex);
+        std::condition_variable spawn_cv;
+        Networking::Message::Room::SpawnData data;
+        bool received_spawn_data = false;
+        Global::ServiceProviders::room_client.request_spawn([&spawn_cv, &received_spawn_data, &data](Networking::Message::Room::SpawnData* sdata){
+            received_spawn_data = true;
+            if (sdata != nullptr)
+            data = *sdata;
+            spawn_cv.notify_all();
+        });
+
+        spawn_cv.wait(lock, [&cancelled, &received_spawn_data](){
+            return (received_spawn_data || cancelled || !Global::ServiceProviders::room_client.connected());
+        });
+
+        hull_data.init();
+        camera.init({Maps::maps[map_idx].width(), Maps::maps[map_idx].height()}, {Maps::maps[map_idx].vwidth(), Maps::maps[map_idx].vheight()}, {hull_data.player_rectangle.width, hull_data.player_rectangle.height});
+        if (cancelled || !Global::ServiceProviders::room_client.connected()){
+            map_idx = 0;
+        } else{
+
+            map_idx = data.map_id;
+            Vector2 player_spawn_position = data.spawn;
+            projected_data.init(player_spawn_position);
+            player_data.init(player_spawn_position);
+            player_data.angle = data.angle;
+        }
+
+        std::cout << "GOT SPAWN DATA!" <<std::endl;
+
+            
+
+        camera.follow(player_data.position);
+        
+
+        crosshair_data.init();
+        gun_data.init();
+        
+
+        viewport_data.offset = Vector2();
+    });
+    spawn_request_setter_worker.await();
+
+    std::cout << "HELLO" << std::endl;
+    
+    
+
 
     time_since_last_send = 0;
     
     
     init_state(Networking::Message::Room::MAX_ROOM_SIZE);
+    LogicUtils::old_state[LogicUtils::player_packet.ID].is_alive = true;
     
 }
 
@@ -221,6 +301,8 @@ void Pages::GameWindowScene::draw_leaderboard() {
 
 void Pages::GameWindowScene::_cleanup()
 {
+    spawn_request_setter_worker.cancel();
+    spawn_request_setter_worker.await();
     LogicUtils::did_shoots.clear();
     LogicUtils::old_timestamps.clear();
     LogicUtils::contact_pointsss.clear();
@@ -306,19 +388,7 @@ void Pages::GameWindowScene::logic_update()
         } else if(gun_controllers[i].current_iteration_count>0){
             gun_controllers[i].play(gun_idle_idx, true);
         }
-    }
-    
-    
-    time_since_last_send += delta_time;
-    
-    if(time_since_last_send>=0.008)
-    {   
-        set_packet();
-        time_since_last_send = 0;        
-        Global::ServiceProviders::room_client.request_game_update(&player_packet, sizeof(PlayerPacket));
-    }
-
-    
+    }    
     camera.follow(player_data.position);
 
     bullet_colliding = false;
@@ -528,20 +598,21 @@ void Pages::GameWindowScene::draw_name_health(int i){
     float factor = (float)old_state[i].health/(float)max_health;
 
     health_bar = {
-        .x = old_state[i].position_absolute.x,
-        .y = old_state[i].position_absolute.y,
+        .x = old_state[i].position_absolute.x - hull_data.player_rectangle.width/2 - 50,
+        .y = old_state[i].position_absolute.y - hull_data.player_rectangle.height/2 - 15,
         .width = 100,
-        .height = 20
+        .height = 10
     };
 
     health_bar = camera.transform(health_bar);
 
+    
+    
+    DrawRectangleRec(health_bar, RED);
+
     health_bar.width *= factor; 
     DrawRectangleRec(health_bar, GREEN);
     
-    health_bar.x += health_bar.width;
-    health_bar.width *= (1-factor)/factor;
-    DrawRectangleRec(health_bar, RED);
     
 }
 
