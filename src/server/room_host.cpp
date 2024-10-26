@@ -2,6 +2,9 @@
 
 RoomHost::RoomHost()
 {
+    game_state.reset(new GameState());
+    gen = std::mt19937 (rd()); // seed the generator
+    distr = std::uniform_int_distribution<>(0, game_state.get()->game_constants.spawnpoints.size() - 1);
     members.assign(Networking::Message::Room::MAX_ROOM_SIZE, {});
     for (size_t i = 0; i < Networking::Message::Room::MAX_ROOM_SIZE; ++i){
         strcpy(names[i], "");
@@ -144,7 +147,7 @@ void RoomHost::handle_message(ENetPeer *peer, size_t type, void *message)
             size_t client_id = *(size_t*)message;
             Structs::SpawnData sd;
             sd.map_id = current_map_idx;
-            sd.spawn = game_state.get()->game_constants.spawnpoints[client_id];
+            sd.spawn = game_state.get()->game_constants.spawnpoints[distr(gen)];
             sd.angle = 0;
             game_state.get()->old_state[client_id].health = 400;
             game_state.get()->old_state[client_id].is_alive = true;

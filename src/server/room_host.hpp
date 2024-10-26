@@ -20,7 +20,7 @@ typedef struct tagMSG *LPMSG;
 #include <map>
 #include <vector>
 #include "host.hpp"
-
+#include <random>
 #include "server_logic.hpp"
 
 struct RoomHost: public Host{
@@ -38,6 +38,9 @@ struct RoomHost: public Host{
 
 
 private:
+    std::random_device rd; // obtain a random number from hardware
+        std::mt19937 gen; // seed the generator
+        std::uniform_int_distribution<> distr;
     int skipped_updates = 0;
     std::unique_ptr<GameState> game_state;
     size_t current_room_size = 0;
