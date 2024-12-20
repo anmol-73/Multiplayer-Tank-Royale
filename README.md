@@ -1,11 +1,11 @@
-# MTRMoment hogaya
+# Multiplayer Tank Royale
  
 ## Usage
 Just cd into the directory with the make file and run `make`
 
 This should create the executable in the build directory
 
-cd into the build directory and run the game ez :)
+cd into the build directory and run the game. 
 
 (Or just run test.bat)
 
