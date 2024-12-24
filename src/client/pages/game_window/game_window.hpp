@@ -64,6 +64,7 @@ namespace Pages
 
         float dead_timer = 0;
         Utils::Task spawn_request_setter_worker;
+        float time;
         
     };
 

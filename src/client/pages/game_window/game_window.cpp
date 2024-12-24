@@ -1,7 +1,6 @@
 #include "game_window.hpp"
 #include <algorithm>
 #define GUN_COOLDOWN_MAX 0.5
-float time1;
 bool player_colliding;
 void Pages::GameWindowScene::_update()
 {
@@ -378,7 +377,7 @@ void Pages::GameWindowScene::logic_update()
         player_controllers[i].play(old_state[i].is_idle ? player_idle_idx : player_moving_idx, false);
     }
 
-    float time = GetTime();
+    time = (float)GetTime();
     gun_data.has_shot = gun_data.has_shot && time - LogicUtils::old_timestamps[self] > GUN_COOLDOWN_MAX;
     if(gun_data.has_shot)
     {
@@ -466,6 +465,8 @@ void Pages::GameWindowScene::logic_update()
         }
     }
     
+    update_projectiles(delta_time);
+    std::cout << time << std::endl;
 }
 
 
@@ -498,6 +499,8 @@ void Pages::GameWindowScene::draw_game()
             camera.transform(contact_point),
             4, WHITE
         );
+        old_timestamps[self] = (float)Pages::GameWindowScene::time;
+        spawn_projectile();
     }
     for (size_t i = 0; i < old_state.size(); ++i){
         if (i == self) continue;
@@ -594,6 +597,15 @@ void Pages::GameWindowScene::draw_game()
         );
     }
 
+    for (size_t i = 0; i < projectiles_vector.size(); ++i){
+        DrawRectanglePro(
+            camera.transform(projectiles_vector[i].hitbox), camera.scale(Vector2{
+                0, projectiles_vector[i].hitbox.height/2
+            }), 
+            projectiles_vector[i].angle*RAD2DEG, RED
+        );
+
+    }
     
     // Draw gun crosshair circle
     DrawCircleLinesV(

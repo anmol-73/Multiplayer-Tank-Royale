@@ -111,6 +111,20 @@ namespace LogicUtils{
         Vector2 projected_offset;
     } extern viewport_data;
 
+    struct Projectile
+    {
+        Rectangle hitbox;
+        double angle;
+        double time_alive;
+        double projectile_speed;
+    };
+
+    std::vector<Projectile> extern projectiles_vector;
+
+    void spawn_projectile();
+
+    void update_projectiles(float delta_time);
+
     void init_state(int max_players);
 
     void update_state(PlayerPacket *received_state);
@@ -158,6 +172,8 @@ namespace LogicUtils{
 
     Texture2D extern map;
     Image extern map_image;
+
+
 };
 
 
