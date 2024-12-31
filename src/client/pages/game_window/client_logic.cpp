@@ -2,7 +2,7 @@
 #include <iostream>
 
 std::vector<float> LogicUtils::old_timestamps;
-LogicUtils::PlayerPacket LogicUtils::player_packet;
+CommonStructs::PlayerPacket LogicUtils::player_packet;
 LogicUtils::LivePlayerData LogicUtils::player_data;
 LogicUtils::LivePlayerData LogicUtils::projected_data;
 LogicUtils::GunStats LogicUtils::gun_data;
@@ -19,8 +19,8 @@ Utils::Animation* LogicUtils::player_moving;
 Utils::Animation* LogicUtils::gun_idle;
 Utils::Animation* LogicUtils::gun_shot;
 
-std::vector<LogicUtils::PlayerPacket> LogicUtils::old_state;
-std::vector<LogicUtils::PlayerPacket> LogicUtils::old_state_buffer;
+std::vector<CommonStructs::PlayerPacket> LogicUtils::old_state;
+std::vector<CommonStructs::PlayerPacket> LogicUtils::old_state_buffer;
 
 Texture2D LogicUtils::player_spritesheet;
 Image LogicUtils::player_spritesheet_image;
@@ -33,47 +33,40 @@ size_t LogicUtils::gun_shot_idx;
 Texture2D LogicUtils::map;
 Image LogicUtils::map_image;
 
-std::vector<LogicUtils::Projectile> LogicUtils::projectiles_vector;
-void LogicUtils::spawn_projectile()
+std::vector<CommonStructs::Projectile> LogicUtils::projectiles_vector;
+
+void LogicUtils::update_projectiles(CommonStructs::Projectile *received_state)
 {
-    Projectile new_projectile;
-    new_projectile.angle = gun_data.gun_angle;
-    new_projectile.hitbox =  {
-            .x = player_data.position.x + (float)(gun_data.gun_rectangle.width*cos(gun_data.gun_angle)),
-            .y = player_data.position.y + (float)(gun_data.gun_rectangle.width*sin(gun_data.gun_angle)),
-            .width = 12,
-            .height = 12,
-        };
-    new_projectile.time_alive = 0;
-    new_projectile.projectile_speed = 200.0f;
-    projectiles_vector.push_back(new_projectile);
+    int num = (int)(received_state[0].time_alive); // Actually the first struct is just holding the size ;-;
+    projectiles_vector = std::vector(received_state, received_state + num);
 }
 
-void LogicUtils::update_projectiles(float delta_time)
-{
-    for(int i=0; i<projectiles_vector.size(); i++)
-    {
-        bool not_colliding = true;
-        if(projectiles_vector[i].time_alive<2 && not_colliding)
-        {
-            double displacement = (projectiles_vector[i].projectile_speed * delta_time);
-            projectiles_vector[i].hitbox.x += (displacement*cos(projectiles_vector[i].angle));
-            projectiles_vector[i].hitbox.y += (displacement*sin(projectiles_vector[i].angle));
-            projectiles_vector[i].time_alive += delta_time;
-        }
-        else
-        {
-            projectiles_vector.erase(projectiles_vector.begin() + i);
-        }
-        std::cout << projectiles_vector[i].time_alive << "  !!!!!!!!!!!" << std::endl;
-    }
-}
+// void LogicUtils::update_projectiles(float delta_time)
+// {
+//     for(int i=0; i<projectiles_vector.size(); i++)
+//     {
+//         bool not_colliding = true;
+//         if(projectiles_vector[i].time_alive<2 && not_colliding)
+//         {
+//             double displacement = (projectiles_vector[i].projectile_speed * delta_time);
+//             projectiles_vector[i].hitbox.x += (displacement*cos(projectiles_vector[i].angle));
+//             projectiles_vector[i].hitbox.y += (displacement*sin(projectiles_vector[i].angle));
+//             projectiles_vector[i].time_alive += delta_time;
+//         }
+//         else
+//         {
+//             projectiles_vector.erase(projectiles_vector.begin() + i);
+//         }
+//     }
+// }
+
+
 
 void LogicUtils::init_state(int max_players)
 {
     for(int i=0; i<max_players; i++)
     {
-        PlayerPacket packet;
+        CommonStructs::PlayerPacket packet;
         packet = {
             .is_idle = true,
             .ID=i,
@@ -90,7 +83,7 @@ void LogicUtils::init_state(int max_players)
     }
 };
 
-void LogicUtils::update_state(PlayerPacket *received_state)
+void LogicUtils::update_state(CommonStructs::PlayerPacket *received_state)
 {
     // TODO: Use proper constant here
     old_state = std::vector(received_state, received_state + Networking::Message::Room::MAX_ROOM_SIZE);

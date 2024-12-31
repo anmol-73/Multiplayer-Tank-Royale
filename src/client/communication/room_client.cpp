@@ -36,6 +36,12 @@ void Communication::RoomClient::request_game_update(void *pp, size_t psize)
     enet_host_flush(host);
 }
 
+void Communication::RoomClient::request_secondary_update(void *pp, size_t psize)
+{
+    // Not needed for now
+    enet_host_flush(host);
+}
+
 void Communication::RoomClient::reset_callbacks()
 {
     room_broadcast_callback = {};
@@ -145,6 +151,12 @@ void Communication::RoomClient::handle_message(size_t type, void *message)
         case ServerCommand::GAME_STATE_UPDATE:{
             if (game_update_callback){
                 game_update_callback(message);
+            }
+            break;
+        }
+        case ServerCommand::SECONDARY_STATE_UPDATE:{
+            if (secondary_update_callback){
+                secondary_update_callback(message);
             }
             break;
         }

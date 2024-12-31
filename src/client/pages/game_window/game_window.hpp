@@ -59,7 +59,7 @@ namespace Pages
         Vector2 contact_point;
         bool bullet_colliding;
         Utils::Camera camera;
-        // std::vector<LogicUtils::PlayerPacket> old_state;
+        // std::vector<LogicUtils::CommonStructs::PlayerPacket> old_state;
         std::vector<LogicUtils::PlayerInfo> leaderboard;
 
         float dead_timer = 0;

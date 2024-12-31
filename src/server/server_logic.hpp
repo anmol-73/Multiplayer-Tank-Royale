@@ -4,42 +4,35 @@
 
 #include "maps/maps.hpp"
 #include "collisions.hpp"
+#include "common_structs.hpp"
 
 #include <string>
 #include <utility>
 #include <vector>
+#include <chrono>
 
-struct PlayerPacket
-{
-    float last_shot;
-    bool is_idle;
-    int ID;
-    Vector2 position_absolute_units; // Top left of tank
-    float player_angle; // Angle with x axis from tank center in rads
-    float gun_angle; // Angle with x axis from tank center in rads
-    int health;
-    int player_dmg;
-    bool has_shot;
-    bool is_alive;
-    bool is_connected;
-    Vector2 closest_wall_hit;
-    int score;
-};
 
 class GameState
 {
     public:
         int max_players=8;
 
-        std::vector<PlayerPacket> old_state;
+        std::vector<CommonStructs::PlayerPacket> old_state;
+
+        long double time_of_last_proj_update;
+        std::chrono::_V2::system_clock::time_point start_time;
 
         void init_state(int max_players);
 
-        std::vector<PlayerPacket>& update_state(PlayerPacket* received_packet);
+        std::vector<CommonStructs::PlayerPacket>& update_state(CommonStructs::PlayerPacket* received_packet);
 
-        void handle_tank_collision(PlayerPacket* received_packet);
+        void handle_tank_collision(CommonStructs::PlayerPacket* received_packet);
 
-        void handle_shots(PlayerPacket* received_packet);
+        void handle_shots(CommonStructs::PlayerPacket* received_packet);
+
+        std::vector<CommonStructs::Projectile> projectiles_vector;
+
+        std::vector<CommonStructs::Projectile>& update_projectiles();
 
         struct GameConstants
         {
@@ -55,6 +48,8 @@ class GameState
             float player_width = 64; // MTR_Units
             int gun_dmg = 1;
         } game_constants;
+
+        long double curtime();
 };
 
 #endif

@@ -28,6 +28,7 @@ namespace Networking
                 REMOVE_PLAYER_REQUEST,
                 MAP_SET_REQUEST,
                 GAME_STATE_UPDATE_REQUEST,
+                SECONDARY_STATE_UPDATE_REQUEST,
                 REQUEST_SPAWN_DATA
             };
 
@@ -52,6 +53,7 @@ namespace Networking
                 DISCONNECT,
                 MAP_SET,
                 GAME_STATE_UPDATE,
+                SECONDARY_STATE_UPDATE,
                 SET_SPAWN_DATA
             };
         } // namespace Room

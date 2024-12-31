@@ -78,7 +78,7 @@ void Pages::GameWindowScene::_update()
     {   
         LogicUtils::set_packet();
         time_since_last_send = 0;        
-        Global::ServiceProviders::room_client.request_game_update(&LogicUtils::player_packet, sizeof(LogicUtils::PlayerPacket));
+        Global::ServiceProviders::room_client.request_game_update(&LogicUtils::player_packet, sizeof(CommonStructs::PlayerPacket));
     }
     
 
@@ -199,8 +199,13 @@ void Pages::GameWindowScene::_load()
         return;
     };
     Global::ServiceProviders::room_client.game_update_callback = [this](void* data){
+
+        update_state((CommonStructs::PlayerPacket*)data);
+        return;
+    };
+    Global::ServiceProviders::room_client.secondary_update_callback = [this](void* data){
         
-        update_state((PlayerPacket*)data);
+        update_projectiles((CommonStructs::Projectile*)data);
         return;
     };
 
@@ -253,7 +258,6 @@ void Pages::GameWindowScene::_load()
     });
     spawn_request_setter_worker.await();
 
-    std::cout << "HELLO" << std::endl;
     
     
 
@@ -464,9 +468,6 @@ void Pages::GameWindowScene::logic_update()
             }
         }
     }
-    
-    update_projectiles(delta_time);
-    std::cout << time << std::endl;
 }
 
 
@@ -494,13 +495,12 @@ void Pages::GameWindowScene::draw_game()
     );
 
     if (gun_data.has_shot){
-        DrawLineEx(
-            camera.transform(player_data.position),
-            camera.transform(contact_point),
-            4, WHITE
-        );
+        // DrawLineEx(
+        //     camera.transform(player_data.position),
+        //     camera.transform(contact_point),
+        //     4, WHITE
+        // );
         old_timestamps[self] = (float)Pages::GameWindowScene::time;
-        spawn_projectile();
     }
     for (size_t i = 0; i < old_state.size(); ++i){
         if (i == self) continue;
@@ -597,14 +597,14 @@ void Pages::GameWindowScene::draw_game()
         );
     }
 
-    for (size_t i = 0; i < projectiles_vector.size(); ++i){
+    for (size_t i = 1; i < projectiles_vector.size(); i++){
         DrawRectanglePro(
             camera.transform(projectiles_vector[i].hitbox), camera.scale(Vector2{
                 0, projectiles_vector[i].hitbox.height/2
             }), 
             projectiles_vector[i].angle*RAD2DEG, RED
         );
-
+        std::cout << projectiles_vector[i].hitbox.x << " " << projectiles_vector[i].hitbox.y << " " << projectiles_vector[i].angle << " " << projectiles_vector[i].time_alive << std::endl;
     }
     
     // Draw gun crosshair circle
