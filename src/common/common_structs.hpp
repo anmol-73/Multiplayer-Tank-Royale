@@ -29,6 +29,8 @@ namespace CommonStructs
         double angle;
         double time_alive;
         double projectile_speed;
+        int dmg;
+        int shot_id;
     };
 
 }
