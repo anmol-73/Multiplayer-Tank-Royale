@@ -190,6 +190,8 @@ std::vector<CommonStructs::Projectile>& GameState::update_projectiles()
         bool not_colliding = true;
 
         Rectangle collider = projectiles_vector[i].hitbox;
+        collider.x += GameState::game_constants.player_width / 2;
+        collider.y += GameState::game_constants.player_height / 2;
         size_t pos_y = (size_t)(collider.y/Maps::maps[0].tile_width_units);
         size_t pos_x = (size_t)(collider.x/Maps::maps[0].tile_width_units);
         size_t pos_idx = ((Maps::maps[0].map_width_tiles)*pos_y) + pos_x;

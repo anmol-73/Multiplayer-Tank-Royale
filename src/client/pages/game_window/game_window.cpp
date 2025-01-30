@@ -600,7 +600,7 @@ void Pages::GameWindowScene::draw_game()
     for (size_t i = 1; i < projectiles_vector.size(); i++){
         DrawRectanglePro(
             camera.transform(projectiles_vector[i].hitbox), camera.scale(Vector2{
-                0, projectiles_vector[i].hitbox.height/2
+                projectiles_vector[i].hitbox.width/2, projectiles_vector[i].hitbox.height/2
             }), 
             projectiles_vector[i].angle*RAD2DEG, RED
         );
