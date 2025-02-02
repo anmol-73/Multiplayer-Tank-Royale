@@ -26,6 +26,8 @@ namespace Physics
 
     bool CheckCollisionRay2dRectEx(Vector2 origin, float dirn_angle, Rectangle rect, float rec_angle,Vector2* intersection);
     bool CheckCollisionRay2dRect(Vector2 origin, float dirn_angle, Rectangle rect, Vector2* intersection);
+
+    bool CheckCollisionCircleRectPro(Vector2 center, float radius, Rectangle rec, float rec_angle);
 } // namespace Physics
 
 

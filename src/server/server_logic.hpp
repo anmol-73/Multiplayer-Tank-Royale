@@ -30,9 +30,9 @@ class GameState
 
         void handle_shots(CommonStructs::PlayerPacket* received_packet);
 
-        std::vector<CommonStructs::Projectile> projectiles_vector;
+        std::vector<CommonStructs::Explosion> explosions_vector;
 
-        std::vector<CommonStructs::Projectile>& update_projectiles();
+        std::vector<CommonStructs::Explosion>& update_explosions();
 
         struct GameConstants
         {

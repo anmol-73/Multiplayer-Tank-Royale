@@ -131,11 +131,11 @@ void RoomHost::handle_message(ENetPeer *peer, size_t type, void *message)
             ++skipped_updates;
             CommonStructs::PlayerPacket* pp = (CommonStructs::PlayerPacket*)message;
             auto xs = game_state.get()->update_state(pp).data();
-            auto pv = game_state.get()->update_projectiles().data();
+            auto pv = game_state.get()->update_explosions().data();
             if (skipped_updates > 2){
                 skipped_updates = 0;
                 send(ServerCommand::GAME_STATE_UPDATE, xs, sizeof(CommonStructs::PlayerPacket) * Networking::Message::Room::MAX_ROOM_SIZE);
-                send(ServerCommand::SECONDARY_STATE_UPDATE, pv, sizeof(CommonStructs::Projectile) * (pv[0].time_alive+1)); // More fuckery
+                send(ServerCommand::SECONDARY_STATE_UPDATE, pv, sizeof(CommonStructs::Projectile) * (pv[0].time_left+1)); // More fuckery
             }
             break;
         }

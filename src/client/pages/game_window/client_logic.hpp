@@ -97,9 +97,9 @@ namespace LogicUtils{
         Vector2 projected_offset;
     } extern viewport_data;
 
-    std::vector<CommonStructs::Projectile> extern projectiles_vector;
+    std::vector<CommonStructs::Explosion> extern explosions_vector;
 
-    void update_projectiles(CommonStructs::Projectile *received_state);
+    void update_explosions(CommonStructs::Explosion *received_state);
 
     void init_state(int max_players);
 

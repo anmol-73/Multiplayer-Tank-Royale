@@ -21,7 +21,7 @@ void GameState::init_state(int max_players)
             .score = 0
         };
         GameState::old_state.push_back(packet);
-        GameState::projectiles_vector.push_back({{0,0,0,0},0,0,0,0});
+        GameState::explosions_vector.push_back({{0,0},0});
         GameState::start_time = std::chrono::high_resolution_clock().now();
         GameState::time_of_last_proj_update = curtime();
     }
@@ -162,103 +162,61 @@ void GameState::handle_tank_collision(CommonStructs::PlayerPacket* received_pack
 
 void GameState::handle_shots(CommonStructs::PlayerPacket* player_packet)
 {
-    CommonStructs::Projectile new_projectile;
-    new_projectile.angle = player_packet->gun_angle;
-    new_projectile.hitbox =  {
-            .x = player_packet->position_absolute.x + (float)(48*cos(player_packet->gun_angle)),
-            .y = player_packet->position_absolute.y + (float)(48*sin(player_packet->gun_angle)),
-            .width = 12,
-            .height = 12,
+    CommonStructs::Explosion new_explosion;
+    new_explosion.position =  {
+            .x = player_packet->mouse_position.x,
+            .y = player_packet->mouse_position.y,
         };
-    new_projectile.time_alive = 0;
-    new_projectile.projectile_speed = 200.0f;
-    new_projectile.dmg=100;
-    new_projectile.shot_id = player_packet->ID;
-    projectiles_vector.push_back(new_projectile);
+    new_explosion.time_left = 1;
+    new_explosion.radius = 20;
+    new_explosion.dmg = 300;
+    new_explosion.shot_id = player_packet->ID;
+    explosions_vector.push_back(new_explosion);
 }
 
-std::vector<CommonStructs::Projectile>& GameState::update_projectiles()
+std::vector<CommonStructs::Explosion>& GameState::update_explosions()
 {
     float t=(float)curtime();
     float delta_time = (t-time_of_last_proj_update)/1000;
-    //std::cout << t << " " << time_of_last_proj_update << " " << delta_time << std::endl; 
     time_of_last_proj_update=t;
-    //std::cout << projectiles_vector.size() << std::endl;
-    for(int i=1; i<projectiles_vector.size(); i++)
+    for(int i=1; i<explosions_vector.size(); i++)
     {
-        //std::cout << projectiles_vector[i].hitbox.x << " " << projectiles_vector[i].hitbox.y << " " << projectiles_vector[i].angle << " " << projectiles_vector[i].time_alive << std::endl;
-        bool not_colliding = true;
-
-        Rectangle collider = projectiles_vector[i].hitbox;
-        collider.x += GameState::game_constants.player_width / 2;
-        collider.y += GameState::game_constants.player_height / 2;
-        size_t pos_y = (size_t)(collider.y/Maps::maps[0].tile_width_units);
-        size_t pos_x = (size_t)(collider.x/Maps::maps[0].tile_width_units);
-        size_t pos_idx = ((Maps::maps[0].map_width_tiles)*pos_y) + pos_x;
-        
-        for(size_t wall_y = pos_y-1; wall_y<pos_y+1; wall_y++)
+        if(explosions_vector[i].time_left>0)
         {
-            for(size_t wall_x = pos_x-1; wall_x<pos_x+1; wall_x++)
-            {
-                size_t wall_idx = ((Maps::maps[0].map_width_tiles)*wall_y) + wall_x;
-                if(Maps::maps[0].walls[wall_idx]==0)
-                {
-                    Rectangle wall = {
-                        .x = (float)(wall_x)*(Maps::maps[0].tile_width_units),
-                        .y = (float)(wall_y)*(Maps::maps[0].tile_width_units),
-                        .width = (Maps::maps[0].tile_width_units),
-                        .height = (Maps::maps[0].tile_width_units),
-                    };
-                    not_colliding = !(Physics::sat_collision_detection(wall, 0, collider, projectiles_vector[i].angle));
-                    if(!not_colliding){break;}
-                }
-            }
-            if(!not_colliding){
-                std::cout<<"wall"<<" ";
-                break;}
-        }
-
-        if(not_colliding)
-        {
-            for(int j=0; j<8; j++)
-            {
-                if (!old_state[j].is_alive) continue;
-                Rectangle other_player_collider = {
-                    .x = old_state[j].position_absolute.x,
-                    .y = old_state[j].position_absolute.y,
-                    .width = GameState::game_constants.player_width,
-                    .height = GameState::game_constants.player_height,
-                };
-                not_colliding = !(Physics::sat_collision_detection(collider, projectiles_vector[i].angle, other_player_collider, old_state[j].player_angle));
-                if(!not_colliding){
-                    std::cout<<j<<" ";
-                    if(old_state[j].health <= projectiles_vector[i].dmg){
-                        old_state[j].is_alive = false;
-                        old_state[j].health = 0;
-                        old_state[projectiles_vector[i].shot_id].score +=100;
-                    }
-                    else{
-                        old_state[j].health -= projectiles_vector[i].dmg;
-                    }
-                    break;
-                }
-            }
-        }
-
-        if(projectiles_vector[i].time_alive<2 && not_colliding)
-        {
-            double displacement = (projectiles_vector[i].projectile_speed * delta_time);
-            projectiles_vector[i].hitbox.x += (displacement*cos(projectiles_vector[i].angle));
-            projectiles_vector[i].hitbox.y += (displacement*sin(projectiles_vector[i].angle));
-            projectiles_vector[i].time_alive += delta_time;
+            explosions_vector[i].time_left -= delta_time;
         }
         else
         {
-            projectiles_vector.erase(projectiles_vector.begin() + i);
+            for(int j=0; j<12; j++)
+            {   
+                if(old_state[j].is_alive)
+                {
+                    Rectangle player_collider = {
+                        .x = old_state[j].position_absolute.x - 1.0f*(Maps::maps[0].tile_width_units),
+                        .y = old_state[j].position_absolute.y - 0.75f * (Maps::maps[0].tile_width_units),
+                        .width = GameState::game_constants.player_width,
+                        .height = GameState::game_constants.player_height,
+                    };
+
+                    bool explosion_colliding = Physics::CheckCollisionCircleRectPro(explosions_vector[i].position, explosions_vector[i].radius, player_collider, old_state[j].player_angle);
+                    if(explosion_colliding)
+                    {
+                        if(old_state[j].health <= explosions_vector[i].dmg){
+                            old_state[j].is_alive = false;
+                            old_state[j].health = 0;
+                            old_state[explosions_vector[i].shot_id].score += 100;
+                        }
+                        else{
+                            old_state[j].health -= explosions_vector[i].dmg;
+                        }
+                    }
+                }
+            }
+            explosions_vector.erase(explosions_vector.begin() + i);
         }
     }
-    projectiles_vector[0].time_alive = projectiles_vector.size(); // Is the size ;-;
-    return projectiles_vector;
+    explosions_vector[0].time_left = explosions_vector.size(); // Is the size ;-;
+    return explosions_vector;
 }
 
 long double GameState::curtime() {

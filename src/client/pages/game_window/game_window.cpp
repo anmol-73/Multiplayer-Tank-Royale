@@ -205,7 +205,7 @@ void Pages::GameWindowScene::_load()
     };
     Global::ServiceProviders::room_client.secondary_update_callback = [this](void* data){
         
-        update_projectiles((CommonStructs::Projectile*)data);
+        update_explosions((CommonStructs::Explosion*)data);
         return;
     };
 
@@ -355,7 +355,7 @@ void Pages::GameWindowScene::logic_update()
 
     // Handle movement of gun
     
-    set_gun_angle(delta_time);
+    // set_gun_angle(delta_time);
     
 
     
@@ -597,21 +597,16 @@ void Pages::GameWindowScene::draw_game()
         );
     }
 
-    for (size_t i = 1; i < projectiles_vector.size(); i++){
-        DrawRectanglePro(
-            camera.transform(projectiles_vector[i].hitbox), camera.scale(Vector2{
-                projectiles_vector[i].hitbox.width/2, projectiles_vector[i].hitbox.height/2
-            }), 
-            projectiles_vector[i].angle*RAD2DEG, RED
-        );
-        std::cout << projectiles_vector[i].hitbox.x << " " << projectiles_vector[i].hitbox.y << " " << projectiles_vector[i].angle << " " << projectiles_vector[i].time_alive << std::endl;
+    for (size_t i = 1; i < explosions_vector.size(); i++){
+        DrawCircleGradient(camera.transform(explosions_vector[i].position).x, camera.transform(explosions_vector[i].position).y, 20, MAGENTA, RED);
+        DrawCircleLines(camera.transform(explosions_vector[i].position).x, camera.transform(explosions_vector[i].position).y, 20, RED);
     }
+    DrawCircleLines(camera.transform(crosshair_data.tracker_position).x, camera.transform(crosshair_data.tracker_position).y, 20, PINK);
+
     
     // Draw gun crosshair circle
     DrawCircleLinesV(
-        camera.transform(
-            Vector2Add(crosshair_data.tracker_position, player_data.position)
-        ),
+        crosshair_data.tracker_position,
         crosshair_data.tracker_radius,
         crosshair_data.circle_color
     );

@@ -33,29 +33,29 @@ size_t LogicUtils::gun_shot_idx;
 Texture2D LogicUtils::map;
 Image LogicUtils::map_image;
 
-std::vector<CommonStructs::Projectile> LogicUtils::projectiles_vector;
+std::vector<CommonStructs::Explosion> LogicUtils::explosions_vector;
 
-void LogicUtils::update_projectiles(CommonStructs::Projectile *received_state)
+void LogicUtils::update_explosions(CommonStructs::Explosion *received_state)
 {
-    int num = (int)(received_state[0].time_alive); // Actually the first struct is just holding the size ;-;
-    projectiles_vector = std::vector(received_state, received_state + num);
+    int num = (int)(received_state[0].time_left); // Actually the first struct is just holding the size ;-;
+    explosions_vector = std::vector(received_state, received_state + num);
 }
 
-// void LogicUtils::update_projectiles(float delta_time)
+// void LogicUtils::update_explosions(float delta_time)
 // {
-//     for(int i=0; i<projectiles_vector.size(); i++)
+//     for(int i=0; i<explosions_vector.size(); i++)
 //     {
 //         bool not_colliding = true;
-//         if(projectiles_vector[i].time_alive<2 && not_colliding)
+//         if(explosions_vector[i].time_alive<2 && not_colliding)
 //         {
-//             double displacement = (projectiles_vector[i].projectile_speed * delta_time);
-//             projectiles_vector[i].hitbox.x += (displacement*cos(projectiles_vector[i].angle));
-//             projectiles_vector[i].hitbox.y += (displacement*sin(projectiles_vector[i].angle));
-//             projectiles_vector[i].time_alive += delta_time;
+//             double displacement = (explosions_vector[i].explosion_speed * delta_time);
+//             explosions_vector[i].hitbox.x += (displacement*cos(explosions_vector[i].angle));
+//             explosions_vector[i].hitbox.y += (displacement*sin(explosions_vector[i].angle));
+//             explosions_vector[i].time_alive += delta_time;
 //         }
 //         else
 //         {
-//             projectiles_vector.erase(projectiles_vector.begin() + i);
+//             explosions_vector.erase(explosions_vector.begin() + i);
 //         }
 //     }
 // }
@@ -107,6 +107,7 @@ void LogicUtils::set_packet() {
     player_packet.player_angle = player_data.angle;
     player_packet.position_absolute = player_data.position;
     player_packet.player_dmg = 100;
+    player_packet.mouse_position = crosshair_data.mouse_position;
 };
 
 void LogicUtils::handle_movement(float delta_time)
@@ -151,58 +152,59 @@ double LogicUtils::normalize_angle(double angle)
 
 void LogicUtils::set_gun_angle(float delta_time)
 {
-    gun_data.expected_gun_angle = normalize_angle(atan2(crosshair_data.mouse_position.y - (Maps::maps[0].tiles_in_screen_y*Maps::maps[0].tile_width_units)/2, crosshair_data.mouse_position.x - (Maps::maps[0].tiles_in_screen_x*Maps::maps[0].tile_width_units)/2));
-    double angle_difference = normalize_angle(gun_data.expected_gun_angle - gun_data.gun_angle);
+    // gun_data.expected_gun_angle = normalize_angle(atan2(crosshair_data.mouse_position.y - (Maps::maps[0].tiles_in_screen_y*Maps::maps[0].tile_width_units)/2, crosshair_data.mouse_position.x - (Maps::maps[0].tiles_in_screen_x*Maps::maps[0].tile_width_units)/2));
+    // double angle_difference = normalize_angle(gun_data.expected_gun_angle - gun_data.gun_angle);
     
-    // Take shortest path to targeted gun_angle
-    {
-        double max_angular_displacement = (gun_data.gun_rot_speed * delta_time);
-        if (angle_difference < PI)
-        {
-            gun_data.gun_angle += max_angular_displacement;
-            // Stop jittering by preventing overshoot
-            if (gun_data.gun_angle > gun_data.expected_gun_angle && gun_data.gun_angle - gun_data.expected_gun_angle < PI){
-                gun_data.gun_angle = gun_data.expected_gun_angle;
-            }
+    // // Take shortest path to targeted gun_angle
+    // {
+    //     double max_angular_displacement = (gun_data.gun_rot_speed * delta_time);
+    //     if (angle_difference < PI)
+    //     {
+    //         gun_data.gun_angle += max_angular_displacement;
+    //         // Stop jittering by preventing overshoot
+    //         if (gun_data.gun_angle > gun_data.expected_gun_angle && gun_data.gun_angle - gun_data.expected_gun_angle < PI){
+    //             gun_data.gun_angle = gun_data.expected_gun_angle;
+    //         }
             
-        }
-        else
-        {
-            gun_data.gun_angle -= max_angular_displacement;
-            // Stop jittering by preventing overshoot
-            if (gun_data.gun_angle < gun_data.expected_gun_angle && gun_data.expected_gun_angle - gun_data.gun_angle < PI){
-                gun_data.gun_angle = gun_data.expected_gun_angle;
-            }
-        }
-    }
-    gun_data.gun_angle = normalize_angle(gun_data.gun_angle);
+    //     }
+    //     else
+    //     {
+    //         gun_data.gun_angle -= max_angular_displacement;
+    //         // Stop jittering by preventing overshoot
+    //         if (gun_data.gun_angle < gun_data.expected_gun_angle && gun_data.expected_gun_angle - gun_data.gun_angle < PI){
+    //             gun_data.gun_angle = gun_data.expected_gun_angle;
+    //         }
+    //     }
+    // }
+    // gun_data.gun_angle = normalize_angle(gun_data.gun_angle);
 }
 
 
 void LogicUtils::set_tracker(float delta_time)
 {
-    // Targeted radial distance (mouse distance)
-    crosshair_data.mouse_distance = sqrt(((crosshair_data.mouse_position.x-(Maps::maps[0].tiles_in_screen_x*Maps::maps[0].tile_width_units)/2)*(crosshair_data.mouse_position.x-(Maps::maps[0].tiles_in_screen_x*Maps::maps[0].tile_width_units)/2) + (crosshair_data.mouse_position.y-(Maps::maps[0].tiles_in_screen_y*Maps::maps[0].tile_width_units)/2)*(crosshair_data.mouse_position.y-(Maps::maps[0].tiles_in_screen_y*Maps::maps[0].tile_width_units)/2)));
+//     // Targeted radial distance (mouse distance)
+//     crosshair_data.mouse_distance = sqrt(((crosshair_data.mouse_position.x-(Maps::maps[0].tiles_in_screen_x*Maps::maps[0].tile_width_units)/2)*(crosshair_data.mouse_position.x-(Maps::maps[0].tiles_in_screen_x*Maps::maps[0].tile_width_units)/2) + (crosshair_data.mouse_position.y-(Maps::maps[0].tiles_in_screen_y*Maps::maps[0].tile_width_units)/2)*(crosshair_data.mouse_position.y-(Maps::maps[0].tiles_in_screen_y*Maps::maps[0].tile_width_units)/2)));
     
-    // Move tracker radially
-    if (crosshair_data.mouse_distance - crosshair_data.tracker_distance > 0){
-        crosshair_data.tracker_distance += crosshair_data.tracker_radial_speed * delta_time;
-        if (crosshair_data.tracker_distance > crosshair_data.mouse_distance){
-            crosshair_data.tracker_distance = crosshair_data.mouse_distance;
-        }
-    } else{
-        crosshair_data.tracker_distance -= crosshair_data.tracker_radial_speed * delta_time;
-        if (crosshair_data.tracker_distance < crosshair_data.mouse_distance){
-            crosshair_data.tracker_distance = crosshair_data.mouse_distance;
-        }
-    }
+//     // Move tracker radially
+//     if (crosshair_data.mouse_distance - crosshair_data.tracker_distance > 0){
+//         crosshair_data.tracker_distance += crosshair_data.tracker_radial_speed * delta_time;
+//         if (crosshair_data.tracker_distance > crosshair_data.mouse_distance){
+//             crosshair_data.tracker_distance = crosshair_data.mouse_distance;
+//         }
+//     } else{
+//         crosshair_data.tracker_distance -= crosshair_data.tracker_radial_speed * delta_time;
+//         if (crosshair_data.tracker_distance < crosshair_data.mouse_distance){
+//             crosshair_data.tracker_distance = crosshair_data.mouse_distance;
+//         }
+//     }
 
-    // Prevent tracker from being on tank
-    crosshair_data.tracker_distance = std::max((float)crosshair_data.tracker_distance, gun_data.gun_rectangle.width-5);
+//     // Prevent tracker from being on tank
+//     crosshair_data.tracker_distance = std::max((float)crosshair_data.tracker_distance, gun_data.gun_rectangle.width-5);
 
-    // Update coordinates
-    crosshair_data.tracker_position.x = crosshair_data.tracker_distance*cos(gun_data.gun_angle);
-    crosshair_data.tracker_position.y = crosshair_data.tracker_distance*sin(gun_data.gun_angle);
+//     // Update coordinates
+//     crosshair_data.tracker_position.x = crosshair_data.tracker_distance*cos(gun_data.gun_angle);
+//     crosshair_data.tracker_position.y = crosshair_data.tracker_distance*sin(gun_data.gun_angle);
+    crosshair_data.tracker_position = crosshair_data.mouse_position;
 }
 
 bool LogicUtils::handle_tank_collision()
@@ -301,7 +303,7 @@ void LogicUtils::HullStats::init()
 
 void LogicUtils::GunStats::init()
 {
-    gun_angle = 0;
+    gun_angle = -PI/2;
     gun_rot_speed = 1;
     gun_dmg = 1;
     has_shot = false;

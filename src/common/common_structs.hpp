@@ -21,6 +21,7 @@ namespace CommonStructs
         bool is_connected;
         Vector2 closest_wall_hit;
         int score;
+        Vector2 mouse_position;
     };
 
     struct Projectile
@@ -29,6 +30,15 @@ namespace CommonStructs
         double angle;
         double time_alive;
         double projectile_speed;
+        int dmg;
+        int shot_id;
+    };
+
+    struct Explosion
+    {
+        Vector2 position;
+        float radius;
+        double time_left;
         int dmg;
         int shot_id;
     };
