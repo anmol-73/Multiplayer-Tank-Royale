@@ -601,12 +601,12 @@ void Pages::GameWindowScene::draw_game()
         DrawCircleGradient(camera.transform(explosions_vector[i].position).x, camera.transform(explosions_vector[i].position).y, 20, MAGENTA, RED);
         DrawCircleLines(camera.transform(explosions_vector[i].position).x, camera.transform(explosions_vector[i].position).y, 20, RED);
     }
-    DrawCircleLines(camera.transform(crosshair_data.tracker_position).x, camera.transform(crosshair_data.tracker_position).y, 20, PINK);
 
-    
     // Draw gun crosshair circle
     DrawCircleLinesV(
-        crosshair_data.tracker_position,
+        camera.transform(
+            Vector2Add(crosshair_data.tracker_position, player_data.position)
+        ),
         crosshair_data.tracker_radius,
         crosshair_data.circle_color
     );

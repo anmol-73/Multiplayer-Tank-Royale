@@ -107,7 +107,7 @@ void LogicUtils::set_packet() {
     player_packet.player_angle = player_data.angle;
     player_packet.position_absolute = player_data.position;
     player_packet.player_dmg = 100;
-    player_packet.mouse_position = crosshair_data.mouse_position;
+    player_packet.mouse_position = Vector2Add(crosshair_data.tracker_position, player_data.position);
 };
 
 void LogicUtils::handle_movement(float delta_time)
@@ -152,7 +152,7 @@ double LogicUtils::normalize_angle(double angle)
 
 void LogicUtils::set_gun_angle(float delta_time)
 {
-    // gun_data.expected_gun_angle = normalize_angle(atan2(crosshair_data.mouse_position.y - (Maps::maps[0].tiles_in_screen_y*Maps::maps[0].tile_width_units)/2, crosshair_data.mouse_position.x - (Maps::maps[0].tiles_in_screen_x*Maps::maps[0].tile_width_units)/2));
+//     gun_data.expected_gun_angle = normalize_angle(atan2(crosshair_data.mouse_position.y - (Maps::maps[0].tiles_in_screen_y*Maps::maps[0].tile_width_units)/2, crosshair_data.mouse_position.x - (Maps::maps[0].tiles_in_screen_x*Maps::maps[0].tile_width_units)/2));
     // double angle_difference = normalize_angle(gun_data.expected_gun_angle - gun_data.gun_angle);
     
     // // Take shortest path to targeted gun_angle
@@ -176,35 +176,35 @@ void LogicUtils::set_gun_angle(float delta_time)
     //         }
     //     }
     // }
+    // gun_data.gun_angle = gun_data.expected_gun_angle;
     // gun_data.gun_angle = normalize_angle(gun_data.gun_angle);
 }
 
 
 void LogicUtils::set_tracker(float delta_time)
 {
-//     // Targeted radial distance (mouse distance)
-//     crosshair_data.mouse_distance = sqrt(((crosshair_data.mouse_position.x-(Maps::maps[0].tiles_in_screen_x*Maps::maps[0].tile_width_units)/2)*(crosshair_data.mouse_position.x-(Maps::maps[0].tiles_in_screen_x*Maps::maps[0].tile_width_units)/2) + (crosshair_data.mouse_position.y-(Maps::maps[0].tiles_in_screen_y*Maps::maps[0].tile_width_units)/2)*(crosshair_data.mouse_position.y-(Maps::maps[0].tiles_in_screen_y*Maps::maps[0].tile_width_units)/2)));
+    // Targeted radial distance (mouse distance)
+    // crosshair_data.mouse_distance = sqrt(((crosshair_data.mouse_position.x-(Maps::maps[0].tiles_in_screen_x*Maps::maps[0].tile_width_units)/2)*(crosshair_data.mouse_position.x-(Maps::maps[0].tiles_in_screen_x*Maps::maps[0].tile_width_units)/2) + (crosshair_data.mouse_position.y-(Maps::maps[0].tiles_in_screen_y*Maps::maps[0].tile_width_units)/2)*(crosshair_data.mouse_position.y-(Maps::maps[0].tiles_in_screen_y*Maps::maps[0].tile_width_units)/2)));
     
-//     // Move tracker radially
-//     if (crosshair_data.mouse_distance - crosshair_data.tracker_distance > 0){
-//         crosshair_data.tracker_distance += crosshair_data.tracker_radial_speed * delta_time;
-//         if (crosshair_data.tracker_distance > crosshair_data.mouse_distance){
-//             crosshair_data.tracker_distance = crosshair_data.mouse_distance;
-//         }
-//     } else{
-//         crosshair_data.tracker_distance -= crosshair_data.tracker_radial_speed * delta_time;
-//         if (crosshair_data.tracker_distance < crosshair_data.mouse_distance){
-//             crosshair_data.tracker_distance = crosshair_data.mouse_distance;
-//         }
-//     }
+    // Move tracker radially
+    // if (crosshair_data.mouse_distance - crosshair_data.tracker_distance > 0){
+    //     crosshair_data.tracker_distance += crosshair_data.tracker_radial_speed * delta_time;
+    //     if (crosshair_data.tracker_distance > crosshair_data.mouse_distance){
+    //         crosshair_data.tracker_distance = crosshair_data.mouse_distance;
+    //     }
+    // } else{
+    //     crosshair_data.tracker_distance -= crosshair_data.tracker_radial_speed * delta_time;
+    //     if (crosshair_data.tracker_distance < crosshair_data.mouse_distance){
+    //         crosshair_data.tracker_distance = crosshair_data.mouse_distance;
+    //     }
+    // }
+    // crosshair_data.tracker_distance = crosshair_data.mouse_distance;
+    // Prevent tracker from being on tank
+    // crosshair_data.tracker_distance = std::max((float)crosshair_data.tracker_distance, gun_data.gun_rectangle.width-5);
 
-//     // Prevent tracker from being on tank
-//     crosshair_data.tracker_distance = std::max((float)crosshair_data.tracker_distance, gun_data.gun_rectangle.width-5);
-
-//     // Update coordinates
-//     crosshair_data.tracker_position.x = crosshair_data.tracker_distance*cos(gun_data.gun_angle);
-//     crosshair_data.tracker_position.y = crosshair_data.tracker_distance*sin(gun_data.gun_angle);
-    crosshair_data.tracker_position = crosshair_data.mouse_position;
+    // Update coordinates
+    crosshair_data.tracker_position = {(crosshair_data.mouse_position.x-(Maps::maps[0].tiles_in_screen_x*Maps::maps[0].tile_width_units)/2), (crosshair_data.mouse_position.y-(Maps::maps[0].tiles_in_screen_y*Maps::maps[0].tile_width_units)/2)};
+    // crosshair_data.tracker_position = crosshair_data.mouse_position;
 }
 
 bool LogicUtils::handle_tank_collision()
