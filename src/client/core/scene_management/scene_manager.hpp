@@ -1,5 +1,5 @@
-#ifndef HEADER_CORE_SCENE_MANAGEMENT_SCENE_MANAGER
-#define HEADER_CORE_SCENE_MANAGEMENT_SCENE_MANAGER
+#ifndef H_SCENE_MANAGER
+#define H_SCENE_MANAGER
 
 #include "scene.hpp"
 #include <vector>

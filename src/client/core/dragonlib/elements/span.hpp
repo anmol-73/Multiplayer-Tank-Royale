@@ -1,5 +1,5 @@
-#ifndef HEADER_CORE_DRAGONLIB_ELEMENTS_BUTTON
-#define HEADER_CORE_DRAGONLIB_ELEMENTS_BUTTON
+#ifndef H_DLIB_ELEMENT_SPAN
+#define H_DLIB_ELEMENT_SPAN
 
 #include <raylib.h>
 #include <functional>

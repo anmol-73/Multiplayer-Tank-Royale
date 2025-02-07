@@ -1,5 +1,6 @@
-#ifndef HEADER_CORE_SCENE_MANAGEMENT_SCENE
-#define HEADER_CORE_SCENE_MANAGEMENT_SCENE
+#ifndef H_SCENE
+#define H_SCENE
+
 #include <cassert>
 #include <thread>
 #include <mutex>
@@ -8,9 +9,10 @@
 namespace SceneManagement
 {
     enum SceneName{
-        MAIN_PAGE,
-        LOBBY_PAGE,
-        GAME_PAGE,
+        SPLASH,
+        LOBBY,
+        ROOM,
+        GAME,
         __NIL__ // NOTE: This must be the last position in the enum
     };
 

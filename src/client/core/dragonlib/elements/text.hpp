@@ -1,5 +1,5 @@
-#ifndef HEADER_CORE_DRAGONLIB_ELEMENTS_TEXT
-#define HEADER_CORE_DRAGONLIB_ELEMENTS_TEXT
+#ifndef H_DLIB_ELEMENT_TEXT
+#define H_DLIB_ELEMENT_TEXT
 
 #include <raylib.h>
 #include <functional>

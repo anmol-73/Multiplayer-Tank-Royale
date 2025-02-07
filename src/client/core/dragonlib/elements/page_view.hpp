@@ -1,5 +1,5 @@
-#ifndef HEADER_CORE_DRAGONLIB_ELEMENTS_PAGE_VIEW
-#define HEADER_CORE_DRAGONLIB_ELEMENTS_PAGE_VIEW
+#ifndef H_DLIB_ELEMENT_PAGE_VIEW
+#define H_DLIB_ELEMENT_PAGE_VIEW
 
 #include "view.hpp"
 #include <raylib.h>
