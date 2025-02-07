@@ -42,6 +42,23 @@ namespace DragonLib
 
                 virtual ~Element();
 
+                /**
+                 * Called outside the main thread (only when the scene is loaded)
+                 */
+                virtual void load_async();
+                /**
+                 * Called outside the main thread (only when the scene is unloaded)
+                 */
+                virtual void cleanup_async();
+                /**
+                 * Called on the main thread (only when the scene is loaded)
+                 */
+                virtual void load_sync();
+                /**
+                 * Called on the main thread (only when the scene is unloaded)
+                 */
+                virtual void cleanup_sync();
+
             protected:
                 /**
                  * Resets the state of the element

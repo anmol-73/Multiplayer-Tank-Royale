@@ -10,9 +10,9 @@ namespace SceneManagement
 {
     enum SceneName{
         SPLASH,
-        LOBBY,
-        ROOM,
-        GAME,
+        // LOBBY,
+        // ROOM,
+        // GAME,
         __NIL__ // NOTE: This must be the last position in the enum
     };
 

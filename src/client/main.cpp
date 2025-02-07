@@ -4,7 +4,7 @@
 #include <iostream>
 
 #include "core/scene_management.hpp"
-#include "global.hpp"
+#include "core/global.hpp"
 #include "pages.hpp"
 
 int main(int argc, char* argv[]){

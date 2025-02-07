@@ -28,6 +28,11 @@ namespace DragonLib
 
                 inline void enable_events();
 
+                void load_async();
+                void cleanup_async();
+                void load_sync();
+                void cleanup_sync();
+
             protected:
                 std::vector<std::unique_ptr<Element>> elements;
                 bool events_enabled = true;
