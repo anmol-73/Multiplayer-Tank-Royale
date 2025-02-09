@@ -33,6 +33,8 @@ namespace Game
             int dmg;
 
             double range;
+
+            double reload_time;
         };
 
         struct ProjectileType
@@ -77,6 +79,7 @@ namespace Game
                 1, // Dmg
                 1, // Rot speed
                 100000, // Range
+                1, // Reload time
             }, // Gun
             {
                 48, // Height
@@ -84,6 +87,7 @@ namespace Game
                 0, // Dmg
                 1, // Rot speed
                 0, // Range
+                1, // Reload time
             }, // Cannon
             {
                 48, // Height
@@ -91,6 +95,7 @@ namespace Game
                 0, // Dmg
                 0, // Rot speed
                 0, // Range
+                2, // Reload time
             }, // Mortar
         };
 

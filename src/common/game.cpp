@@ -3,7 +3,18 @@
 void Game::GameState::apply_frame(const Game::Frame& frame)
 {
     curr_frame = frame;
+    player_vector[curr_frame.player_id].last_frame_processed_num = curr_frame.frame_num;
     handle_movement();
+    set_gun_angle();
+    handle_shots();
+    float t=(float)curtime();
+    float delta_time = (t-time_of_last_objects_update)/1000;
+    time_of_last_objects_update=t;
+
+    // Needs to be changed to happen on broadcast
+    update_projectiles(delta_time);
+    update_explosions(delta_time);
+
     return;
 }
 
@@ -18,8 +29,8 @@ void Game::GameState::handle_movement()
 {
     size_t ID = curr_frame.player_id;
     double projected_angle = player_vector[ID].angle;
-    double dx;
-    double dy;
+    double dx=0;
+    double dy=0;
     if(curr_frame.a_pressed || curr_frame.d_pressed || curr_frame.s_pressed || curr_frame.w_pressed)
     {
         if (curr_frame.a_pressed) projected_angle += Game::Data::tank_types[player_vector[ID].tank_type].rot_speed * curr_frame.delta_time;
@@ -28,14 +39,14 @@ void Game::GameState::handle_movement()
         if (curr_frame.w_pressed)
         {
             double displacement = (Game::Data::tank_types[player_vector[ID].tank_type].move_speed * curr_frame.delta_time);
-            dx += (displacement*cos(projected_angle));
-            dy += (displacement*sin(projected_angle));
+            dx += (displacement*cos(player_vector[ID].angle));
+            dy += (displacement*sin(player_vector[ID].angle));
         }
         if (curr_frame.s_pressed)
         {
             double displacement = (Game::Data::tank_types[player_vector[ID].tank_type].move_speed * curr_frame.delta_time);
-            dx -= (displacement*cos(projected_angle));
-            dy -= (displacement*sin(projected_angle));
+            dx -= (displacement*cos(player_vector[ID].angle));
+            dy -= (displacement*sin(player_vector[ID].angle));
         }
     }
     else
@@ -48,30 +59,30 @@ void Game::GameState::handle_movement()
     bool player_colliding=false;
     bool player_colliding_rot=false;
 
-    Rectangle collider = {
+    Rectangle collider = Physics::make_rect({
         .x = player_vector[ID].position.x,
         .y = player_vector[ID].position.y,
         .width = Game::Data::tank_types[player_vector[ID].tank_type].width,
         .height = Game::Data::tank_types[player_vector[ID].tank_type].height,
-    };
+    });
     double scanning_radius = 1.5*(sqrt((Game::Data::tank_types[player_vector[ID].tank_type].width)*(Game::Data::tank_types[player_vector[ID].tank_type].width) + (Game::Data::tank_types[player_vector[ID].tank_type].height)*(Game::Data::tank_types[player_vector[ID].tank_type].height)));
     size_t scanning_radius_tiles = (size_t)ceil(scanning_radius/Maps::maps[map_num].tile_width_units);
     // Player wall
-    size_t pos_y = (size_t)(player_vector[ID].position.y/Maps::maps[map_num].tile_width_units);
+    size_t pos_y = Maps::maps[map_num].map_height_tiles - (size_t)(player_vector[ID].position.y/Maps::maps[map_num].tile_width_units) - 1;
     size_t pos_x = (size_t)(player_vector[ID].position.x/Maps::maps[map_num].tile_width_units);
     size_t pos_idx = ((Maps::maps[map_num].map_width_tiles)*pos_y) + pos_x;
     for(size_t wall_y = pos_y-scanning_radius_tiles*(Maps::maps[map_num].map_width_tiles); wall_y<pos_y+scanning_radius_tiles*(Maps::maps[map_num].map_width_tiles); wall_y++)
     {
         for(size_t wall_x = pos_x-scanning_radius_tiles; wall_x<pos_x+scanning_radius_tiles; wall_x++)
         {
-            size_t wall_idx = ((Maps::maps[0].map_width_tiles)*wall_y) + wall_x;
-            if((Vector2Distance({(float)wall_x, (float)wall_y}, {(float)pos_x, (float)pos_y})<=scanning_radius_tiles) && Maps::maps[0].walls[wall_idx]==0)
+            size_t wall_idx = ((Maps::maps[map_num].map_width_tiles)*wall_y) + wall_x;
+            if((Vector2Distance({(float)wall_x, (float)wall_y}, {(float)pos_x, (float)pos_y})<=scanning_radius_tiles) && Maps::maps[map_num].walls[wall_idx]==0)
             {
                 Rectangle wall = {
-                    .x = (float)(wall_x)*(Maps::maps[0].tile_width_units),
-                    .y = (float)(wall_y)*(Maps::maps[0].tile_width_units),
-                    .width = (Maps::maps[0].tile_width_units),
-                    .height = (Maps::maps[0].tile_width_units),
+                    .x = (float)(wall_x)*(Maps::maps[map_num].tile_width_units),
+                    .y = (float)(Maps::maps[map_num].map_height_tiles - wall_y)*(Maps::maps[map_num].tile_width_units),
+                    .width = (Maps::maps[map_num].tile_width_units),
+                    .height = (Maps::maps[map_num].tile_width_units),
                 };
                 if(!player_colliding) player_colliding = Physics::sat_collision_detection(wall, 0, {collider.x+(float)dx, collider.y+(float)dy, collider.width, collider.height}, player_vector[ID].angle);
                 if(!player_colliding_x) player_colliding_x = Physics::sat_collision_detection(wall, 0, {collider.x+(float)dx, collider.y, collider.width, collider.height}, player_vector[ID].angle);
@@ -91,12 +102,12 @@ void Game::GameState::handle_movement()
             if (!player_vector[i].is_alive) continue;
             if(i!=ID)
             {
-                Rectangle other_player_collider = {
+                Rectangle other_player_collider = Physics::make_rect({
                     .x = player_vector[i].position.x,
                     .y = player_vector[i].position.y,
                     .width = Game::Data::tank_types[player_vector[i].tank_type].width,
                     .height = Game::Data::tank_types[player_vector[i].tank_type].height,
-                };
+                });
                 if(!player_colliding) player_colliding = Physics::sat_collision_detection({collider.x+(float)dx, collider.y+(float)dy, collider.width, collider.height}, player_vector[ID].angle, other_player_collider, player_vector[i].angle);
                 if(!player_colliding_x) player_colliding_x = Physics::sat_collision_detection({collider.x+(float)dx, collider.y, collider.width, collider.height}, player_vector[ID].angle, other_player_collider, player_vector[i].angle);
                 if(!player_colliding_y) player_colliding_y = Physics::sat_collision_detection({collider.x, collider.y+(float)dy, collider.width, collider.height}, player_vector[ID].angle, other_player_collider, player_vector[i].angle);
@@ -129,21 +140,21 @@ void Game::GameState::handle_movement()
     scanning_radius = 1.5*(sqrt((Game::Data::tank_types[player_vector[ID].tank_type].width)*(Game::Data::tank_types[player_vector[ID].tank_type].width) + (Game::Data::tank_types[player_vector[ID].tank_type].height)*(Game::Data::tank_types[player_vector[ID].tank_type].height)));
     scanning_radius_tiles = (size_t)ceil(scanning_radius/Maps::maps[map_num].tile_width_units);
     // Player wall
-    pos_y = (size_t)(player_vector[ID].position.y/Maps::maps[map_num].tile_width_units);
+    pos_y = Maps::maps[map_num].map_height_tiles - (size_t)(player_vector[ID].position.y/Maps::maps[map_num].tile_width_units) - 1;
     pos_x = (size_t)(player_vector[ID].position.x/Maps::maps[map_num].tile_width_units);
     pos_idx = ((Maps::maps[map_num].map_width_tiles)*pos_y) + pos_x;
     for(size_t wall_y = pos_y-scanning_radius_tiles*(Maps::maps[map_num].map_width_tiles); wall_y<pos_y+scanning_radius_tiles*(Maps::maps[map_num].map_width_tiles); wall_y++)
     {
         for(size_t wall_x = pos_x-scanning_radius_tiles; wall_x<pos_x+scanning_radius_tiles; wall_x++)
         {
-            size_t wall_idx = ((Maps::maps[0].map_width_tiles)*wall_y) + wall_x;
-            if((Vector2Distance({(float)wall_x, (float)wall_y}, {(float)pos_x, (float)pos_y})<=scanning_radius_tiles) && Maps::maps[0].walls[wall_idx]==0)
+            size_t wall_idx = ((Maps::maps[map_num].map_width_tiles)*wall_y) + wall_x;
+            if((Vector2Distance({(float)wall_x, (float)wall_y}, {(float)pos_x, (float)pos_y})<=scanning_radius_tiles) && Maps::maps[map_num].walls[wall_idx]==0)
             {
                 Rectangle wall = {
-                    .x = (float)(wall_x)*(Maps::maps[0].tile_width_units),
-                    .y = (float)(wall_y)*(Maps::maps[0].tile_width_units),
-                    .width = (Maps::maps[0].tile_width_units),
-                    .height = (Maps::maps[0].tile_width_units),
+                    .x = (float)(wall_x)*(Maps::maps[map_num].tile_width_units),
+                    .y = (float)(Maps::maps[map_num].map_height_tiles - wall_y)*(Maps::maps[map_num].tile_width_units),
+                    .width = (Maps::maps[map_num].tile_width_units),
+                    .height = (Maps::maps[map_num].tile_width_units),
                 };
                 if(!player_colliding_rot) player_colliding = Physics::sat_collision_detection(wall, 0, collider, projected_angle);
 
@@ -210,4 +221,262 @@ void Game::GameState::set_gun_angle()
         }
     }
     player_vector[ID].gun_angle = normalize_angle(player_vector[ID].gun_angle);
+}
+
+void Game::GameState::handle_shots()
+{
+    size_t ID = curr_frame.player_id;
+    if(curr_frame.lmb_pressed)
+    {
+        if(player_vector[ID].time_since_last_shot<Game::Data::gun_types[player_vector[ID].gun_type].reload_time)
+        {
+           player_vector[ID].time_since_last_shot += curr_frame.delta_time; 
+        }
+        else
+        {
+            player_vector[ID].time_since_last_shot = 0;
+            switch (player_vector[ID].gun_type){
+                case 0: // Gun behaviour
+                {
+                    bool bullet_colliding = false;
+                    Vector2 contact_point = {player_vector[ID].position.x + Game::Data::gun_types[player_vector[ID].gun_type].range*(float)cos(player_vector[ID].gun_angle), player_vector[ID].position.y + Game::Data::gun_types[player_vector[ID].gun_type].range*(float)sin(player_vector[ID].gun_angle)};
+                    Vector2 curr_contact_point = contact_point;
+                    float min_dis = Vector2Distance(contact_point, player_vector[ID].position);
+                    float cur_dis;
+                    for(size_t wall_y = 0; wall_y<Maps::maps[map_num].map_height_tiles; wall_y++)
+                    {
+                        for(size_t wall_x = 0; wall_x<Maps::maps[map_num].map_width_tiles; wall_x++)
+                        {
+                            size_t wall_idx = ((Maps::maps[map_num].map_width_tiles)*wall_y) + wall_x;
+                            if (wall_idx >= Maps::maps[map_num].walls.size()){
+                                continue;
+                            }
+                            if(Maps::maps[map_num].walls[wall_idx]==0)
+                            {
+                                Rectangle wall = {
+                                    .x = (float)(wall_x)*(Maps::maps[map_num].tile_width_units),
+                                    .y = (float)(Maps::maps[map_num].map_height_tiles - wall_y)*(Maps::maps[map_num].tile_width_units),
+                                    .width = (Maps::maps[map_num].tile_width_units),
+                                    .height = (Maps::maps[map_num].tile_width_units),
+                                };
+                                bullet_colliding = Physics::CheckCollisionRay2dRect(player_vector[ID].position, player_vector[ID].gun_angle, wall, &curr_contact_point);
+                                
+                                if(bullet_colliding){
+                                    
+                                    if(cur_dis<min_dis)
+                                    {
+                                        contact_point = curr_contact_point;
+                                        min_dis = cur_dis;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    curr_contact_point = contact_point;
+                    float min_dis = Vector2Distance(contact_point, player_vector[ID].position);
+                    float cur_dis;
+
+                    bullet_colliding=false;
+                    int hitting_idx = -1;
+                    for(int i=0; i<12; i++)
+                    {   
+                        if(i!=ID && player_vector[i].is_alive)
+                        {
+                            Rectangle other_player_collider = Physics::make_rect({
+                                .x = player_vector[i].position.x,
+                                .y = player_vector[i].position.y,
+                                .width = Game::Data::tank_types[player_vector[i].tank_type].width,
+                                .height = Game::Data::tank_types[player_vector[i].tank_type].height,
+                            });
+
+                            bullet_colliding = Physics::CheckCollisionRay2dRectEx(player_vector[ID].position, player_vector[ID].gun_angle, other_player_collider, player_vector[i].angle, &curr_contact_point);
+                            cur_dis = Vector2Distance(curr_contact_point, player_vector[ID].position);
+                            
+                            if(bullet_colliding){
+                                if(cur_dis < min_dis)
+                                {
+                                    min_dis = cur_dis;
+                                    contact_point = curr_contact_point;
+                                    hitting_idx = i;
+                                }
+                            }
+                        }
+                    }
+                    if(hitting_idx >= 0){
+                        if(player_vector[hitting_idx].health <= Game::Data::gun_types[player_vector[ID].gun_type].dmg){
+                            player_vector[hitting_idx].is_alive = false;
+                            player_vector[hitting_idx].health = 0;
+                            player_vector[ID].score +=100;
+                        }
+                        else{
+                            player_vector[hitting_idx].health -= Game::Data::gun_types[player_vector[ID].gun_type].dmg;
+                        }
+                    }
+
+                    player_vector[ID].ray_contact = contact_point;
+
+                    break;
+                }
+
+                case 1:
+                {
+                    Game::GameState::Projectile new_projectile;
+                    new_projectile.type = 0;
+                    new_projectile.angle = player_vector[ID].gun_angle;
+                    new_projectile.position =  {
+                            .x = player_vector[ID].position.x + (float)((Game::Data::gun_types[player_vector[ID].gun_type].width + Game::Data::projectile_types[0].width + 1)*cos(player_vector[ID].gun_angle)),
+                            .y = player_vector[ID].position.y + (float)((Game::Data::gun_types[player_vector[ID].gun_type].width + Game::Data::projectile_types[0].width + 1)*sin(player_vector[ID].gun_angle)),
+                        };
+                    new_projectile.time_alive = 0;
+                    new_projectile.shot_id = ID;
+                    projectile_vector.push_back(new_projectile);
+                    break;
+                }
+
+                case 2:
+                {
+                    Game::GameState::Explosion new_explosion;
+                    new_explosion.position =  {
+                            .x = curr_frame.mouse_position_screen.x - (Maps::maps[map_num].tiles_in_screen_x*Maps::maps[map_num].tile_width_units)/2 + player_vector[ID].position.x,
+                            .y = curr_frame.mouse_position_screen.y - (Maps::maps[map_num].tiles_in_screen_y*Maps::maps[map_num].tile_width_units)/2 + player_vector[ID].position.y,
+                        };
+                    new_explosion.time_alive = 0;
+                    new_explosion.shot_id = ID;
+                    explosion_vector.push_back(new_explosion);
+                    break;
+                }
+            }
+        }
+    }
+    else
+    {
+        player_vector[ID].time_since_last_shot += curr_frame.delta_time;
+    }
+}
+
+void Game::GameState::update_projectiles(float delta_time)
+{
+
+    for(int i=1; i<projectile_vector.size(); i++)
+    {
+        bool not_colliding = true;
+
+        Rectangle collider = Physics::make_rect({projectile_vector[i].position.x, projectile_vector[i].position.y, Game::Data::projectile_types[projectile_vector[i].type].width, Game::Data::projectile_types[projectile_vector[i].type].height});
+        size_t pos_y = Maps::maps[map_num].map_height_tiles - (size_t)(collider.y/Maps::maps[map_num].tile_width_units) - 1;
+        size_t pos_x = (size_t)(collider.x/Maps::maps[map_num].tile_width_units);
+        size_t pos_idx = ((Maps::maps[map_num].map_width_tiles)*pos_y) + pos_x;
+        
+        double scanning_radius = 1.5*(sqrt((Game::Data::projectile_types[projectile_vector[i].type].width)*(Game::Data::projectile_types[projectile_vector[i].type].width) + (Game::Data::projectile_types[projectile_vector[i].type].height)*(Game::Data::projectile_types[projectile_vector[i].type].height)));
+        size_t scanning_radius_tiles = (size_t)ceil(scanning_radius/Maps::maps[map_num].tile_width_units);
+
+        for(size_t wall_y = pos_y-scanning_radius_tiles; wall_y<pos_y+scanning_radius_tiles; wall_y++)
+        {
+            for(size_t wall_x = pos_x-scanning_radius_tiles; wall_x<pos_x+scanning_radius_tiles; wall_x++)
+            {
+                size_t wall_idx = ((Maps::maps[map_num].map_width_tiles)*wall_y) + wall_x;
+                if(Maps::maps[map_num].walls[wall_idx]==0)
+                {
+                    Rectangle wall = {
+                        .x = (float)(wall_x)*(Maps::maps[map_num].tile_width_units),
+                        .y = (float)(Maps::maps[map_num].map_height_tiles - wall_y)*(Maps::maps[map_num].tile_width_units),
+                        .width = (Maps::maps[map_num].tile_width_units),
+                        .height = (Maps::maps[map_num].tile_width_units),
+                    };
+                    not_colliding = !(Physics::sat_collision_detection(wall, 0, collider, projectile_vector[i].angle));
+                    if(!not_colliding){break;}
+                }
+            }
+            if(!not_colliding){
+                break;
+            }
+        }
+
+        if(not_colliding)
+        {
+            for(int j=0; j<8; j++)
+            {
+                if (!player_vector[j].is_alive) continue;
+                Rectangle other_player_collider = Physics::make_rect({
+                    .x = player_vector[j].position.x,
+                    .y = player_vector[j].position.y,
+                    .width = Game::Data::tank_types[player_vector[j].tank_type].width,
+                    .height = Game::Data::tank_types[player_vector[j].tank_type].height,
+                });
+                not_colliding = !(Physics::sat_collision_detection(collider, projectile_vector[i].angle, other_player_collider, player_vector[j].angle));
+                if(!not_colliding){
+                    if(player_vector[j].health <= Game::Data::projectile_types[projectile_vector[i].type].dmg){
+                        player_vector[j].is_alive = false;
+                        player_vector[j].health = 0;
+                        player_vector[projectile_vector[i].shot_id].score +=100;
+                    }
+                    else{
+                        player_vector[j].health -= Game::Data::projectile_types[projectile_vector[i].type].dmg;
+                    }
+                    break;
+                }
+            }
+        }
+
+        if(projectile_vector[i].time_alive<Game::Data::projectile_types[projectile_vector[i].type].lifetime && not_colliding)
+        {
+            double displacement = (Game::Data::projectile_types[projectile_vector[i].type].mov_speed * delta_time);
+            projectile_vector[i].position.x += (displacement*cos(projectile_vector[i].angle));
+            projectile_vector[i].position.y += (displacement*sin(projectile_vector[i].angle));
+            projectile_vector[i].time_alive += delta_time;
+        }
+        else
+        {
+            projectile_vector.erase(projectile_vector.begin() + i);
+        }
+    }
+    return;
+}
+
+void Game::GameState::update_explosions(float delta_time)
+{
+    for(int i=1; i<explosion_vector.size(); i++)
+    {
+        if(explosion_vector[i].time_alive<Game::Data::explosion_types[explosion_vector[i].type].lifetime)
+        {
+            explosion_vector[i].time_alive -= delta_time;
+        }
+        else
+        {
+            for(int j=0; j<12; j++)
+            {   
+                if(player_vector[j].is_alive)
+                {
+                    Rectangle player_collider = Physics::make_rect({
+                        .x = player_vector[j].position.x,
+                        .y = player_vector[j].position.y,
+                        .width = Game::Data::tank_types[player_vector[j].tank_type].width,
+                        .height = Game::Data::tank_types[player_vector[j].tank_type].height,
+                    });
+
+                    bool explosion_colliding = Physics::CheckCollisionCircleRectPro(explosion_vector[i].position, Game::Data::explosion_types[explosion_vector[i].type].radius, player_collider, player_vector[j].angle);
+                    if(explosion_colliding)
+                    {
+                        if(player_vector[j].health <= Game::Data::explosion_types[explosion_vector[i].type].dmg){
+                            player_vector[j].is_alive = false;
+                            player_vector[j].health = 0;
+                            player_vector[explosion_vector[i].shot_id].score += 100;
+                        }
+                        else{
+                            player_vector[j].health -= Game::Data::explosion_types[explosion_vector[i].type].dmg;
+                        }
+                    }
+                }
+            }
+            explosion_vector.erase(explosion_vector.begin() + i);
+        }
+    }
+    return;
+}
+
+long double Game::GameState::curtime()
+{
+    auto ctime = std::chrono::high_resolution_clock().now();
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(ctime-GameState::start_time);
+    return duration.count();
 }

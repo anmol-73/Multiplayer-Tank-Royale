@@ -1,6 +1,10 @@
 #include "collisions.hpp"
 #include <iostream>
 
+Rectangle Physics::make_rect(Rectangle bad_rect)
+{
+    return {bad_rect.x - bad_rect.width/2, bad_rect.y-bad_rect.height/2, bad_rect.width, bad_rect.height};
+}
 
 Vector2 Physics::rotate_point(Vector2 point, Vector2 center, float angle_rad)
 {
@@ -144,4 +148,15 @@ bool Physics::CheckCollisionRay2dRect(Vector2 origin, float dirn_angle, Rectangl
     }
 
     return true;
+}
+
+bool Physics::CheckCollisionCircleRectPro(Vector2 center, float radius, Rectangle rec, float rec_angle)
+{
+    center.x = center.x - rec.x;
+    center.y = center.y - rec.y;
+    rec.x = 0;
+    rec.y = 0;
+    float rotation_angle = rec_angle;
+    Vector2 rotated_center = Vector2Rotate(center, rotation_angle);
+    return CheckCollisionCircleRec(rotated_center, radius, rec);
 }
