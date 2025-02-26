@@ -43,7 +43,7 @@ namespace Game
         size_t map_num;
 
         long double time_of_last_objects_update;
-        std::chrono::_V2::system_clock::time_point start_time;
+        std::chrono::time_point<std::chrono::high_resolution_clock> start_time;
 
         struct PlayerState
         {
