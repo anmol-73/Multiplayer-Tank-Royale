@@ -1,0 +1,94 @@
+#include "lobby_client.hpp"
+
+#define log(message) std::cout << "[Lobby] " << message << std::endl
+
+bool ServiceConsumers::LobbyClient::is_connected()
+{
+    return _is_connected;
+}
+
+const std::vector<Communication::Lobby::RoomDetail> &ServiceConsumers::LobbyClient::get_rooms() const
+{
+    return rooms;
+}
+
+ServiceConsumers::LobbyClient::NewRoomStatus ServiceConsumers::LobbyClient::get_new_room_status()
+{
+    return status;
+}
+
+std::optional<Communication::Lobby::RoomDetail> ServiceConsumers::LobbyClient::get_new_room_detail()
+{
+    if (status != NewRoomStatus::ACCEPTED) return std::nullopt;
+    return new_room_detail;
+}
+
+void ServiceConsumers::LobbyClient::request_new_room(const std::string &room_name)
+{
+    using namespace Communication::Lobby;
+
+    if (status != ONGOING){
+        throw std::runtime_error("Tried requesting for new room while ongoing request exists!");
+    }
+
+    status = ONGOING;
+    
+    RoomName name;
+    strncpy(name, room_name.c_str(), sizeof(RoomName));
+
+    send_message(Client::CREATE_ROOM, name, sizeof(RoomName));
+}
+
+void ServiceConsumers::LobbyClient::handle_message(Communication::Command type, const void *message, size_t size)
+{
+    if (!is_running()) return; // Ignore any incoming messages after the client has changed rooms
+    using namespace Communication::Lobby;
+    
+    switch (static_cast<Server>(type)){
+        case Server::CREATE_OK: {
+            new_room_detail = *static_cast<const RoomDetail*>(message);
+            status = NewRoomStatus::ACCEPTED;
+
+            log("Room accepted! (" << new_room_detail.port << ")");
+        }
+
+        case Server::CREATE_DENIED: {
+            status = NewRoomStatus::DENIED;
+            log("Room denied :(");
+        }
+        
+        case Server::ROOM_LIST: {
+            size_t rooms_length = size / sizeof(RoomDetail);
+            rooms.assign(
+                static_cast<const RoomDetail*>(message),
+                static_cast<const RoomDetail*>(message) + rooms_length
+            );
+
+            log("Active rooms count: " << rooms_length);
+        }
+    }
+}
+
+void ServiceConsumers::LobbyClient::on_start()
+{
+    status = NewRoomStatus::DENIED;
+    log("Listening :)");
+}
+
+void ServiceConsumers::LobbyClient::on_finish()
+{
+    log("Stopped listening :(");
+}
+
+std::string ServiceConsumers::LobbyClient::on_connection_established()
+{
+    _is_connected = true;
+    log("Connected!");
+    return std::string();
+}
+
+void ServiceConsumers::LobbyClient::handle_disconnection()
+{
+    _is_connected = false;
+    log("Disconnected!");
+}

@@ -5,7 +5,7 @@ namespace Communication
 {
     namespace Lobby
     {
-        using RoomName = char[48];
+        using RoomName = char[32];
 
         struct RoomDetail{
             RoomName name;

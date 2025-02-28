@@ -111,8 +111,11 @@ void ServiceConsumer::handle_disconnection(){
 
 void ServiceConsumer::handle_message(Communication::Command type, const void *message, size_t size){}
 
-void ServiceConsumer::send_message(Communication::Command command, const void *data, size_t data_size, ENetPeer *peer, ENetPacketFlag flag)
+void ServiceConsumer::send_message(Communication::Command command, const void *data, size_t data_size, ENetPacketFlag flag)
 {
+    if (!is_running()){ // TODO: Throwing now just for sanity check. Remove this before rc
+        throw std::runtime_error("Tried to send message after disconnection!");
+    }
     auto [encoded_message, encoded_message_size] = Communication::encode_message(command, data, data_size);
     enet_peer_send(
         peer, 0,
@@ -120,8 +123,11 @@ void ServiceConsumer::send_message(Communication::Command command, const void *d
     );
 }
 
-void ServiceConsumer::send_command(Communication::Command command, ENetPeer *peer, ENetPacketFlag flag)
+void ServiceConsumer::send_command(Communication::Command command, ENetPacketFlag flag)
 {
+    if (!is_running()){ // TODO: Throwing now just for sanity check. Remove this before rc
+        throw std::runtime_error("Tried to send command after disconnection!");
+    }
     enet_peer_send(
         peer, 0,
         enet_packet_create(&command, sizeof(Communication::Command), flag)

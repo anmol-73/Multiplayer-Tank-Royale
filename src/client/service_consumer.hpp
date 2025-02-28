@@ -3,6 +3,7 @@
 
 #include <enet_include.hpp>
 #include <cassert>
+#include <iostream>
 
 #include "communication/message_encoding.hpp"
 #include "communication/structs.hpp"
@@ -26,7 +27,7 @@ public:
      */
     void stop();
 
-    ~ServiceConsumer();
+    virtual ~ServiceConsumer();
     
     ENetAddress address;
 
@@ -66,12 +67,12 @@ protected:
     /**
      * Sends a command (along with the message data) to a specific peer
      */
-    void send_message(Communication::Command command, const void* data, size_t data_size, ENetPeer* peer, ENetPacketFlag flag = ENET_PACKET_FLAG_RELIABLE);
+    void send_message(Communication::Command command, const void* data, size_t data_size, ENetPacketFlag flag = ENET_PACKET_FLAG_RELIABLE);
     
     /**
      * Sends a command to a specific peer
      */
-    void send_command(Communication::Command command, ENetPeer* peer, ENetPacketFlag flag = ENET_PACKET_FLAG_RELIABLE);
+    void send_command(Communication::Command command, ENetPacketFlag flag = ENET_PACKET_FLAG_RELIABLE);
     
     
     ENetHost *host = nullptr;

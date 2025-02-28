@@ -30,6 +30,8 @@ Pages::SplashUI::SplashUI()
         )
     );
 
+    address_input->value = "127.0.0.1:8000";
+
     bg->register_element(
         connect_button = Components::create_span_button(
             "Connect",

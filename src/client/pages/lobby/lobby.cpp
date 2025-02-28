@@ -14,7 +14,6 @@ void Pages::LobbyScene::_update()
     }
     EndDrawing();
     ui.poll_events();
-
 }
 
 void Pages::LobbyScene::_loading_update()
@@ -28,11 +27,19 @@ void Pages::LobbyScene::_loading_update()
         ClearBackground({0xcb, 0xc6, 0xb2, 0xe0});
         DragonLib::Utils::Drawing::draw_text({
             .content = "Trying to connect to the server...   :)",
-            .font_size = Global::rem * 2,
+            .font_size = Global::rem * 1.5f,
             .font_color = {0, 0, 0, 0x60}
         });
     }
     EndDrawing();
+
+    if (client->get_new_room_status() == client->ACCEPTED){
+
+    } else if (client->get_new_room_status() == client->DENIED){
+
+    } else if (client->get_new_room_status() == client->ONGOING){
+        
+    }
 }
 
 void Pages::LobbyScene::_prepare(const void *_address)
@@ -44,21 +51,26 @@ void Pages::LobbyScene::_prepare(const void *_address)
 void Pages::LobbyScene::_load()
 {
     ui.load_async();
-
+    
     if (address.is_invalid()){ // This is clean af. I love you past self :)
         SceneManagement::SceneManager::prepare_scene(SceneManagement::SceneName::SPLASH, address.name.c_str());
         SceneManagement::SceneManager::load_scene(SceneManagement::SceneName::SPLASH);
         return;
     }
-
+    
     client = new ServiceConsumers::LobbyClient();
     std::string error = client->connect(address);
-
+    
     if (error.size() > 0){
         SceneManagement::SceneManager::prepare_scene(SceneManagement::SceneName::SPLASH, error.c_str());
         SceneManagement::SceneManager::load_scene(SceneManagement::SceneName::SPLASH);
         return;
     }
+    ui.set_room_provider(
+        [this](){
+            return client != nullptr ? client->get_rooms() : std::vector<Communication::Lobby::RoomDetail>();
+        }
+    );
 
     client_worker.accomplish([this](auto _){
         client->start();
