@@ -7,7 +7,7 @@ void Utils::Task::accomplish(std::function<void(const bool &)> work)
     
     cancel_requested = false;
     is_active = true;
-    worker = std::thread([work, this](){
+    worker = std::jthread([work, this](){
         work(this->cancel_requested);
         this->is_active = false;
     });

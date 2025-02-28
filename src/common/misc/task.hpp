@@ -15,7 +15,7 @@ namespace Utils
         bool is_running();
 
     private:
-        std::thread worker;
+        std::jthread worker;
         bool is_active = false;
         bool cancel_requested;
     };

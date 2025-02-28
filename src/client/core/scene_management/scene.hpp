@@ -11,7 +11,7 @@ namespace SceneManagement
     enum SceneName{
         SPLASH,
         LOBBY,
-        // ROOM,
+        ROOM,
         // GAME,
         __NIL__ // NOTE: This must be the last position in the enum
     };
@@ -108,7 +108,7 @@ namespace SceneManagement
             std::condition_variable load_unload_cv;
             
             bool thread_should_run = false; // Flag that tells whether the load_unload thread should run
-            std::thread load_unload_worker_thread; // The thread that handles all load and unload calls for the scene
+            std::jthread load_unload_worker_thread; // The thread that handles all load and unload calls for the scene
 
             size_t loads_requested = 0; // Keeps track of the number of loads requested
             size_t unloads_requested = 0; // Keeps track of the number of unloads requested

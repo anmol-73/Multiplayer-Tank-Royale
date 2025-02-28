@@ -13,7 +13,35 @@ void Pages::LobbyScene::_update()
         ui.draw();
     }
     EndDrawing();
+
+    ui.visible_rooms = client->get_rooms();
     ui.poll_events();
+
+    std::optional<Communication::Lobby::RoomDetail> room_to_join = std::nullopt; {
+        if (client->get_new_room_status() == client->ACCEPTED){
+            room_to_join = client->get_new_room_detail();
+            assert(room_to_join.has_value());
+        } else{
+            room_to_join = ui.join_room_request();
+        }
+    }
+    if (room_to_join.has_value()){
+        Communication::Address room_addr; {
+            room_addr.name = address.name;
+            room_addr.port = room_to_join.value().port;
+        }
+
+        SceneManagement::SceneManager::prepare_scene(SceneManagement::SceneName::ROOM, &room_addr);
+        SceneManagement::SceneManager::load_scene(SceneManagement::SceneName::ROOM);
+        return;
+    }
+
+    if (client->get_new_room_status() == client->DENIED){
+        std::string new_room_name = ui.new_room_request();
+        if (new_room_name.size() > 0){
+            client->request_new_room(new_room_name);
+        }
+    }
 }
 
 void Pages::LobbyScene::_loading_update()
@@ -32,14 +60,6 @@ void Pages::LobbyScene::_loading_update()
         });
     }
     EndDrawing();
-
-    if (client->get_new_room_status() == client->ACCEPTED){
-
-    } else if (client->get_new_room_status() == client->DENIED){
-
-    } else if (client->get_new_room_status() == client->ONGOING){
-        
-    }
 }
 
 void Pages::LobbyScene::_prepare(const void *_address)
@@ -66,11 +86,6 @@ void Pages::LobbyScene::_load()
         SceneManagement::SceneManager::load_scene(SceneManagement::SceneName::SPLASH);
         return;
     }
-    ui.set_room_provider(
-        [this](){
-            return client != nullptr ? client->get_rooms() : std::vector<Communication::Lobby::RoomDetail>();
-        }
-    );
 
     client_worker.accomplish([this](auto _){
         client->start();

@@ -2,7 +2,9 @@
 #define H_PAGES_LOBBY_UI
 
 #include <functional>
+#include <optional>
 
+#include "misc/string_algorithms.hpp"
 #include "core/dragonlib.hpp"
 #include "components.hpp"
 #include "communication/protocol.hpp"
@@ -14,13 +16,17 @@ namespace Pages
     public:
         LobbyUI();
         
-        void set_room_provider(std::function<const std::vector<Communication::Lobby::RoomDetail>&()> provider);
+        std::optional<Communication::Lobby::RoomDetail> join_room_request();
         std::string new_room_request();
 
+        std::vector<Communication::Lobby::RoomDetail> visible_rooms;
+
+        void poll_events();
+
     private:
-        std::function<const std::vector<Communication::Lobby::RoomDetail>&()> room_provider;
         DragonLib::UI::Elements::Span *create_room_button;
         DragonLib::UI::Elements::Input *create_room_name_input;
+        std::vector<DragonLib::UI::Elements::Text*> room_selects;
     };
 } // namespace Pages
 

@@ -4,6 +4,9 @@ Pages::LobbyUI::LobbyUI()
 {
     using Mode = UI::DrawParameters::SizeMode;
     
+    const size_t max_room_count = 8;
+    room_selects.assign(max_room_count, nullptr);
+    
     auto *bg = new UI::Elements::ImageView(
         DragonLib::DImage("resources/ui_background.png"),
         [](const auto *_){
@@ -17,39 +20,90 @@ Pages::LobbyUI::LobbyUI()
     );
     register_element(bg);
 
-    bg->register_element(
-        create_room_name_input = Components::create_sl_input(
-            "Room Name:", "...", {
-                .value = {0.5f, 0.5f},
-                .mode = {Mode::SCREEN_W, Mode::SCREEN_H}
-            }, {
-                .value = {0.55f, 0.05f},
-                .mode = {Mode::SCREEN_W, Mode::SCREEN_H}
-            },
-            30 // Max input size
-        )
-    );
+    { // Active rooms
+        for (size_t i = 0; i < max_room_count; ++i){
+            bg->register_element(
+                room_selects[i] = new UI::Elements::Text(
+                    [this, i, max_room_count](auto _) -> std::pair<UI::DrawParameters::Box, UI::DrawParameters::Text>{
+                        return {
+                            {
+                                .position = {
+                                    .value = {
+                                        i < max_room_count/2 ? 0.05f : 0.35f, 0.25f + (i % (max_room_count/2)) * 0.1f
+                                    },
+                                    .mode = {Mode::SCREEN_W, Mode::SCREEN_H}
+                                },
+                                .size = {
+                                    .value = {0.23f, 0.06f},
+                                    .mode = {Mode::SCREEN_W, Mode::SCREEN_H}
+                                },
+                                .origin = {0},
+                                .fill = visible_rooms.size() > i ? Color{0xb2, 0xad, 0x99, 0xc0} : Color{0x49, 0x47, 0x3f, 0x60}
+                            },
+                            {
+                                .content = visible_rooms.size() > i ? visible_rooms[i].name : "",
+                                .font_size = Global::rem,
+                                .font_color = {0x45, 0x41, 0x39, 0xc0},
+                                .position = {
+                                    .value={0.05, 0.5},
+                                    .mode = {Mode::SELF_W, Mode::SELF_H}
+                                },
+                                .origin = {
+                                    .value = {0, 0.5},
+                                    .mode = {Mode::SELF_W, Mode::SELF_H}
+                                }
+                            }
+                        };
+                    }
+                )
+            );
+        }
+    }
 
-    bg->register_element(
-        create_room_button = Components::create_span_button(
-            "Create Room",
-            {
-                .value = {0.5, 0.7},
-                .mode = {Mode::SCREEN_W, Mode::SCREEN_H}
-            }
-        )
-    );
+
+    { // Room creation
+        bg->register_element(
+            create_room_name_input = Components::create_sl_input(
+                "Room Name:", "...", {
+                    .value = {0.5f, 0.5f},
+                    .mode = {Mode::SCREEN_W, Mode::SCREEN_H}
+                }, {
+                    .value = {0.55f, 0.05f},
+                    .mode = {Mode::SCREEN_W, Mode::SCREEN_H}
+                },
+                30 // Max input size
+            )
+        );
+    
+        bg->register_element(
+            create_room_button = Components::create_span_button(
+                "Create Room",
+                {
+                    .value = {0.5, 0.7},
+                    .mode = {Mode::SCREEN_W, Mode::SCREEN_H}
+                }
+            )
+        );
+    }
 }
 
-void Pages::LobbyUI::set_room_provider(std::function<const std::vector<Communication::Lobby::RoomDetail> &()> provider)
+std::optional<Communication::Lobby::RoomDetail> Pages::LobbyUI::join_room_request()
 {
-    room_provider = provider;
+    return std::nullopt;
 }
 
 std::string Pages::LobbyUI::new_room_request()
 {
     if (create_room_button->clicked){
-        return create_room_name_input->value;
+        return Utils::StringAlgorithms::stripped(create_room_name_input->value);
     }
     return "";
+}
+
+void Pages::LobbyUI::poll_events()
+{
+    if ((!visible) || (!events_enabled)) return;
+    UI::Elements::PageView::poll_events();
+
+    
 }

@@ -27,10 +27,7 @@ void ServiceConsumers::LobbyClient::request_new_room(const std::string &room_nam
 {
     using namespace Communication::Lobby;
 
-    if (status != ONGOING){
-        throw std::runtime_error("Tried requesting for new room while ongoing request exists!");
-    }
-
+    assert(status == DENIED);
     status = ONGOING;
     
     RoomName name;
@@ -50,11 +47,13 @@ void ServiceConsumers::LobbyClient::handle_message(Communication::Command type, 
             status = NewRoomStatus::ACCEPTED;
 
             log("Room accepted! (" << new_room_detail.port << ")");
+            break;
         }
-
+        
         case Server::CREATE_DENIED: {
             status = NewRoomStatus::DENIED;
             log("Room denied :(");
+            break;
         }
         
         case Server::ROOM_LIST: {
@@ -63,8 +62,9 @@ void ServiceConsumers::LobbyClient::handle_message(Communication::Command type, 
                 static_cast<const RoomDetail*>(message),
                 static_cast<const RoomDetail*>(message) + rooms_length
             );
-
+            
             log("Active rooms count: " << rooms_length);
+            break;
         }
     }
 }
@@ -91,4 +91,7 @@ void ServiceConsumers::LobbyClient::handle_disconnection()
 {
     _is_connected = false;
     log("Disconnected!");
+    ServiceConsumer::handle_disconnection();
 }
+
+#undef log

@@ -24,11 +24,11 @@ namespace ServiceConsumers
         NewRoomStatus get_new_room_status();
         
     protected:
-        virtual void handle_message(Communication::Command type, const void *message, size_t size);
-        virtual void on_start();
-        virtual void on_finish();
-        virtual std::string on_connection_established();
-        virtual void handle_disconnection();
+        void handle_message(Communication::Command type, const void *message, size_t size);
+        void on_start();
+        void on_finish();
+        std::string on_connection_established();
+        void handle_disconnection();
         
     private:
         bool _is_connected = false;
