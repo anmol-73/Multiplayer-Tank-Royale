@@ -13,10 +13,10 @@ void Pages::LobbyScene::_update()
         ui.draw();
     }
     EndDrawing();
-
-    ui.visible_rooms = client->get_rooms();
     ui.poll_events();
 
+    ui.visible_rooms = client->get_rooms();
+    
     std::optional<Communication::Lobby::RoomDetail> room_to_join = std::nullopt; {
         if (client->get_new_room_status() == client->ACCEPTED){
             room_to_join = client->get_new_room_detail();
@@ -31,7 +31,8 @@ void Pages::LobbyScene::_update()
             room_addr.port = room_to_join.value().port;
         }
 
-        SceneManagement::SceneManager::prepare_scene(SceneManagement::SceneName::ROOM, &room_addr);
+        SceneManagement::SceneManager::prepare_scene(SceneManagement::SceneName::ROOM, &room_addr, 0);
+        SceneManagement::SceneManager::prepare_scene(SceneManagement::SceneName::ROOM, &room_to_join.value(), 1);
         SceneManagement::SceneManager::load_scene(SceneManagement::SceneName::ROOM);
         return;
     }
@@ -62,10 +63,24 @@ void Pages::LobbyScene::_loading_update()
     EndDrawing();
 }
 
-void Pages::LobbyScene::_prepare(const void *_address)
+void Pages::LobbyScene::_prepare(const void *msg, size_t command)
 {
-    if (_address == nullptr) return;
-    address = *static_cast<const Communication::Address*>(_address);
+    switch(command){
+        case 0: {
+            assert(msg != nullptr);
+            address = *static_cast<const Communication::Address*>(msg);
+            break;
+        }
+        
+        case 1: {
+            assert(msg != nullptr);
+            // TODO: Add error message to lobby!
+            // ui.error_message = static_cast<const char*>(error_msg);
+            break;
+        }
+
+        default: assert(false);
+    }
 }
 
 void Pages::LobbyScene::_load()
@@ -73,7 +88,7 @@ void Pages::LobbyScene::_load()
     ui.load_async();
     
     if (address.is_invalid()){ // This is clean af. I love you past self :)
-        SceneManagement::SceneManager::prepare_scene(SceneManagement::SceneName::SPLASH, address.name.c_str());
+        SceneManagement::SceneManager::prepare_scene(SceneManagement::SceneName::SPLASH, address.name.c_str(), 0);
         SceneManagement::SceneManager::load_scene(SceneManagement::SceneName::SPLASH);
         return;
     }
@@ -82,7 +97,7 @@ void Pages::LobbyScene::_load()
     std::string error = client->connect(address);
     
     if (error.size() > 0){
-        SceneManagement::SceneManager::prepare_scene(SceneManagement::SceneName::SPLASH, error.c_str());
+        SceneManagement::SceneManager::prepare_scene(SceneManagement::SceneName::SPLASH, error.c_str(), 0);
         SceneManagement::SceneManager::load_scene(SceneManagement::SceneName::SPLASH);
         return;
     }

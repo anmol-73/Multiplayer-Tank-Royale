@@ -49,7 +49,7 @@ void RoomServiceProvider::handle_new_client(ENetPeer *peer)
 
     int id = -1;
     for (auto& player: players){
-        if (!player.exists) continue;
+        if (player.exists) continue;
         
         id = player.id;
         strncpy(player.name, default_player_name, sizeof(PlayerName));

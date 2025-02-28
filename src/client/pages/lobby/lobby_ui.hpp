@@ -21,8 +21,6 @@ namespace Pages
 
         std::vector<Communication::Lobby::RoomDetail> visible_rooms;
 
-        void poll_events();
-
     private:
         DragonLib::UI::Elements::Span *create_room_button;
         DragonLib::UI::Elements::Input *create_room_name_input;

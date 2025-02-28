@@ -16,7 +16,7 @@ void Pages::SplashScene::_update()
 
     if(ui.connect_button->clicked){
         Communication::Address address(ui.address_input->value);
-        SceneManagement::SceneManager::prepare_scene(SceneManagement::SceneName::LOBBY, &address);
+        SceneManagement::SceneManager::prepare_scene(SceneManagement::SceneName::LOBBY, &address, 0);
         SceneManagement::SceneManager::load_scene(SceneManagement::SceneName::LOBBY);
     }
 }
@@ -39,13 +39,22 @@ void Pages::SplashScene::_loading_update()
     EndDrawing();
 }
 
-void Pages::SplashScene::_prepare(const void *error_msg)
+void Pages::SplashScene::_prepare(const void *error_msg, size_t command)
 {
-    if (error_msg == nullptr){
-        ui.error_message = "";
-        return;
+    switch(command){
+        case 0: {
+            assert(error_msg != nullptr);
+            ui.error_message = static_cast<const char*>(error_msg);
+            break;
+        }
+
+        case 1: {
+            ui.error_message = "";
+            break;
+        }
+
+        default: assert(false);
     }
-    ui.error_message = static_cast<const char*>(error_msg);
 }
 
 void Pages::SplashScene::_load()

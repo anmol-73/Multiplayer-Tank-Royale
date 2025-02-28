@@ -33,6 +33,11 @@ public:
 
 protected:
     /**
+     * Called before enet_host_service is called
+     */
+    virtual void update();
+
+    /**
      * Callback when `start` is called
      */
     virtual void on_start();

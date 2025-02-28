@@ -59,7 +59,7 @@ namespace SceneManagement
          * NOTE: The caller is expected to provided data as required!
          * NOTE: The data is not freed
          */
-        void prepare_scene(SceneName scene, const void *data);
+        void prepare_scene(SceneName scene, const void *data, size_t command);
 
         /**
          * Loads a scene the next time update is called

@@ -18,12 +18,16 @@ private:
 
     void on_start();
     void on_finish();
+    void update();
     void handle_new_client(ENetPeer *peer);
     void handle_disconnection(ENetPeer *peer);
     void handle_message(ENetPeer *peer, Communication::Command type, const void *message, size_t size);
 
     std::map<int, std::unique_ptr<RoomServiceProvider>> rooms;
     std::map<int, std::unique_ptr<GameServiceProvider>> games;
+
+    std::vector<int> rooms_to_delete;
+    std::vector<int> games_to_delete;
 };
 
 #endif

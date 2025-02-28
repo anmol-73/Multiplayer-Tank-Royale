@@ -48,7 +48,7 @@ void SceneManagement::Scene::__request_cleanup()
     load_parameters.load_unload_cv.notify_one();
 }
 
-void SceneManagement::Scene::_prepare(const void *data){}
+void SceneManagement::Scene::_prepare(const void *data, size_t command){}
 
 void SceneManagement::Scene::__update()
 {

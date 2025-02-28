@@ -14,7 +14,7 @@ namespace Pages
 
     protected:
         /** Expects a pointer to a cstring! */
-        virtual void _prepare(const void *error_msg);
+        virtual void _prepare(const void *error_msg, size_t command);
         virtual void _load();
         virtual void _cleanup();
         virtual void _load_with_context();

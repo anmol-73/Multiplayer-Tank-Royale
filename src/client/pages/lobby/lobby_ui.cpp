@@ -4,7 +4,7 @@ Pages::LobbyUI::LobbyUI()
 {
     using Mode = UI::DrawParameters::SizeMode;
     
-    const size_t max_room_count = 8;
+    const size_t max_room_count = 16;
     room_selects.assign(max_room_count, nullptr);
     
     auto *bg = new UI::Elements::ImageView(
@@ -98,12 +98,4 @@ std::string Pages::LobbyUI::new_room_request()
         return Utils::StringAlgorithms::stripped(create_room_name_input->value);
     }
     return "";
-}
-
-void Pages::LobbyUI::poll_events()
-{
-    if ((!visible) || (!events_enabled)) return;
-    UI::Elements::PageView::poll_events();
-
-    
 }

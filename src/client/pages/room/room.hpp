@@ -1,20 +1,20 @@
-#ifndef H_PAGES_LOBBY
-#define H_PAGES_LOBBY
+#ifndef H_PAGES_ROOM
+#define H_PAGES_ROOM
 
 #include "core/scene_management.hpp"
-#include "lobby_ui.hpp"
-#include "lobby_client.hpp"
+#include "room_ui.hpp"
+#include "room_client.hpp"
 #include "misc/task.hpp"
 
 namespace Pages
 {
-    class LobbyScene: public SceneManagement::Scene{
+    class RoomScene: public SceneManagement::Scene{
     public:
         virtual void _update();
         virtual void _loading_update();
 
     protected:
-        /** Expects a pointer to an Address! */
+        /** Expects a pointer to chunk with an Address and a RoomDetail! */
         virtual void _prepare(const void *msg, size_t command);
         virtual void _load();
         virtual void _cleanup();
@@ -22,10 +22,11 @@ namespace Pages
         virtual void _cleanup_with_context();
 
     private:
-        LobbyUI ui;
+        RoomUI ui;
         Communication::Address address = {};
+        Communication::Lobby::RoomDetail room_detail = {};
 
-        ServiceConsumers::LobbyClient *client = nullptr;
+        ServiceConsumers::RoomClient *client = nullptr;
 
         Utils::Task client_worker;
     };

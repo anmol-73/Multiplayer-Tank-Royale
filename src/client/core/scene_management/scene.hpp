@@ -54,7 +54,7 @@ namespace SceneManagement
          *  The scene was asked to prepare itself with some initialization data
          *  NOTE: It is up to the caller to ensure that the data provided is as expected!
          */
-        virtual void _prepare(const void *data);
+        virtual void _prepare(const void *data, size_t command);
 
         /** 
          * Called every frame.

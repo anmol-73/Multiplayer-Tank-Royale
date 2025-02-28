@@ -30,6 +30,7 @@ void ServiceProvider::start()
 
     ENetEvent event;
     while (is_running()){
+        update();
         if (enet_host_service(host, &event, timeout) <= 0) continue;
         switch (event.type){
             case ENET_EVENT_TYPE_CONNECT:
@@ -79,7 +80,9 @@ ServiceProvider::~ServiceProvider()
     enet_host_destroy(host);
 }
 
-void ServiceProvider::on_start(){}
+void ServiceProvider::update(){}
+
+void ServiceProvider::on_start() {}
 
 void ServiceProvider::on_finish(){}
 
