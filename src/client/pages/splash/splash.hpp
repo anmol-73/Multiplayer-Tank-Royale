@@ -3,6 +3,7 @@
 
 #include "core/scene_management.hpp"
 #include "splash_ui.hpp"
+#include "communication/structs.hpp"
 
 namespace Pages
 {
@@ -12,6 +13,8 @@ namespace Pages
         virtual void _loading_update();
 
     protected:
+        /** Expects a pointer to a cstring! */
+        virtual void _prepare(const void *error_msg);
         virtual void _load();
         virtual void _cleanup();
         virtual void _load_with_context();

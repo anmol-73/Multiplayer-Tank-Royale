@@ -13,6 +13,12 @@ void Pages::SplashScene::_update()
     }
     EndDrawing();
     ui.poll_events();
+
+    if(ui.connect_button->clicked){
+        Communication::Address address(ui.address_input->value);
+        SceneManagement::SceneManager::prepare_scene(SceneManagement::SceneName::LOBBY, &address);
+        SceneManagement::SceneManager::load_scene(SceneManagement::SceneName::LOBBY);
+    }
 }
 
 void Pages::SplashScene::_loading_update()
@@ -31,6 +37,15 @@ void Pages::SplashScene::_loading_update()
         });
     }
     EndDrawing();
+}
+
+void Pages::SplashScene::_prepare(const void *error_msg)
+{
+    if (error_msg == nullptr){
+        ui.error_message = "";
+        return;
+    }
+    ui.error_message = static_cast<const char*>(error_msg);
 }
 
 void Pages::SplashScene::_load()

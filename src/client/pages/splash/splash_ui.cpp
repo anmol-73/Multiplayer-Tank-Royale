@@ -19,7 +19,7 @@ Pages::SplashUI::SplashUI()
 
     bg->register_element(
         address_input = Components::create_sl_input(
-            "Hello", "Placeholder", {
+            "Server Address:", "eg: 127.0.0.1:3000", {
                 .value = {0.5f, 0.5f},
                 .mode = {Mode::SCREEN_W, Mode::SCREEN_H}
             }, {
@@ -29,9 +29,32 @@ Pages::SplashUI::SplashUI()
             23 // Max input size
         )
     );
-}
 
-std::optional<Communication::Address> Pages::SplashUI::lobby_address()
-{
-    return std::nullopt;
+    bg->register_element(
+        connect_button = Components::create_span_button(
+            "Connect",
+            {
+                .value = {0.5, 0.7},
+                .mode = {Mode::SCREEN_W, Mode::SCREEN_H}
+            }
+        )
+    );
+
+    bg->register_element(
+        new UI::Elements::Span(
+            [this](UI::Elements::Span* _){
+                
+                return UI::DrawParameters::TextBox{
+                    .content = this->error_message,
+                    .font_size = Global::rem,
+                    .font_color = Components::ColorScheme::light_red,
+                    .position = {
+                        .value = {0.5, 0.85},
+                        .mode = {Mode::SCREEN_W, Mode::SCREEN_H}
+                    },
+                    .fill = {0}
+                };
+            }
+        )
+    );
 }

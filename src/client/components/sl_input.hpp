@@ -2,6 +2,7 @@
 #define H_COMPONENTS_SLINPUT
 
 #include "core/dragonlib.hpp"
+#include "color_scheme.hpp"
 
 namespace Pages
 {

@@ -28,6 +28,7 @@ int main(int argc, char* argv[]){
     Global::init();
 
     SceneManagement::SceneManager::register_scene(SceneManagement::SceneName::SPLASH, new Pages::SplashScene());
+    SceneManagement::SceneManager::register_scene(SceneManagement::SceneName::LOBBY, new Pages::LobbyScene());
     SceneManagement::SceneManager::init();
 
     SceneManagement::SceneManager::load_scene(SceneManagement::SceneName::SPLASH);

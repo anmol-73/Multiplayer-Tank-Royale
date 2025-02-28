@@ -13,6 +13,8 @@ void DragonLib::UI::Elements::ImageView::draw()
         0,
         WHITE
     );
+
+    View::draw();
 }
 
 void DragonLib::UI::Elements::ImageView::load_async()

@@ -9,6 +9,7 @@ DragonLib::UI::Elements::Input *Pages::Components::create_sl_input(
 ){
     using namespace DragonLib::UI::Elements;
     using Mode = DragonLib::UI::DrawParameters::SizeMode;
+    using namespace ColorScheme;
 
     return new Input(InputParameters{
         .label = label,
@@ -22,25 +23,25 @@ DragonLib::UI::Elements::Input *Pages::Components::create_sl_input(
             .value = {0, 0.05},
             .mode = {Mode::SELF_H, Mode::SELF_H}
         },
-        .background_color = {0xb2, 0xad, 0x99, 0xc0},
-        .font_color = {0x45, 0x41, 0x39, 0xf0},
+        .background_color = plain_fill,
+        .font_color = plain_color,
         .default_border_params = {
             .width = 0,
-            .color = {0x49, 0x47, 0x3f, 0xc0},
+            .color = plain_border_h,
         },
         .focused_border_params = {
             .width = 2.0f,
-            .color = {0x49, 0x47, 0x3f, 0xf0},
+            .color = plain_border,
             .offset = 6.0f
         },
         .hover_border_params = {
             .width = 2.0f,
-            .color = {0x49, 0x47, 0x3f, 0x60},
+            .color = plain_border_l,
             .offset = 12.0f
         },
         .placeholder = {
             .content = placeholder_text,
-            .placeholder_font_color = {0x45, 0x41, 0x39, 0x80}
+            .placeholder_font_color = plain_color_l
         },
         .max_input_size = max_input_size
     });

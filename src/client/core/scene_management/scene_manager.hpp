@@ -53,6 +53,13 @@ namespace SceneManagement
          * NOTE: If `ignore_reload` is set to true and new sene is the currently loaded scene, nothing is done.
          */
         void load_scene(SceneName scene, bool ignore_reload=true);
+        
+        /**
+         * Prepares a scene
+         * NOTE: The caller is expected to provided data as required!
+         * NOTE: The data is not freed
+         */
+        void prepare_scene(SceneName scene, const void *data);
 
         /**
          * Loads a scene the next time update is called

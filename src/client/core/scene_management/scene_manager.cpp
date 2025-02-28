@@ -60,6 +60,11 @@ void SceneManagement::SceneManager::load_scene(SceneName scene, bool ignore_relo
     _scenes[_loaded_scene].get()->__request_load();
 }
 
+void SceneManagement::SceneManager::prepare_scene(SceneName scene, const void *data)
+{
+    _scenes[scene]->_prepare(data);
+}
+
 void SceneManagement::SceneManager::load_deferred(SceneName scene, bool ignore_reload)
 {
     if (ignore_reload && scene == _loaded_scene) return;

@@ -48,6 +48,8 @@ void SceneManagement::Scene::__request_cleanup()
     load_parameters.load_unload_cv.notify_one();
 }
 
+void SceneManagement::Scene::_prepare(const void *data){}
+
 void SceneManagement::Scene::__update()
 {
     if (!is_active()){

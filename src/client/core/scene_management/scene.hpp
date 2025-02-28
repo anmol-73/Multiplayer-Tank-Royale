@@ -10,7 +10,7 @@ namespace SceneManagement
 {
     enum SceneName{
         SPLASH,
-        // LOBBY,
+        LOBBY,
         // ROOM,
         // GAME,
         __NIL__ // NOTE: This must be the last position in the enum
@@ -49,6 +49,12 @@ namespace SceneManagement
         
         /** Pushes the cleanup request onto the load-unload thread. */
         void __request_cleanup();
+
+        /**
+         *  The scene was asked to prepare itself with some initialization data
+         *  NOTE: It is up to the caller to ensure that the data provided is as expected!
+         */
+        virtual void _prepare(const void *data);
 
         /** 
          * Called every frame.
