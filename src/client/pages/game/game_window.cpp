@@ -35,9 +35,41 @@ void Pages::GameWindowScene::_loading_update()
     EndDrawing();
 }
 
-void Pages::GameWindowScene::_prepare(const void *game_props, size_t command)
+void Pages::GameWindowScene::_prepare(const void *msg, size_t command)
 {
-    game_props = static_cast<const GameWindowScene::GameProps*>(game_props);
+    std::cout << command << std::endl;
+    switch(command){
+        case 0: {
+            assert(msg != nullptr);
+            address = *static_cast<const Communication::Address*>(msg);
+            std::cout << address.port << ' ' << address.name << std::endl;
+            break;
+        }
+        
+        case 1: {
+            assert(msg != nullptr);
+            player_details_size = *static_cast<const size_t*>(msg);
+            std::cout << "SZ " << player_details_size << std::endl;
+            break;
+        }
+        
+        case 2: {
+            assert(msg != nullptr);
+            auto ptr = static_cast<const PlayerDetail*>(msg);
+            player_details.assign(ptr, ptr + player_details_size);
+            std::cout << "SZ 2 " << player_details.size() << std::endl;
+            break;
+        }
+        
+        case 3: {
+            assert(msg != nullptr);
+            settings = *static_cast<const Communication::Room::RoomSettings*>(msg);
+            std::cout << "setging " << settings.map << std::endl;
+            break;
+        }
+
+        default: assert(false);
+    }
 }
 
 void Pages::GameWindowScene::_load()

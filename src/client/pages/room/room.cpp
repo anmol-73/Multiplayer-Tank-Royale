@@ -10,6 +10,9 @@ void Pages::RoomScene::_update()
         return;
     }
 
+    ui.map_idx = client->get_current_settings().map;
+    ui.visible_players = client->get_joined_players();
+
     BeginDrawing();{
         ClearBackground({0x1e, 0x1e, 0x1e, 0xff});
         ui.draw();
@@ -21,6 +24,54 @@ void Pages::RoomScene::_update()
         SceneManagement::SceneManager::prepare_scene(SceneManagement::SceneName::LOBBY, "Room rejected join!", 1);
         SceneManagement::SceneManager::load_scene(SceneManagement::SceneName::LOBBY);
         return;
+    }
+    
+    if (client->get_game_port().has_value()){
+        Communication::Address addr; {
+            addr.name = address.name;
+            addr.port = client->get_game_port().value();
+        }
+        auto sz = client->get_joined_players().size();
+        SceneManagement::SceneManager::prepare_scene(SceneManagement::SceneName::GAME, &addr, 0);
+        SceneManagement::SceneManager::prepare_scene(SceneManagement::SceneName::GAME, &sz, 1);
+        SceneManagement::SceneManager::prepare_scene(SceneManagement::SceneName::GAME, &client->get_joined_players(), 2);
+        SceneManagement::SceneManager::prepare_scene(SceneManagement::SceneName::GAME, &client->get_current_settings(), 3);
+        SceneManagement::SceneManager::load_scene(SceneManagement::SceneName::GAME);
+        return;
+    }
+    
+    if (ui.should_leave()){
+        // SceneManagement::SceneManager::prepare_scene(SceneManagement::SceneName::LOBBY, "", 0);
+        SceneManagement::SceneManager::load_scene(SceneManagement::SceneName::LOBBY);
+        return;
+    }
+
+    if (ui.should_start_game()){
+        client->request_game_start();
+    }
+
+    if (ui.get_map_idx_delta()){
+        Communication::Room::RoomSettings new_settings(client->get_current_settings());
+        new_settings.map += ui.get_map_idx_delta();
+        ui.map_idx += ui.map_idx;
+        client->request_set_settings(new_settings);
+    }
+
+    auto nss = client->get_name_set_status();
+    if (nss == Communication::RequestStatus::DENIED){
+        std::cout << "NAME Denied!" << std::endl;
+        return;
+    }
+
+    if (nss == Communication::RequestStatus::ACCEPTED){
+        std::cout << "NAME Accepted!" << std::endl;
+    }
+
+    if (nss == Communication::RequestStatus::IDLE){
+        auto name = ui.set_name_request();
+        if (name.size() > 0){
+            client->request_new_name(name);
+        }
     }
 }
 

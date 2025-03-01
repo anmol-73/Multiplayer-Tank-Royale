@@ -89,6 +89,11 @@ Pages::LobbyUI::LobbyUI()
 
 std::optional<Communication::Lobby::RoomDetail> Pages::LobbyUI::join_room_request()
 {
+    for (size_t i = 0; i < visible_rooms.size(); ++i){
+        if (room_selects[i]->clicked){
+            return visible_rooms[i];
+        }
+    }
     return std::nullopt;
 }
 
@@ -98,4 +103,14 @@ std::string Pages::LobbyUI::new_room_request()
         return Utils::StringAlgorithms::stripped(create_room_name_input->value);
     }
     return "";
+}
+
+void Pages::LobbyUI::poll_events()
+{
+    if ((!visible) || (!events_enabled)) return;
+    UI::Elements::PageView::poll_events();
+
+    for (size_t i = 0; i < room_selects.size(); ++i){
+        room_selects[i]->interactable = (i < visible_rooms.size());
+    }
 }

@@ -27,6 +27,7 @@ namespace ServiceConsumers
         std::optional<int> get_game_port();
 
         const Communication::Room::RoomSettings& get_current_settings() const;
+        const std::vector<Communication::Room::PlayerDetail>& get_joined_players() const;
 
         void request_new_name(const std::string& new_name);
         void request_game_start();

@@ -4,6 +4,9 @@ const size_t timeout = 500;
 
 std::string ServiceConsumer::connect(Communication::Address _address)
 {
+    if (_address.is_invalid()){
+        std::cout << _address.name << ' ' << _address.port << '\n';
+    }
     assert(!_address.is_invalid());
     
     host = enet_host_create(

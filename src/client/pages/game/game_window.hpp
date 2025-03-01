@@ -3,6 +3,7 @@
 
 #include <raylib.h>
 #include <vector>
+#include <cassert>
 
 #include "core/scene_management.hpp"
 #include "game.hpp"
@@ -19,7 +20,7 @@ namespace Pages
 
     protected:
         /** Expects a pointer to an Address! */
-        virtual void _prepare(const void *address, size_t command);
+        virtual void _prepare(const void *msg, size_t command);
         virtual void _load();
         virtual void _cleanup();
         virtual void _load_with_context();
@@ -28,21 +29,21 @@ namespace Pages
     private:
         ServiceConsumers::GameClient *client = nullptr;
 
-        Communication::Address address = {};
-
+        
         Utils::Task client_worker;
-
+        
         using PlayerName = char[32];
         struct PlayerDetail{
             PlayerName name;
             int id;
         };
-
-        struct GameProps
-        {
-            PlayerDetail player_details[12];
-            int map; // The index of the map used.
-        }game_props;
+        
+        
+        Communication::Address address = {};
+        size_t player_details_size = 0;
+        std::vector<PlayerDetail> player_details;
+        Communication::Room::RoomSettings settings; // The index of the map used.
+        
         
         void game_update_callback(const Game::GameState* server_gs, size_t size);
         

@@ -16,7 +16,24 @@ namespace Pages
     public:
         RoomUI();
 
+        bool should_start_game();
+        bool should_leave();
+        std::string set_name_request();
+
+        int get_map_idx_delta();
+        
+        std::string room_name;
+        std::vector<Communication::Room::PlayerDetail> visible_players;
+        int map_idx;
+
     private:
+        UI::Elements::Span* start_game_button;
+        UI::Elements::Span* exit_button;
+        UI::Elements::Text* left_map_select;
+        UI::Elements::Text* right_map_select;
+
+        DragonLib::UI::Elements::Span *set_name_button;
+        DragonLib::UI::Elements::Input *name_input;
         
     };
 } // namespace Pages

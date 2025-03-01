@@ -8,6 +8,8 @@ void Pages::LobbyScene::_update()
         return;
     }
 
+    ui.visible_rooms = client->get_rooms();
+    
     BeginDrawing();{
         ClearBackground({0x1e, 0x1e, 0x1e, 0xff});
         ui.draw();
@@ -15,7 +17,6 @@ void Pages::LobbyScene::_update()
     EndDrawing();
     ui.poll_events();
 
-    ui.visible_rooms = client->get_rooms();
     
     std::optional<Communication::Lobby::RoomDetail> room_to_join = std::nullopt; {
         if (client->get_new_room_status() == Communication::RequestStatus::ACCEPTED){

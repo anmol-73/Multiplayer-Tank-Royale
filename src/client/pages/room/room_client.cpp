@@ -15,6 +15,7 @@ Communication::RequestStatus ServiceConsumers::RoomClient::get_join_status()
 Communication::RequestStatus ServiceConsumers::RoomClient::get_name_set_status()
 {
     auto nss = name_set_status;
+    if (nss == Communication::RequestStatus::ONGOING) return nss;
     name_set_status = Communication::RequestStatus::IDLE;
     
     return nss;
@@ -36,6 +37,11 @@ std::optional<int> ServiceConsumers::RoomClient::get_game_port()
 const Communication::Room::RoomSettings &ServiceConsumers::RoomClient::get_current_settings() const
 {
     return settings;
+}
+
+const std::vector<Communication::Room::PlayerDetail> &ServiceConsumers::RoomClient::get_joined_players() const
+{
+    return players;
 }
 
 void ServiceConsumers::RoomClient::request_new_name(const std::string &new_name)

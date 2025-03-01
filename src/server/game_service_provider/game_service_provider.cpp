@@ -1,6 +1,6 @@
 #include "game_service_provider.hpp"
 
-#define log(message) std::cout << "[Lobby Server] " << message << std::endl
+#define log(message) std::cout << "[Game Server] " << message << std::endl
 
 
 void GameServiceProvider::start_async()
