@@ -46,8 +46,8 @@ void Pages::GameWindowScene::_load()
     std::string error = client->connect(address);
 
     if (error.size() > 0){
-        SceneManagement::SceneManager::prepare_scene(SceneManagement::SceneName::SPLASH, error.c_str());
-        SceneManagement::SceneManager::load_scene(SceneManagement::SceneName::SPLASH);
+        SceneManagement::SceneManager::prepare_scene(SceneManagement::SceneName::SPLASH, error.c_str(), 0);
+        SceneManagement::SceneManager::load_scene(SceneManagement::SceneName::SPLASH, 0);
         return;
     }
 

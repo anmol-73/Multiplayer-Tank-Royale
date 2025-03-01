@@ -12,7 +12,7 @@ namespace SceneManagement
         SPLASH,
         LOBBY,
         ROOM,
-        // GAME,
+        GAME,
         __NIL__ // NOTE: This must be the last position in the enum
     };
 

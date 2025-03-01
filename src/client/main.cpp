@@ -30,6 +30,7 @@ int main(int argc, char* argv[]){
     SceneManagement::SceneManager::register_scene(SceneManagement::SceneName::SPLASH, new Pages::SplashScene());
     SceneManagement::SceneManager::register_scene(SceneManagement::SceneName::LOBBY, new Pages::LobbyScene());
     SceneManagement::SceneManager::register_scene(SceneManagement::SceneName::ROOM, new Pages::RoomScene());
+    SceneManagement::SceneManager::register_scene(SceneManagement::SceneName::GAME, new Pages::GameWindowScene());
     SceneManagement::SceneManager::init();
 
     SceneManagement::SceneManager::load_scene(SceneManagement::SceneName::SPLASH);
