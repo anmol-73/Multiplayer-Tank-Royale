@@ -5,7 +5,7 @@
 
 namespace Game
 {
-    Game::GameState * deserialize_game_state(const void *, size_t sz);
+    Game::GameState deserialize_game_state(const void * message, size_t sz);
 
     std::pair<void *, size_t> serialize_game_state(Game::GameState game_state);
 }
