@@ -6,6 +6,10 @@
 #include <mutex>
 #include <condition_variable>
 
+#ifndef _WIN32
+#define jthread thread
+#endif
+
 namespace SceneManagement
 {
     enum SceneName{

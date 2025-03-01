@@ -19,7 +19,7 @@ BOOL WINAPI SignalHandler::win_handler_routine(_In_ DWORD dwCtrlType)
     }
 }
 #else
-void SignalHandler::my_handler(int signum)
+void SignalHandler::unix_handler_routine(int signum)
 {
      if (signum == SIGINT) {
         if (SignalHandler::ctrl_c_callback != nullptr) {

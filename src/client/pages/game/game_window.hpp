@@ -19,7 +19,7 @@ namespace Pages
 
     protected:
         /** Expects a pointer to an Address! */
-        virtual void _prepare(const void *address);
+        virtual void _prepare(const void *address, size_t command);
         virtual void _load();
         virtual void _cleanup();
         virtual void _load_with_context();

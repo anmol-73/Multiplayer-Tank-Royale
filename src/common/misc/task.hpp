@@ -5,6 +5,10 @@
 #include <thread>
 #include <stdexcept>
 
+#ifndef _WIN32
+#define jthread thread
+#endif
+
 namespace Utils
 {
     struct Task{

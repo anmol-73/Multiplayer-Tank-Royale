@@ -35,7 +35,7 @@ void Pages::GameWindowScene::_loading_update()
     EndDrawing();
 }
 
-void Pages::GameWindowScene::_prepare(const void *game_props)
+void Pages::GameWindowScene::_prepare(const void *game_props, size_t command)
 {
     game_props = static_cast<const GameWindowScene::GameProps*>(game_props);
 }
