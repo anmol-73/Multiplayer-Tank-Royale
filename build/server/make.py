@@ -22,7 +22,7 @@ CC = "g++" # The compiler to use
 # Compiler arguments
 LINK_LIBS = "-lraylib -lopengl32 -lgdi32 -lwinmm -lenet"
 LINK_DIRS = f"-L{LIB_DIR} -L{RAYLIB_DIR}/src"
-INCLUDE_DIRS = f"-I{SRC_DIR} -I{COM_DIR} -I{INC_DIR} -I{RAYLIB_DIR}/src/ -I{RAYLIB_DIR}/src/external/"
+INCLUDE_DIRS = f"-I{RAYLIB_DIR}/src/ -I{RAYLIB_DIR}/src/external/ -I{SRC_DIR} -I{COM_DIR} -I{INC_DIR}"
 CFLAGS = "-Wall -std=c++23 -D_DEFAULT_SOURCE -Wno-missing-braces"
 PLATFORM = "PLATFORM_DESKTOP"
 

@@ -6,6 +6,7 @@ void Game::GameState::init_game_state()
     for(size_t i=0; i<12; i++)
     {
         Game::GameState::PlayerState empty_player;
+        empty_player.exists = false;
         empty_player.is_alive = false;
         empty_player.angle = 0;
         empty_player.gun_angle = 0;

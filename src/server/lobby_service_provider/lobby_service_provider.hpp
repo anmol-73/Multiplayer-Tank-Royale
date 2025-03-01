@@ -3,9 +3,9 @@
 
 #include <map>
 
+#include "room_service_provider/room_service_provider.hpp"
 #include "../service_provider.hpp"
 #include "communication/protocol.hpp"
-#include "room_service_provider/room_service_provider.hpp"
 
 struct LobbyServiceProvider: public ServiceProvider{
 public:

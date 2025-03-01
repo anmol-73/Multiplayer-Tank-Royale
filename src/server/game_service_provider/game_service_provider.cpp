@@ -42,7 +42,7 @@ void GameServiceProvider::handle_message(ENetPeer *peer, Communication::Command 
     using namespace Communication::Game;
 
     switch (static_cast<Client>(type)){
-        case Client::IDENTIFY:
+        case Client::IDENTIFY: {
             PlayerIdentification pi = *static_cast<const PlayerIdentification*>(message);
             if(game_already_started || game_state.player_vector[pi.id].exists) break;
             peers[pi.id] = peer;
@@ -53,10 +53,12 @@ void GameServiceProvider::handle_message(ENetPeer *peer, Communication::Command 
                 start_game();
             }
             break;
+        }
         case Client::FRAME:
             game_state.apply_frame(*static_cast<const Game::Frame*>(message));
             break;
-        case Client::TYPES_SELECTION:
+        case Client::TYPES_SELECTION: {
+
             Game::TypeSelection selection = *static_cast<const Game::TypeSelection*>(message);
             game_state.player_vector[selection.player_id].gun_type = selection.gun_type;
             game_state.player_vector[selection.player_id].tank_type = selection.tank_type;
@@ -66,6 +68,7 @@ void GameServiceProvider::handle_message(ENetPeer *peer, Communication::Command 
             game_state.player_vector[selection.player_id].position = Maps::maps[0].spawnpoints[selection.player_id];
             dead_times[selection.player_id] = 0;
             break;
+        }
     }
 }
 
@@ -94,7 +97,7 @@ void GameServiceProvider::timed_loop_func()
             time_at_last_broadcast = t;
             game_state.update_projectiles(delta_time);
             game_state.update_explosions(delta_time);
-            auto [message, sz] = deserialize(game_state); // TODO: make
+            auto [message, sz] = serialize_game_state(game_state); // TODO: make
             broadcast_message(Communication::Game::Server::GAME_STATE_BROADCAST, message, sz);
         }
         for(size_t i=0; i<12; i++)
