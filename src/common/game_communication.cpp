@@ -1,8 +1,45 @@
 #include "game_communication.hpp"
 
-Game::GameState *Game::deserialize_game_state(const void *, size_t sz)
+template<typename T>
+const void* destore(const void* ptr, T& item) {
+    item = *reinterpret_cast<const T*>(ptr); 
+    return reinterpret_cast<const T*>(ptr) + 1; 
+}
+
+template<typename T>
+const void* destore_vector(const void* ptr, std::vector<T>& vec)
 {
-    return nullptr;
+    size_t size;
+    ptr = destore(ptr, size);  // Extract vector size
+
+    vec.resize(size);
+    for (size_t i = 0; i < size; i++) {
+        ptr = destore(ptr, vec[i]);
+    }
+    return ptr;
+}
+
+
+
+Game::GameState Game::deserialize_game_state(const void *message, size_t sz)
+{
+    Game::GameState game_state;
+    const void* ptr = message;
+    ptr = destore(ptr, game_state.num_of_players);
+    ptr = destore(ptr, game_state.map_num);
+    ptr = destore(ptr, game_state.time_of_last_objects_update);
+    ptr = destore(ptr, game_state.start_time);
+    game_state.player_vector.resize(12);
+    for (size_t i = 0; i < 12; i++) {
+        ptr = destore(ptr, game_state.player_vector[i]);
+    }
+    ptr = destore_vector(ptr, game_state.projectile_vector);
+    ptr = destore_vector(ptr, game_state.explosion_vector);
+    ptr = destore(ptr, game_state.curr_frame);
+    return game_state;
+
+
+    
 }
 
 template<typename T>
