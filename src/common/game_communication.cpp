@@ -1,6 +1,6 @@
 #include "game_communication.hpp"
 
-Game::GameState *Game::deserialize_game_state(void *)
+Game::GameState *Game::deserialize_game_state(const void *, size_t sz)
 {
     return nullptr;
 }

@@ -6,6 +6,7 @@
 #include "game.hpp"
 #include "communication/protocol.hpp"
 #include "service_consumer.hpp"
+#include "game_communication.hpp"
 
 namespace ServiceConsumers
 {
