@@ -64,12 +64,19 @@ namespace Communication
     
     namespace Game
     {
+
+        using PlayerIdentification = ::Communication::Room::PlayerDetail;
         // The commands sent by the game server
         enum Server{
+            RESPAWN_OK,
+            GAME_STATE_BROADCAST,
         };
 
         // The commands sent by the game client
         enum Client{
+            IDENTIFY,
+            TYPES_SELECTION,
+            FRAME,
         };
     } // namespace Game
     

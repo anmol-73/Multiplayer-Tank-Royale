@@ -1,4 +1,5 @@
 #include <stdexcept>
+#include <raylib.h>
 #include <enet_include.hpp>
 
 #include "misc/sig_handler.hpp"

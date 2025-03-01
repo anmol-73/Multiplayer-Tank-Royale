@@ -1,20 +1,33 @@
 #include "game.hpp"
 
-void Game::GameState::apply_frame(const Game::Frame& frame)
+void Game::GameState::init_game_state()
+{
+    num_of_players = 0;
+    for(size_t i=0; i<12; i++)
+    {
+        Game::GameState::PlayerState empty_player;
+        empty_player.exists = false;
+        empty_player.is_alive = false;
+        empty_player.angle = 0;
+        empty_player.gun_angle = 0;
+        empty_player.position = Maps::maps[map_num].spawnpoints[i];
+        empty_player.score = 0;
+        empty_player.time_since_last_shot = 0;
+        player_vector.push_back(empty_player);
+    }
+    Game::GameState::start_time = std::chrono::high_resolution_clock().now();
+}
+
+void Game::GameState::apply_frame(const Game::Frame &frame)
 {
     curr_frame = frame;
+    if(!player_vector[curr_frame.player_id].is_alive) return;
     player_vector[curr_frame.player_id].last_frame_processed_num = curr_frame.frame_num;
     handle_movement();
     set_gun_angle();
     handle_shots();
     float t=static_cast<float>(curtime());
-    float delta_time = (t-time_of_last_objects_update)/1000;
     time_of_last_objects_update=t;
-
-    // Needs to be changed to happen on broadcast
-    update_projectiles(delta_time);
-    update_explosions(delta_time);
-
     return;
 }
 

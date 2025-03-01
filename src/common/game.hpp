@@ -38,6 +38,7 @@ namespace Game
     // Current state of the game
     struct GameState
     {
+
         size_t num_of_players;
 
         size_t map_num;
@@ -47,6 +48,8 @@ namespace Game
 
         struct PlayerState
         {
+            bool exists;
+
             bool is_alive;
 
             size_t last_frame_processed_num;
@@ -103,6 +106,12 @@ namespace Game
         // Current frame being processed, so that it doesnt need to be passed around to functions
         Frame curr_frame;
 
+
+        /**
+         * Takes a frame as input and updates game state accordingly
+         */
+        void init_game_state();
+
         /**
          * Takes a frame as input and updates game state accordingly
          */
@@ -142,7 +151,13 @@ namespace Game
         long double curtime();
 
     };
-
+    
+    struct TypeSelection
+    {
+        size_t player_id;
+        size_t gun_type;
+        size_t tank_type;
+    };
 }
 
 #endif

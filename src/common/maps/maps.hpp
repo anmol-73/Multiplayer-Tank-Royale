@@ -16,6 +16,7 @@ namespace Maps{
         float tile_width_units;
         int unique_tiles; // Walls always 0 for now
         std::vector<int> walls;
+        std::vector<Vector2> spawnpoints;
 
         float width();
         float height();
