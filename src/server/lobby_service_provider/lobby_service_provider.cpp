@@ -49,6 +49,21 @@ void LobbyServiceProvider::on_finish()
     games.clear();
 }
 
+void LobbyServiceProvider::update()
+{
+    using namespace Communication::Lobby;
+
+    std::unique_lock<std::mutex> lock(delete_mutex);
+    for (const auto v: games_to_delete) games.erase(v);
+    games_to_delete.assign(0, {});
+    if (rooms_to_delete.size() > 0){
+        for (const auto v: rooms_to_delete) rooms.erase(v);
+        auto room_details = get_room_details();
+        broadcast_message(Server::ROOM_LIST, room_details.data(), sizeof(RoomDetail) * room_details.size());
+    }
+    rooms_to_delete.assign(0, {});
+}
+
 void LobbyServiceProvider::handle_new_client(ENetPeer *peer)
 {
     using namespace Communication::Lobby;
@@ -95,10 +110,8 @@ void LobbyServiceProvider::handle_message(ENetPeer *peer, Communication::Command
 
                 log("Acknowledged destruction of room `" << rooms[port]->name << "`.");
                 
-                rooms.erase(port);
-
-                auto room_details = get_room_details();
-                broadcast_message(Server::ROOM_LIST, room_details.data(), sizeof(RoomDetail) * room_details.size());
+                std::unique_lock<std::mutex> lock(delete_mutex);
+                rooms_to_delete.push_back(port);
 
             }, [&](int port, GameServiceProvider* gsp){
                 games[port].reset(gsp);
@@ -112,7 +125,8 @@ void LobbyServiceProvider::handle_message(ENetPeer *peer, Communication::Command
 
                 log("Acknowledged destruction of game `" << games[port]->name << "`.");
                 
-                games.erase(port);
+                std::unique_lock<std::mutex> lock(delete_mutex);
+                games_to_delete.push_back(port);
             }, name);
             
             int port = rsp->address.port;

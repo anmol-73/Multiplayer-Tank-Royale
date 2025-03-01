@@ -3,6 +3,8 @@
 
 void Pages::RoomScene::_update()
 {
+    if (client->get_join_status() == Communication::RequestStatus::ONGOING) return _loading_update();
+
     if (WindowShouldClose()){
         SceneManagement::SceneManager::quit();
         return;
@@ -15,6 +17,11 @@ void Pages::RoomScene::_update()
     EndDrawing();
     ui.poll_events();
 
+    if (client->get_join_status() == Communication::RequestStatus::DENIED){
+        SceneManagement::SceneManager::prepare_scene(SceneManagement::SceneName::LOBBY, "Room rejected join!", 1);
+        SceneManagement::SceneManager::load_scene(SceneManagement::SceneName::LOBBY);
+        return;
+    }
 }
 
 void Pages::RoomScene::_loading_update()
@@ -72,7 +79,7 @@ void Pages::RoomScene::_load()
         SceneManagement::SceneManager::load_scene(SceneManagement::SceneName::LOBBY);
         return;
     }
-
+    
     client_worker.accomplish([this](auto _){
         client->start();
     });

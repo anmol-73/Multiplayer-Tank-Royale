@@ -2,6 +2,7 @@
 #define H_LOBBY_SERVICE_PROVIDER
 
 #include <map>
+#include <mutex>
 
 #include "../service_provider.hpp"
 #include "communication/protocol.hpp"
@@ -25,6 +26,8 @@ private:
 
     std::map<int, std::unique_ptr<RoomServiceProvider>> rooms;
     std::map<int, std::unique_ptr<GameServiceProvider>> games;
+
+    std::mutex delete_mutex;
 
     std::vector<int> rooms_to_delete;
     std::vector<int> games_to_delete;

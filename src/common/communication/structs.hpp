@@ -5,6 +5,12 @@
 
 namespace Communication
 {
+    enum RequestStatus{
+        IDLE,
+        DENIED,
+        ONGOING,
+        ACCEPTED
+    };
     struct Address{
     public:
         Address(const std::string& address);

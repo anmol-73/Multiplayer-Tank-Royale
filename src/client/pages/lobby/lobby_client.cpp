@@ -12,14 +12,14 @@ const std::vector<Communication::Lobby::RoomDetail> &ServiceConsumers::LobbyClie
     return rooms;
 }
 
-ServiceConsumers::LobbyClient::NewRoomStatus ServiceConsumers::LobbyClient::get_new_room_status()
+Communication::RequestStatus ServiceConsumers::LobbyClient::get_new_room_status()
 {
     return status;
 }
 
 std::optional<Communication::Lobby::RoomDetail> ServiceConsumers::LobbyClient::get_new_room_detail()
 {
-    if (status != NewRoomStatus::ACCEPTED) return std::nullopt;
+    if (status != Communication::RequestStatus::ACCEPTED) return std::nullopt;
     return new_room_detail;
 }
 
@@ -27,8 +27,8 @@ void ServiceConsumers::LobbyClient::request_new_room(const std::string &room_nam
 {
     using namespace Communication::Lobby;
 
-    assert(status == DENIED);
-    status = ONGOING;
+    assert(status == Communication::RequestStatus::DENIED);
+    status = Communication::RequestStatus::ONGOING;
     
     RoomName name;
     strncpy(name, room_name.c_str(), sizeof(RoomName));
@@ -44,14 +44,14 @@ void ServiceConsumers::LobbyClient::handle_message(Communication::Command type, 
     switch (static_cast<Server>(type)){
         case Server::CREATE_OK: {
             new_room_detail = *static_cast<const RoomDetail*>(message);
-            status = NewRoomStatus::ACCEPTED;
+            status = Communication::RequestStatus::ACCEPTED;
 
             log("Room accepted! (" << new_room_detail.port << ")");
             break;
         }
         
         case Server::CREATE_DENIED: {
-            status = NewRoomStatus::DENIED;
+            status = Communication::RequestStatus::DENIED;
             log("Room denied :(");
             break;
         }
@@ -71,7 +71,7 @@ void ServiceConsumers::LobbyClient::handle_message(Communication::Command type, 
 
 void ServiceConsumers::LobbyClient::on_start()
 {
-    status = NewRoomStatus::DENIED;
+    status = Communication::RequestStatus::DENIED;
     log("Listening :)");
 }
 

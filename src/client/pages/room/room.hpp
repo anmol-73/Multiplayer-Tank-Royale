@@ -23,12 +23,12 @@ namespace Pages
 
     private:
         RoomUI ui;
+        
+        ServiceConsumers::RoomClient *client = nullptr;
+        Utils::Task client_worker;
+
         Communication::Address address = {};
         Communication::Lobby::RoomDetail room_detail = {};
-
-        ServiceConsumers::RoomClient *client = nullptr;
-
-        Utils::Task client_worker;
     };
 } // namespace Pages
 

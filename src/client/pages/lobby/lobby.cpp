@@ -18,7 +18,7 @@ void Pages::LobbyScene::_update()
     ui.visible_rooms = client->get_rooms();
     
     std::optional<Communication::Lobby::RoomDetail> room_to_join = std::nullopt; {
-        if (client->get_new_room_status() == client->ACCEPTED){
+        if (client->get_new_room_status() == Communication::RequestStatus::ACCEPTED){
             room_to_join = client->get_new_room_detail();
             assert(room_to_join.has_value());
         } else{
@@ -37,7 +37,7 @@ void Pages::LobbyScene::_update()
         return;
     }
 
-    if (client->get_new_room_status() == client->DENIED){
+    if (client->get_new_room_status() == Communication::RequestStatus::DENIED){
         std::string new_room_name = ui.new_room_request();
         if (new_room_name.size() > 0){
             client->request_new_room(new_room_name);
