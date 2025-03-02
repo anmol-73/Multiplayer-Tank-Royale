@@ -126,7 +126,7 @@ void GameServiceProvider::timed_loop_func()
     time_at_last_broadcast = game_state.curtime();
     while(is_running())
     {
-        
+        // TODO: Consider making the sleep like sleep properly (the code doesnt take 0 time to run....)
         // 60 fps
         std::this_thread::sleep_for(std::chrono::milliseconds(17));
         

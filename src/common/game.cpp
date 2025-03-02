@@ -92,7 +92,7 @@ void Game::GameState::handle_movement()
     size_t pos_y = Maps::maps[map_num].map_height_tiles - (size_t)(player_vector[ID].position.y/Maps::maps[map_num].tile_width_units) - 1;
     size_t pos_x = (size_t)(player_vector[ID].position.x/Maps::maps[map_num].tile_width_units);
     // size_t pos_idx = ((Maps::maps[map_num].map_width_tiles)*pos_y) + pos_x;
-    for(size_t wall_y = pos_y-scanning_radius_tiles*(Maps::maps[map_num].map_width_tiles); wall_y<pos_y+scanning_radius_tiles*(Maps::maps[map_num].map_width_tiles); wall_y++)
+    for(size_t wall_y = pos_y-scanning_radius_tiles; wall_y<pos_y+scanning_radius_tiles; wall_y++)
     {
         for(size_t wall_x = pos_x-scanning_radius_tiles; wall_x<pos_x+scanning_radius_tiles; wall_x++)
         {
@@ -108,7 +108,7 @@ void Game::GameState::handle_movement()
                 if(!player_colliding) player_colliding = Physics::sat_collision_detection(wall, 0, {collider.x+static_cast<float>(dx), collider.y+static_cast<float>(dy), collider.width, collider.height}, player_vector[ID].angle);
                 if(!player_colliding_x) player_colliding_x = Physics::sat_collision_detection(wall, 0, {collider.x+static_cast<float>(dx), collider.y, collider.width, collider.height}, player_vector[ID].angle);
                 if(!player_colliding_y) player_colliding_y = Physics::sat_collision_detection(wall, 0, {collider.x, collider.y+static_cast<float>(dy), collider.width, collider.height}, player_vector[ID].angle);
-
+                
                 if(player_colliding && player_colliding_x && player_colliding_y){break;}
             }
             if(player_colliding && player_colliding_x && player_colliding_y){break;}
@@ -149,9 +149,13 @@ void Game::GameState::handle_movement()
     {
         player_vector[ID].position.y += dy;
     }
-    else if(!player_colliding && !player_colliding_x && player_colliding_y)
+    else if(player_colliding && !player_colliding_x && player_colliding_y)
     {
         player_vector[ID].position.x += dx;
+    }
+    else
+    {
+        // Do nothing
     }
 
 
@@ -164,7 +168,7 @@ void Game::GameState::handle_movement()
     pos_y = Maps::maps[map_num].map_height_tiles - (size_t)(player_vector[ID].position.y/Maps::maps[map_num].tile_width_units) - 1;
     pos_x = (size_t)(player_vector[ID].position.x/Maps::maps[map_num].tile_width_units);
     // size_t pos_idx = ((Maps::maps[map_num].map_width_tiles)*pos_y) + pos_x;
-    for(size_t wall_y = pos_y-scanning_radius_tiles*(Maps::maps[map_num].map_width_tiles); wall_y<pos_y+scanning_radius_tiles*(Maps::maps[map_num].map_width_tiles); wall_y++)
+    for(size_t wall_y = pos_y-scanning_radius_tiles; wall_y<pos_y+scanning_radius_tiles; wall_y++)
     {
         for(size_t wall_x = pos_x-scanning_radius_tiles; wall_x<pos_x+scanning_radius_tiles; wall_x++)
         {
@@ -211,6 +215,10 @@ void Game::GameState::handle_movement()
     if(!player_colliding_rot)
     {
         player_vector[ID].angle = projected_angle;
+    }
+    else
+    {
+        // Do nothing
     }
 }
 
