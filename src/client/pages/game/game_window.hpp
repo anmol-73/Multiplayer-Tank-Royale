@@ -45,7 +45,7 @@ namespace Pages
         Communication::Room::RoomSettings settings; // The index of the map used.
         
         
-        void game_update_callback(const Game::GameState* server_gs, size_t size);
+        void game_update_callback(const Game::GameState server_gs, size_t size);
         
         /**
          * Handles updating game logic each frame

@@ -48,7 +48,7 @@ void* store(void* ptr, const T& item){
     return reinterpret_cast<T*>(ptr) + 1;
 }
 
-std::pair<void *, size_t> Game::serialize_game_state(Game::GameState game_state)
+std::pair<Utils::unique_void_ptr, size_t> Game::serialize_game_state(Game::GameState game_state)
 {
     void * message;
     size_t sz = 0;
@@ -111,5 +111,5 @@ std::pair<void *, size_t> Game::serialize_game_state(Game::GameState game_state)
     // sz += sizeof(Game::Frame);
     ptr = store(ptr, game_state.curr_frame);
 
-    return {message, sz};
+    return {Utils::unique_void_ptr(message), sz};
 }

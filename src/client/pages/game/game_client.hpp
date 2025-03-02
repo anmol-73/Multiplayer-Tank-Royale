@@ -12,7 +12,7 @@ namespace ServiceConsumers
 {
     struct GameClient: public ServiceConsumer{
         public:
-        GameClient(std::function<void(const Game::GameState*, size_t)> game_update_callback): game_update_callback(game_update_callback){
+        GameClient(std::function<void(const Game::GameState, size_t)> game_update_callback): game_update_callback(game_update_callback){
             //
         }
 
@@ -21,7 +21,7 @@ namespace ServiceConsumers
         protected:
             virtual void handle_message(Communication::Command type, const void *message, size_t size);
 
-            std::function<void(const Game::GameState*, size_t)> game_update_callback;
+            std::function<void(const Game::GameState, size_t)> game_update_callback;
 
     };
 } // namespace Pages

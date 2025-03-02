@@ -74,7 +74,7 @@ void Pages::GameWindowScene::_prepare(const void *msg, size_t command)
 
 void Pages::GameWindowScene::_load()
 {
-    client = new ServiceConsumers::GameClient([this](const Game::GameState* server_gs, size_t size)->void{game_update_callback(server_gs, size);});
+    client = new ServiceConsumers::GameClient([this](const Game::GameState server_gs, size_t size)->void{game_update_callback(server_gs, size);});
     std::string error = client->connect(address);
 
     if (error.size() > 0){
@@ -110,9 +110,9 @@ void Pages::GameWindowScene::_cleanup_with_context()
 
 }
 
-void Pages::GameWindowScene::game_update_callback(const Game::GameState *server_gs, size_t size)
+void Pages::GameWindowScene::game_update_callback(const Game::GameState server_gs, size_t size)
 {
-    game_state = *server_gs;
+    game_state = server_gs;
 }
 
 void Pages::GameWindowScene::logic_update()
