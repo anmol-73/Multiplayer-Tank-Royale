@@ -10,7 +10,7 @@ void ServiceConsumers::GameClient::handle_message(Communication::Command type, c
     switch(type){
         case Communication::Game::Server::GAME_STATE_BROADCAST:
             Game::GameState* server_gs;
-            server_gs = Game::deserialize_game_state(message, size);
+            *server_gs = Game::deserialize_game_state(message, size);
             game_update_callback(static_cast<const Game::GameState*>(server_gs), size);
             break;
     }
