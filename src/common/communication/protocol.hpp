@@ -34,7 +34,7 @@ namespace Communication
         }; 
         
         struct RoomSettings{
-            unsigned long long int map; // The index of the map used.
+            unsigned long long int map = 0; // The index of the map used.
         };
 
         // TODO: Think of a nice way for room to be joinable while game is running!

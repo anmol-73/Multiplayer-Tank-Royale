@@ -16,7 +16,12 @@ namespace Pages
     public:
         GameUI();
 
+        void allow_respawn(bool ok);
+
+        bool should_respawn();
+
     private:
+        DragonLib::UI::Elements::Span *respawn_button;
                 
     };
 } // namespace Pages

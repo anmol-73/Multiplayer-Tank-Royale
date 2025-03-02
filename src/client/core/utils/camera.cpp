@@ -5,7 +5,7 @@ void Utils::Camera::init(Vector2 map_size_, Vector2 viewport_size_, Vector2 play
 {
     map_size = map_size_;
     viewport_size = viewport_size_;
-    player_size = player_size_;
+    player_size = player_size_; // TODO: Remove this shit
     half_screen_size = Vector2Scale({(float)GetScreenWidth(), (float)GetScreenHeight()}, 0.5f);
     
     scaling_factor = Vector2Divide({(float)GetScreenWidth(), (float)GetScreenHeight()}, viewport_size);
@@ -19,17 +19,19 @@ void Utils::Camera::follow(Vector2 player_position)
 
 Vector2 Utils::Camera::transform(Vector2 point)
 {
+    point = Vector2Subtract(point, position);
     return Vector2Add(
-        scale(Vector2Subtract(point, position)), // Position wrt to camera in screen units
+        scale(point), // Position wrt to camera in screen units
         half_screen_size // Camera is at the middle of the screen always
     );
 }
 
 Rectangle Utils::Camera::transform(Rectangle rect)
 {
+    Vector2 point = transform(Vector2{rect.x, rect.y});
     return Rectangle{
-        .x = (rect.x - position.x) * scaling_factor.x + half_screen_size.x,
-        .y = (rect.y - position.y) * scaling_factor.y + half_screen_size.y,
+        .x = point.x,
+        .y = point.y,
         .width = rect.width * scaling_factor.x,
         .height = rect.height * scaling_factor.y,
     };
@@ -52,8 +54,8 @@ Rectangle Utils::Camera::scale(Rectangle size)
 Rectangle Utils::Camera::viewport()
 {
     return {
-        position.x - viewport_size.x/2 + player_size.x/2,
-        position.y - viewport_size.y/2 + player_size.y/2,
+        position.x - viewport_size.x/2,
+        (map_size.y - position.y) - viewport_size.y/2,
         viewport_size.x, viewport_size.y
     };
 }

@@ -20,30 +20,38 @@ void Pages::GameWindowScene::_update()
         return;
     }
 
-    // if (client.is_dead){
-    //     ui.show_death_screen();
-    //     ui.set_respawn_ok(client->respawn_ok());
-    // }
+    if (!game_state.player_vector[prepared_args.pi.id].is_alive){
+        ui.show();
+        ui.allow_respawn(client->allow_respawn());
+    } else{
+        ui.hide();
+    }
 
     BeginDrawing();{
         ClearBackground({0x1e, 0x1e, 0x1e, 0xff});
 
         std::unique_lock<std::mutex> lk(gs_mutex);
-        renderer.draw(game_state);
+        renderer.draw(game_state, prepared_args.pi.id);
         ui.draw();
     }
     EndDrawing();
     ui.poll_events();
     
-    // if (ui.should_respawn()){
-    //     client->send_selection();
-    //     renderer.prepare();
-    // }
+    if (ui.should_respawn()){
+        Game::TypeSelection selection;
+        selection.gun_type = 0;
+        selection.tank_type = 0;
+        selection.player_id = prepared_args.pi.id;
+        client->send_selection(selection);
+        renderer.prepare(prepared_args.settings.map, selection.tank_type);
+    }
 
-    // if (!client.is_dead){
-    //     std::unique_lock<std::mutex> lk(gs_mutex);
-    //     logic_update();    
-    // }
+    {
+        std::unique_lock<std::mutex> lk(gs_mutex);
+        if (game_state.player_vector[prepared_args.pi.id].is_alive){
+            logic_update();    
+        }
+    }
 }
 
 void Pages::GameWindowScene::_loading_update()
@@ -117,7 +125,7 @@ void Pages::GameWindowScene::_load()
     }
     
     game_state = {};
-    game_state.init_game_state();
+    game_state.init_game_state(prepared_args.settings.map);
     made_frames.clear();
 
     client->identify(prepared_args.pi);
@@ -126,6 +134,7 @@ void Pages::GameWindowScene::_load()
         client->start();
     });
     
+    renderer.prepare(prepared_args.settings.map, 0);
     curr_frame.frame_num = 0;   
 }
 
@@ -170,11 +179,6 @@ void Pages::GameWindowScene::logic_update()
     {
         game_state.apply_frame(made_frames[i]);
     }
-}
-
-void Pages::GameWindowScene::draw_game()
-{
-    
 }
 
 void Pages::GameWindowScene::set_curr_frame()

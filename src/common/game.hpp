@@ -110,7 +110,7 @@ namespace Game
         /**
          * Takes a frame as input and updates game state accordingly
          */
-        void init_game_state();
+        void init_game_state(size_t map);
 
         /**
          * Takes a frame as input and updates game state accordingly

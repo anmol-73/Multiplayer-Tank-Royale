@@ -3,17 +3,24 @@
 Pages::GameUI::GameUI()
 {
     using Mode = UI::DrawParameters::SizeMode;
-
-    auto *bg = new UI::Elements::ImageView(
-        DragonLib::DImage("resources/ui_background.png"),
-        [](const auto *_){
-            return UI::DrawParameters::Box{
-                .size = {
-                    .value = {1.0f, 1.0f},
-                    .mode = {Mode::SCREEN_W, Mode::SCREEN_H}
-                }
-            };
-        }
+    register_element(
+        respawn_button = Components::create_span_button(
+            "Create Room",
+            {
+                .value = {0.5, 0.7},
+                .mode = {Mode::SCREEN_W, Mode::SCREEN_H}
+            }
+        )
     );
-    register_element(bg);
+
+}
+
+void Pages::GameUI::allow_respawn(bool ok)
+{
+    respawn_button->interactable = ok;
+}
+
+bool Pages::GameUI::should_respawn()
+{
+    return respawn_button->clicked;
 }

@@ -21,6 +21,7 @@ namespace ServiceConsumers
         void send_selection(const Game::TypeSelection& selection);
 
         bool is_game_over();
+        bool allow_respawn();
 
         protected:
             virtual void handle_message(Communication::Command type, const void *message, size_t size);

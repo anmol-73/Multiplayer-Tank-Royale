@@ -46,7 +46,7 @@ private:
     };
 
     bool game_started = false;
-    Communication::Room::RoomSettings settings;
+    Communication::Room::RoomSettings settings = {};
 
     std::vector<PlayerInfo> players;
 };

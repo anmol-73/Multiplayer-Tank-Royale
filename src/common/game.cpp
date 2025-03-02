@@ -1,8 +1,9 @@
 #include "game.hpp"
 #include <iostream>
 
-void Game::GameState::init_game_state()
+void Game::GameState::init_game_state(size_t map)
 {
+    map_num = map;
     num_of_players = 0;
     for(size_t i=0; i<12; i++)
     {
@@ -28,6 +29,7 @@ void Game::GameState::apply_frame(const Game::Frame &frame)
     player_vector[curr_frame.player_id].last_frame_processed_num = curr_frame.frame_num;
     
     if(!player_vector[curr_frame.player_id].is_alive) return;
+    
     handle_movement();
     set_gun_angle();
     handle_shots();
@@ -69,6 +71,7 @@ void Game::GameState::handle_movement()
     }
     else
     {
+
     }
 
     // Handle collision detection

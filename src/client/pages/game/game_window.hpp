@@ -63,8 +63,6 @@ namespace Pages
          */
         void logic_update();
 
-        void draw_game();
-
         /**
          * Handles setting current frame based on player inputs
          */

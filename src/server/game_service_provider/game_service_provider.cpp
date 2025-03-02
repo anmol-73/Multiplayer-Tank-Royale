@@ -8,21 +8,21 @@ void GameServiceProvider::start_async()
     if (life.is_running()){
         throw std::runtime_error("Service provider was asked to start twice!");
     }
-    log("Started listening 2");
     life.accomplish([this](bool _cancelled){
-        log("Started listening");
         start();
     });
 }
 
 void GameServiceProvider::on_start()
 {
+    log("HELLO");
     const size_t hostname_sz = 16;
     char hostname[hostname_sz];
     enet_address_get_host_ip(&address, hostname, hostname_sz);
     
     peers.assign(12, nullptr);
-    game_state.init_game_state();
+    log(settings.map);
+    game_state.init_game_state(settings.map);
     dead_times.assign(12, 0);
     respawn_ok_sent.assign(12, true);
 
@@ -66,7 +66,7 @@ void GameServiceProvider::handle_message(ENetPeer *peer, Communication::Command 
 {
     using namespace Communication::Game;
     if (game_over) return;
-
+    log(type);
     switch (static_cast<Client>(type)){
         case Client::IDENTIFY: {
             
@@ -135,7 +135,7 @@ void GameServiceProvider::timed_loop_func()
         
         double t = game_state.curtime();
         
-        if (t > 10000){ // Game timer
+        if (t > 60000){ // Game timer
             game_over = true;
             log("Game over :)");
             broadcast_command(Communication::Game::Server::GAME_OVER);

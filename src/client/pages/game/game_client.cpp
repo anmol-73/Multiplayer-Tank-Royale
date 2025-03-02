@@ -1,4 +1,5 @@
 #include "game_client.hpp"
+#include <iostream>
 
 void ServiceConsumers::GameClient::identify(const Communication::Game::PlayerIdentification &pi)
 {
@@ -22,6 +23,10 @@ void ServiceConsumers::GameClient::send_selection(const Game::TypeSelection &sel
 bool ServiceConsumers::GameClient::is_game_over()
 {
     return game_over;
+}
+bool ServiceConsumers::GameClient::allow_respawn()
+{
+    return respawn_ok;
 }
 
 void ServiceConsumers::GameClient::handle_message(Communication::Command type, const void *message, size_t size)
