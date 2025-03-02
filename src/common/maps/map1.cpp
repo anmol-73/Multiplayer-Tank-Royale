@@ -53,5 +53,6 @@ Maps::MapData Maps::maps[1] = {{
         {0, 0},
         {0, 0},
         {0, 0},
-    }
+    },
+    .resource_path = "resources/game_window/defaultmap.png"
 }};

@@ -3,6 +3,7 @@
 
 #include <raylib.h>
 #include <vector>
+#include <mutex>
 #include <cassert>
 
 #include "core/scene_management.hpp"
@@ -13,6 +14,7 @@
 #include "game_ui.hpp"
 #include "core/utils/animation_controller.hpp"
 #include "core/utils/camera.hpp"
+#include "game_renderer.hpp"
 
 
 namespace Pages
@@ -50,7 +52,8 @@ namespace Pages
         Game::Frame curr_frame;
         
         Game::GameState game_state;        
-        
+        std::mutex gs_mutex;
+
         void game_update_callback(const Game::GameState server_gs, size_t size);
         
         /**
@@ -60,11 +63,14 @@ namespace Pages
          */
         void logic_update();
 
+        void draw_game();
+
         /**
          * Handles setting current frame based on player inputs
          */
         void set_curr_frame();
-        
+
+        GameRenderer renderer;        
     };
 } // namespace Pages
 

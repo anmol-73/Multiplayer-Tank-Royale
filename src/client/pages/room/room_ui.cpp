@@ -5,6 +5,11 @@ Pages::RoomUI::RoomUI()
     const int max_room_size = 12;
     using Mode = UI::DrawParameters::SizeMode;
 
+    map_images.assign(Maps::map_count, {});
+    for (size_t i = 0; i < Maps::map_count; ++i){
+        map_images[i].path = Maps::maps[i].resource_path;
+    }
+
     auto *bg = new UI::Elements::ImageView(
         DragonLib::DImage("resources/ui_background.png"),
         [](const auto *_){
@@ -17,6 +22,19 @@ Pages::RoomUI::RoomUI()
         }
     );
     register_element(bg);
+
+    bg->register_element(
+        map_preview = new UI::Elements::ImageView(
+            map_images[0], [this](UI::Elements::ImageView *) -> UI::DrawParameters::Box{
+                return {
+                    .size = {
+                        .value = {0.3f, 0.3f},
+                        .mode = {Mode::SCREEN_W, Mode::SCREEN_H}
+                    }    
+                };
+            }
+        )
+    );
 
     bg->register_element(
         new UI::Elements::Span(
@@ -208,4 +226,44 @@ std::string Pages::RoomUI::set_name_request()
 int Pages::RoomUI::get_map_idx_delta()
 {
     return right_map_select->clicked - left_map_select->clicked;
+}
+
+void Pages::RoomUI::set_map(size_t _map_idx)
+{
+    map_idx = _map_idx;
+    assert(map_idx < Maps::map_count);
+
+    // map_preview->image = map_images[map_idx];
+}
+
+void Pages::RoomUI::load_async()
+{
+    UI::Elements::PageView::load_async();
+    for (size_t i = 0; i < Maps::map_count; ++i){
+        map_images[i].load_im();
+    }
+}
+
+void Pages::RoomUI::load_sync()
+{
+    UI::Elements::PageView::load_sync();
+    for (size_t i = 0; i < Maps::map_count; ++i){
+        map_images[i].load_tex();
+    }
+}
+
+void Pages::RoomUI::cleanup_async()
+{
+    UI::Elements::PageView::cleanup_async();
+    for (size_t i = 0; i < Maps::map_count; ++i){
+        map_images[i].unload_im();
+    }
+}
+
+void Pages::RoomUI::cleanup_sync()
+{
+    UI::Elements::PageView::cleanup_sync();
+    for (size_t i = 0; i < Maps::map_count; ++i){
+        map_images[i].unload_tex();
+    }
 }

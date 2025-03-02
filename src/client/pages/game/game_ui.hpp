@@ -17,7 +17,7 @@ namespace Pages
         GameUI();
 
     private:
-        
+                
     };
 } // namespace Pages
 

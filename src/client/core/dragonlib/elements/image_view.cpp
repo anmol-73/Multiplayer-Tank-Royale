@@ -1,10 +1,10 @@
 #include "image_view.hpp"
+#include <iostream>
 
 void DragonLib::UI::Elements::ImageView::draw()
 {
     const auto params = draw_param_provider(this);
     const auto bbox = Utils::Drawing::draw_box(params);
-    
     DrawTexturePro(
         image.tex,
         {0, 0, (float)image.tex.width, (float)image.tex.height},

@@ -2,6 +2,7 @@
 #define H_COM_MAPS
 
 #include <vector>
+#include <string>
 #include <stdlib.h>
 #include <raylib.h>
 
@@ -23,9 +24,12 @@ namespace Maps{
         
         float vwidth();
         float vheight();
+
+        std::string resource_path;
     };
 
-    extern MapData maps[1];
+    constexpr size_t map_count = 1;
+    extern MapData maps[map_count];
 
     //void setmap(MapData map, int map_no);
 }

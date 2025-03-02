@@ -10,7 +10,7 @@ void Pages::RoomScene::_update()
         return;
     }
 
-    ui.map_idx = client->get_current_settings().map;
+    ui.set_map(client->get_current_settings().map);
     ui.visible_players = client->get_joined_players();
 
     BeginDrawing();{
@@ -56,8 +56,8 @@ void Pages::RoomScene::_update()
     
     if (ui.get_map_idx_delta()){
         Communication::Room::RoomSettings new_settings(client->get_current_settings());
-        new_settings.map += ui.get_map_idx_delta();
-        ui.map_idx = new_settings.map;
+        new_settings.map = (static_cast<int>(new_settings.map) + ui.get_map_idx_delta() + Maps::map_count) % Maps::map_count;
+        ui.set_map(new_settings.map);
         client->request_set_settings(new_settings);
     }
 

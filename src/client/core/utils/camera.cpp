@@ -9,8 +9,6 @@ void Utils::Camera::init(Vector2 map_size_, Vector2 viewport_size_, Vector2 play
     half_screen_size = Vector2Scale({(float)GetScreenWidth(), (float)GetScreenHeight()}, 0.5f);
     
     scaling_factor = Vector2Divide({(float)GetScreenWidth(), (float)GetScreenHeight()}, viewport_size);
-    
-
 }
 
 void Utils::Camera::follow(Vector2 player_position)

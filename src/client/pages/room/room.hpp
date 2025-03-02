@@ -5,6 +5,7 @@
 #include "room_ui.hpp"
 #include "room_client.hpp"
 #include "misc/task.hpp"
+#include "maps/maps.hpp"
 
 namespace Pages
 {

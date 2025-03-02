@@ -8,18 +8,42 @@ void Pages::GameWindowScene::_update()
     }
 
     if (client->is_game_over()){
-        std::cout << "GAME OVER!" << std::endl;
+        BeginDrawing();{
+            ClearBackground({0x1e, 0x1e, 0x1e, 0xff});
+            DragonLib::Utils::Drawing::draw_text({
+                .content = "GMAE OVER!",
+                .font_size = Global::rem * 2,
+                .font_color = {0, 0, 0, 0x60}
+            });
+        }
+        EndDrawing();
         return;
     }
-    
+
+    // if (client.is_dead){
+    //     ui.show_death_screen();
+    //     ui.set_respawn_ok(client->respawn_ok());
+    // }
+
     BeginDrawing();{
         ClearBackground({0x1e, 0x1e, 0x1e, 0xff});
+
+        std::unique_lock<std::mutex> lk(gs_mutex);
+        renderer.draw(game_state);
         ui.draw();
     }
     EndDrawing();
     ui.poll_events();
     
-    logic_update();    
+    // if (ui.should_respawn()){
+    //     client->send_selection();
+    //     renderer.prepare();
+    // }
+
+    // if (!client.is_dead){
+    //     std::unique_lock<std::mutex> lk(gs_mutex);
+    //     logic_update();    
+    // }
 }
 
 void Pages::GameWindowScene::_loading_update()
@@ -81,6 +105,8 @@ void Pages::GameWindowScene::_prepare(const void *msg, size_t command)
 void Pages::GameWindowScene::_load()
 {
     ui.load_async();
+    renderer.load_async();
+    
     client = new ServiceConsumers::GameClient([this](const Game::GameState server_gs, size_t size)->void{game_update_callback(server_gs, size);});
     std::string error = client->connect(prepared_args.address);
     
@@ -100,12 +126,13 @@ void Pages::GameWindowScene::_load()
         client->start();
     });
     
-    curr_frame.frame_num = 0;
+    curr_frame.frame_num = 0;   
 }
 
 void Pages::GameWindowScene::_cleanup()
 {
     ui.cleanup_async();
+    renderer.cleanup_async();
     if (client != nullptr){
         client->stop();
         client_worker.await();
@@ -117,15 +144,18 @@ void Pages::GameWindowScene::_cleanup()
 void Pages::GameWindowScene::_load_with_context()
 {
     ui.load_sync();
+    renderer.load_sync();
 }
 
 void Pages::GameWindowScene::_cleanup_with_context()
 {
     ui.cleanup_sync();
+    renderer.cleanup_sync();
 }
 
 void Pages::GameWindowScene::game_update_callback(const Game::GameState server_gs, size_t size)
 {
+    std::unique_lock<std::mutex> lk(gs_mutex);
     game_state = server_gs;
 }
 
@@ -140,6 +170,11 @@ void Pages::GameWindowScene::logic_update()
     {
         game_state.apply_frame(made_frames[i]);
     }
+}
+
+void Pages::GameWindowScene::draw_game()
+{
+    
 }
 
 void Pages::GameWindowScene::set_curr_frame()

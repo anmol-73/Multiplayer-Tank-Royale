@@ -16,8 +16,14 @@ namespace DragonLib
         void load_tex();
         void unload_tex();
         std::string path;
+        
+        
         Image im;
         Texture tex;
+
+    private:
+        bool is_im_loaded = false;
+        bool is_tex_loaded = false;
     };
 } // namespace DragonLib
 
