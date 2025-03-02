@@ -86,7 +86,6 @@ void GameServiceProvider::handle_message(ENetPeer *peer, Communication::Command 
         }
 
         case Client::FRAME: {
-            log("Got frame");
             std::unique_lock<std::mutex> lk(gs_mutex);
             game_state.apply_frame(*static_cast<const Game::Frame*>(message));
             break;

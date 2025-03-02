@@ -7,13 +7,19 @@ void Pages::GameWindowScene::_update()
         return;
     }
 
-    logic_update();
-
+    if (client->is_game_over()){
+        std::cout << "GAME OVER!" << std::endl;
+        return;
+    }
+    
     BeginDrawing();{
         ClearBackground({0x1e, 0x1e, 0x1e, 0xff});
+        ui.draw();
     }
     EndDrawing();
-
+    ui.poll_events();
+    
+    logic_update();    
 }
 
 void Pages::GameWindowScene::_loading_update()
@@ -26,7 +32,7 @@ void Pages::GameWindowScene::_loading_update()
     BeginDrawing();{
         ClearBackground({0xcb, 0xc6, 0xb2, 0xe0});
         DragonLib::Utils::Drawing::draw_text({
-            .content = "Starting Game...   :)",
+            .content = "Joining Game...   :)",
             .font_size = Global::rem * 2,
             .font_color = {0, 0, 0, 0x60}
         });
@@ -39,32 +45,32 @@ void Pages::GameWindowScene::_prepare(const void *msg, size_t command)
     switch(command){
         case 0: {
             assert(msg != nullptr);
-            address = *static_cast<const Communication::Address*>(msg);
+            prepared_args.address = *static_cast<const Communication::Address*>(msg);
             break;
         }
         
         case 1: {
             assert(msg != nullptr);
-            player_details_size = *static_cast<const size_t*>(msg);
+            prepared_args.player_details_size = *static_cast<const size_t*>(msg);
             break;
         }
         
         case 2: {
             assert(msg != nullptr);
-            auto ptr = static_cast<const PlayerDetail*>(msg);
-            player_details.assign(ptr, ptr + player_details_size);
+            auto ptr = static_cast<const Communication::Room::PlayerDetail*>(msg);
+            prepared_args.player_details.assign(ptr, ptr + prepared_args.player_details_size);
             break;
         }
         
         case 3: {
             assert(msg != nullptr);
-            settings = *static_cast<const Communication::Room::RoomSettings*>(msg);
+            prepared_args.settings = *static_cast<const Communication::Room::RoomSettings*>(msg);
             break;
         }
 
         case 4: {
             assert(msg != nullptr);
-            pi = *static_cast<const Communication::Game::PlayerIdentification*>(msg);
+            prepared_args.pi = *static_cast<const Communication::Game::PlayerIdentification*>(msg);
             break;
         }
 
@@ -74,8 +80,9 @@ void Pages::GameWindowScene::_prepare(const void *msg, size_t command)
 
 void Pages::GameWindowScene::_load()
 {
+    ui.load_async();
     client = new ServiceConsumers::GameClient([this](const Game::GameState server_gs, size_t size)->void{game_update_callback(server_gs, size);});
-    std::string error = client->connect(address);
+    std::string error = client->connect(prepared_args.address);
     
     if (error.size() > 0){
         SceneManagement::SceneManager::prepare_scene(SceneManagement::SceneName::SPLASH, error.c_str(), 0);
@@ -87,7 +94,7 @@ void Pages::GameWindowScene::_load()
     game_state.init_game_state();
     made_frames.clear();
 
-    client->identify(pi);
+    client->identify(prepared_args.pi);
     
     client_worker.accomplish([this](auto _){
         client->start();
@@ -98,6 +105,7 @@ void Pages::GameWindowScene::_load()
 
 void Pages::GameWindowScene::_cleanup()
 {
+    ui.cleanup_async();
     if (client != nullptr){
         client->stop();
         client_worker.await();
@@ -108,10 +116,12 @@ void Pages::GameWindowScene::_cleanup()
 
 void Pages::GameWindowScene::_load_with_context()
 {
+    ui.load_sync();
 }
 
 void Pages::GameWindowScene::_cleanup_with_context()
 {
+    ui.cleanup_sync();
 }
 
 void Pages::GameWindowScene::game_update_callback(const Game::GameState server_gs, size_t size)
@@ -126,7 +136,7 @@ void Pages::GameWindowScene::logic_update()
 
     made_frames.push_back(curr_frame);
     
-    for(size_t i = game_state.player_vector[pi.id].last_frame_processed_num+1; i<=curr_frame.frame_num; i++)
+    for(size_t i = game_state.player_vector[prepared_args.pi.id].last_frame_processed_num+1; i<=curr_frame.frame_num; i++)
     {
         game_state.apply_frame(made_frames[i]);
     }
@@ -141,7 +151,6 @@ void Pages::GameWindowScene::set_curr_frame()
     curr_frame.lmb_pressed = IsKeyDown(MOUSE_BUTTON_LEFT);
     curr_frame.delta_time = GetFrameTime();
     curr_frame.frame_num = made_frames.size();
-    curr_frame.player_id = pi.id;
+    curr_frame.player_id = prepared_args.pi.id;
     curr_frame.mouse_position_screen = GetMousePosition();
 }
-

@@ -10,6 +10,7 @@
 #include "misc/task.hpp"
 #include "core/dragonlib.hpp"
 #include "game_client.hpp"
+#include "game_ui.hpp"
 #include "core/utils/animation_controller.hpp"
 #include "core/utils/camera.hpp"
 
@@ -30,24 +31,25 @@ namespace Pages
         virtual void _cleanup_with_context();
 
     private:
-        ServiceConsumers::GameClient *client = nullptr;
+        GameUI ui;
 
-        
+        ServiceConsumers::GameClient *client = nullptr;        
         Utils::Task client_worker;
+                
+        struct PreparedArguments{
+            Communication::Address address = {};
+            
+            size_t player_details_size = 0;
+            std::vector<Communication::Game::PlayerIdentification> player_details;
+            Communication::Room::RoomSettings settings; // The index of the map used.
+            
+            Communication::Game::PlayerIdentification pi;
+        } prepared_args;
         
-        using PlayerName = char[32];
-        struct PlayerDetail{
-            PlayerName name;
-            int id;
-        };
+        std::vector<Game::Frame> made_frames;
+        Game::Frame curr_frame;
         
-        
-        Communication::Address address = {};
-        size_t player_details_size = 0;
-        std::vector<PlayerDetail> player_details;
-        Communication::Room::RoomSettings settings; // The index of the map used.
-        Communication::Game::PlayerIdentification pi;
-        
+        Game::GameState game_state;        
         
         void game_update_callback(const Game::GameState server_gs, size_t size);
         
@@ -63,12 +65,6 @@ namespace Pages
          */
         void set_curr_frame();
         
-        
-        Game::GameState game_state;
-        std::vector<Game::Frame> made_frames;
-        Game::Frame curr_frame;
-
-        int map_idx;
     };
 } // namespace Pages
 

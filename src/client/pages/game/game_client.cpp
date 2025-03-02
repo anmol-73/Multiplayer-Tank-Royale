@@ -12,6 +12,18 @@ void ServiceConsumers::GameClient::send_frame(Game::Frame *frame)
     send_message(Client::FRAME, frame, sizeof(Game::Frame));
 }
 
+void ServiceConsumers::GameClient::send_selection(const Game::TypeSelection &selection)
+{
+    using namespace Communication::Game;
+    send_message(Client::TYPES_SELECTION, &selection, sizeof(Game::TypeSelection));
+    respawn_ok = false;
+}
+
+bool ServiceConsumers::GameClient::is_game_over()
+{
+    return game_over;
+}
+
 void ServiceConsumers::GameClient::handle_message(Communication::Command type, const void *message, size_t size)
 {
     using namespace Communication::Game;
@@ -23,12 +35,12 @@ void ServiceConsumers::GameClient::handle_message(Communication::Command type, c
         }
 
         case Server::RESPAWN_OK: {
-            std::cout << "CAN RESPAWN!" << std::endl;
+            respawn_ok = true;
             break;
         }
 
         case Server::GAME_OVER: {
-            std::cout << "GMAE OVER!" << std::endl;
+            game_over = true;
             break;
         }
     }

@@ -68,16 +68,16 @@ namespace Communication
         using PlayerIdentification = ::Communication::Room::PlayerDetail;
         // The commands sent by the game server
         enum Server{
-            RESPAWN_OK,
-            GAME_OVER,
-            GAME_STATE_BROADCAST,
+            RESPAWN_OK, // No data. The client is allowed to respawn.
+            GAME_OVER, // No data. The game has ended.
+            GAME_STATE_BROADCAST, // data: `serialized(Game::GameState)`. The server's view of the game.
         };
 
         // The commands sent by the game client
         enum Client{
-            IDENTIFY,
-            TYPES_SELECTION,
-            FRAME,
+            IDENTIFY, // data: `PlayerIdentification`.
+            TYPES_SELECTION, // data: `Game::TypeSelection`. The selection 
+            FRAME, // data: `Game::Frame`. A frame of data.
         };
     } // namespace Game
     

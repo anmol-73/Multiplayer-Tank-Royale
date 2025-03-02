@@ -18,10 +18,15 @@ namespace ServiceConsumers
 
         void identify(const Communication::Game::PlayerIdentification& pi);
         void send_frame(Game::Frame*);
+        void send_selection(const Game::TypeSelection& selection);
+
+        bool is_game_over();
 
         protected:
             virtual void handle_message(Communication::Command type, const void *message, size_t size);
 
+            bool game_over = false;
+            bool respawn_ok = false;
             std::function<void(const Game::GameState, size_t)> game_update_callback;
 
     };
