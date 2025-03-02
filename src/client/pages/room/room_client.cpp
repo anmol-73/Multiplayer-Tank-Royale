@@ -44,6 +44,17 @@ const std::vector<Communication::Room::PlayerDetail> &ServiceConsumers::RoomClie
     return players;
 }
 
+std::string ServiceConsumers::RoomClient::get_government_name()
+{
+    for (size_t i = 0; i < players.size(); ++i){
+        if (players[i].id == assigned_id){
+            return players[i].name;
+        }
+    }
+
+    assert(false);
+}
+
 void ServiceConsumers::RoomClient::request_new_name(const std::string &new_name)
 {
     using namespace Communication::Room;

@@ -4,9 +4,6 @@ const size_t timeout = 500;
 
 std::string ServiceConsumer::connect(Communication::Address _address)
 {
-    if (_address.is_invalid()){
-        std::cout << _address.name << ' ' << _address.port << '\n';
-    }
     assert(!_address.is_invalid());
     
     host = enet_host_create(
@@ -120,9 +117,6 @@ void ServiceConsumer::handle_message(Communication::Command type, const void *me
 
 void ServiceConsumer::send_message(Communication::Command command, const void *data, size_t data_size, ENetPacketFlag flag)
 {
-    if (!is_running()){ // TODO: Throwing now just for sanity check. Remove this before rc
-        throw std::runtime_error("Tried to send message after disconnection!");
-    }
     auto [encoded_message, encoded_message_size] = Communication::encode_message(command, data, data_size);
     enet_peer_send(
         peer, 0,

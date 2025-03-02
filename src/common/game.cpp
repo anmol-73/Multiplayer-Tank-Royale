@@ -1,4 +1,5 @@
 #include "game.hpp"
+#include <iostream>
 
 void Game::GameState::init_game_state()
 {
@@ -13,16 +14,20 @@ void Game::GameState::init_game_state()
         empty_player.position = Maps::maps[map_num].spawnpoints[i];
         empty_player.score = 0;
         empty_player.time_since_last_shot = 0;
+        empty_player.last_frame_processed_num = 0;
         player_vector.push_back(empty_player);
     }
+    
     Game::GameState::start_time = std::chrono::high_resolution_clock().now();
 }
 
 void Game::GameState::apply_frame(const Game::Frame &frame)
 {
+    
     curr_frame = frame;
-    if(!player_vector[curr_frame.player_id].is_alive) return;
     player_vector[curr_frame.player_id].last_frame_processed_num = curr_frame.frame_num;
+    
+    if(!player_vector[curr_frame.player_id].is_alive) return;
     handle_movement();
     set_gun_angle();
     handle_shots();

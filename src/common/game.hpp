@@ -18,7 +18,7 @@ namespace Game
     {
         size_t player_id;
 
-        size_t frame_num;
+        size_t frame_num = 0;
 
         Vector2 mouse_position_screen;
         

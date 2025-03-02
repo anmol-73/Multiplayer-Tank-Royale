@@ -1,6 +1,6 @@
 #include "game_service_provider.hpp"
 
-#define log(message) std::cout << "[Room Server `" << name << "`] " << message << std::endl
+#define log(message) std::cout << "[Game Server `" << name << "`] " << message << std::endl
 
 
 void GameServiceProvider::start_async()
@@ -8,7 +8,9 @@ void GameServiceProvider::start_async()
     if (life.is_running()){
         throw std::runtime_error("Service provider was asked to start twice!");
     }
+    log("Started listening 2");
     life.accomplish([this](bool _cancelled){
+        log("Started listening");
         start();
     });
 }
@@ -20,6 +22,10 @@ void GameServiceProvider::on_start()
     enet_address_get_host_ip(&address, hostname, hostname_sz);
     
     peers.assign(12, nullptr);
+    game_state.init_game_state();
+    dead_times.assign(12, 0);
+    respawn_ok_sent.assign(12, true);
+
     log("Listening on " << hostname << ':' << address.port);
 }
 
@@ -51,7 +57,7 @@ void GameServiceProvider::handle_disconnection(ENetPeer *peer)
     }
     log("Client disconnected.");
 
-    if (game_over and num_of_players_joined == 0){
+    if (game_over and num_of_players_joined <= 0){
         stop();
     }
 }
@@ -63,15 +69,16 @@ void GameServiceProvider::handle_message(ENetPeer *peer, Communication::Command 
 
     switch (static_cast<Client>(type)){
         case Client::IDENTIFY: {
+            
             PlayerIdentification pi = *static_cast<const PlayerIdentification*>(message);
+            
             if(game_already_started || game_state.player_vector[pi.id].exists) break;
             peers[pi.id] = peer;
             game_state.player_vector[pi.id].exists = true;
             
             log("Player with ID(" << pi.id << ") has joined :)");
-            
             num_of_players_joined++;
-            if(num_of_players_joined == players_list.size())
+            if(num_of_players_joined == static_cast<int>(players_list.size()))
             {
                 start_game();
             }
@@ -79,6 +86,7 @@ void GameServiceProvider::handle_message(ENetPeer *peer, Communication::Command 
         }
 
         case Client::FRAME: {
+            log("Got frame");
             std::unique_lock<std::mutex> lk(gs_mutex);
             game_state.apply_frame(*static_cast<const Game::Frame*>(message));
             break;
@@ -108,16 +116,13 @@ void GameServiceProvider::start_game()
 {
     if(game_already_started) return;
     game_already_started = true;
-
-    game_state.init_game_state();
-    dead_times.assign(12, 0);
-    respawn_ok_sent.assign(12, true);
     
     broadcast_command(Communication::Game::Server::RESPAWN_OK);
     
     timed_loop.accomplish([this](bool _cancelled){
         timed_loop_func();
     });
+    log("Started game!");
 }
 
 void GameServiceProvider::timed_loop_func()
@@ -131,15 +136,16 @@ void GameServiceProvider::timed_loop_func()
         
         double t = game_state.curtime();
         
-        if (t > 60000){ // Game timer
+        if (t > 10000){ // Game timer
             game_over = true;
+            log("Game over :)");
             broadcast_command(Communication::Game::Server::GAME_OVER);
-            
+            if (num_of_players_joined <= 0) stop();
             break;
         }
         
         double delta_time = t - time_at_last_broadcast;
-
+        
         // TODO: Consider putting a mutex
         time_at_last_broadcast = t;
 

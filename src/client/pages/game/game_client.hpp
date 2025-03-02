@@ -16,6 +16,7 @@ namespace ServiceConsumers
             //
         }
 
+        void identify(const Communication::Game::PlayerIdentification& pi);
         void send_frame(Game::Frame*);
 
         protected:

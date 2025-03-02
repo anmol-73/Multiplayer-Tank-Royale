@@ -29,6 +29,7 @@ namespace ServiceConsumers
         const Communication::Room::RoomSettings& get_current_settings() const;
         const std::vector<Communication::Room::PlayerDetail>& get_joined_players() const;
 
+        std::string get_government_name();
         void request_new_name(const std::string& new_name);
         void request_game_start();
         void request_set_settings(const Communication::Room::RoomSettings& new_settings);

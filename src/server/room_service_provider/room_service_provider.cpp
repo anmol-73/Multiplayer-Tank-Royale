@@ -74,6 +74,7 @@ void RoomServiceProvider::handle_new_client(ENetPeer *peer)
 
 void RoomServiceProvider::handle_disconnection(ENetPeer *peer)
 {
+    log("Received disconnection request");
     using namespace Communication::Room;
 
     if (peer_to_idx.count(peer) == 0) return;
@@ -100,6 +101,7 @@ void RoomServiceProvider::handle_disconnection(ENetPeer *peer)
 
 void RoomServiceProvider::handle_message(ENetPeer *peer, Communication::Command type, const void *message, size_t size)
 {
+    log("Recieved message");
     using namespace Communication::Room;
     if (peer_to_idx.count(peer) == 0){
         log("Unrecognized peer sending message!");
@@ -147,16 +149,16 @@ void RoomServiceProvider::handle_message(ENetPeer *peer, Communication::Command 
         }
         case Client::START_GAME: {
             if (game_started) break;
+            log("Room has requested to start game :)");
+            
             game_started = true;
-
-            log("Game started");
             auto gsp = new GameServiceProvider(name, game_destroy_callback, get_player_details());
             
             int port = gsp->address.port;
             gsp->start_async(); // TODO! GSPs have to self delete! (Thats very prone to leaking)
-
+            
             register_game(port, gsp);
-
+            
             broadcast_message(Server::JOIN_GAME, &port, sizeof(int));
 
             break;

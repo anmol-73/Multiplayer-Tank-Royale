@@ -139,6 +139,8 @@ Pages::LobbyUI::LobbyUI()
             )
         );
     }
+
+    create_room_name_input->value = "Default Room";
 }
 
 std::optional<Communication::Lobby::RoomDetail> Pages::LobbyUI::join_room_request()

@@ -46,6 +46,7 @@ namespace Pages
         size_t player_details_size = 0;
         std::vector<PlayerDetail> player_details;
         Communication::Room::RoomSettings settings; // The index of the map used.
+        Communication::Game::PlayerIdentification pi;
         
         
         void game_update_callback(const Game::GameState server_gs, size_t size);
@@ -61,64 +62,13 @@ namespace Pages
          * Handles setting current frame based on player inputs
          */
         void set_curr_frame();
-
-        std::vector<Game::Frame> made_frames;
-
-        size_t player_id;
-
+        
+        
         Game::GameState game_state;
-
+        std::vector<Game::Frame> made_frames;
         Game::Frame curr_frame;
 
-        struct PlayerInfo
-        {
-            std::string name;
-            int score;
-        };
-
-        std::vector<PlayerInfo> leaderboard;
-
-        struct CrosshairData
-        {
-            Vector2 mouse_position; // Relative
-            double mouse_distance; // Relative
-            Vector2 tracker_position; // Relative and wrt top left
-            double tracker_distance; // Relative
-            double tracker_radius;
-            double tracker_radial_speed;
-            Color circle_color = WHITE; 
-
-            void init();
-        }crosshair_data;
-
-        /**
-         * To update tracker circle to after delta_time
-         */
-        void set_tracker(float delta_time);
-
-        Texture2D player_spritesheet;
-        Image player_spritesheet_image;
-        
-        std::vector<Utils::AnimationController> player_controllers;
-        size_t player_idle_idx;
-        size_t player_moving_idx;
-
-        std::vector<Utils::AnimationController> gun_controllers;
-        size_t gun_idle_idx;
-        size_t gun_shot_idx;
-
         int map_idx;
-
-        Utils::Animation *player_idle;
-        Utils::Animation *player_moving;
-        Utils::Animation *gun_idle;
-        Utils::Animation *gun_shot;
-
-        Texture2D map;
-        Image map_image;
-
-        Utils::Camera camera;
-
     };
 } // namespace Pages
 

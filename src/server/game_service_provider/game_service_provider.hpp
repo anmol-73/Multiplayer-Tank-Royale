@@ -33,7 +33,7 @@ private:
 
     std::vector<ENetPeer *> peers;
 
-    int num_of_players_joined;
+    int num_of_players_joined = 0;
 
     std::vector<double> dead_times;
     std::vector<bool> respawn_ok_sent;

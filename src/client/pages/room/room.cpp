@@ -32,10 +32,18 @@ void Pages::RoomScene::_update()
             addr.port = client->get_game_port().value();
         }
         auto sz = client->get_joined_players().size();
+        Communication::Game::PlayerIdentification pi; {
+            pi.id = client->get_client_id();
+            std::string name = client->get_government_name();
+
+            strncpy(pi.name, name.c_str(), sizeof(Communication::Game::PlayerIdentification::name));
+        }
+
         SceneManagement::SceneManager::prepare_scene(SceneManagement::SceneName::GAME, &addr, 0);
         SceneManagement::SceneManager::prepare_scene(SceneManagement::SceneName::GAME, &sz, 1);
         SceneManagement::SceneManager::prepare_scene(SceneManagement::SceneName::GAME, &client->get_joined_players(), 2);
         SceneManagement::SceneManager::prepare_scene(SceneManagement::SceneName::GAME, &client->get_current_settings(), 3);
+        SceneManagement::SceneManager::prepare_scene(SceneManagement::SceneName::GAME, &pi, 4);
         SceneManagement::SceneManager::load_scene(SceneManagement::SceneName::GAME);
         return;
     }
