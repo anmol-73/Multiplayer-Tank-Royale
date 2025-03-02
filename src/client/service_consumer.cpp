@@ -75,6 +75,10 @@ void ServiceConsumer::start()
             case ENET_EVENT_TYPE_NONE:{
                 break;
             }
+
+            case ENET_EVENT_TYPE_CONNECT:{
+                break;
+            }
         }
     }
     
