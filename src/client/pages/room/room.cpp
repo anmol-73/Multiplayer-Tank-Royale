@@ -45,15 +45,11 @@ void Pages::RoomScene::_update()
         SceneManagement::SceneManager::load_scene(SceneManagement::SceneName::LOBBY);
         return;
     }
-
-    if (ui.should_start_game()){
-        client->request_game_start();
-    }
-
+    
     if (ui.get_map_idx_delta()){
         Communication::Room::RoomSettings new_settings(client->get_current_settings());
         new_settings.map += ui.get_map_idx_delta();
-        ui.map_idx += ui.map_idx;
+        ui.map_idx = new_settings.map;
         client->request_set_settings(new_settings);
     }
 
@@ -62,16 +58,20 @@ void Pages::RoomScene::_update()
         std::cout << "NAME Denied!" << std::endl;
         return;
     }
-
+    
     if (nss == Communication::RequestStatus::ACCEPTED){
         std::cout << "NAME Accepted!" << std::endl;
     }
-
+    
     if (nss == Communication::RequestStatus::IDLE){
         auto name = ui.set_name_request();
         if (name.size() > 0){
             client->request_new_name(name);
         }
+    }
+
+    if (ui.should_start_game()){
+        client->request_game_start();
     }
 }
 
