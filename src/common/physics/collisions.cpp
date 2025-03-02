@@ -97,9 +97,7 @@ void Physics::SwapFloatValue(float *a, float *b){
 bool Physics::CheckCollisionRay2dRectEx(Vector2 origin, float dirn_angle, Rectangle rect, float rec_angle, Vector2 * intersection)
 {
     Vector2 center = {rect.x + rect.width/2, rect.y + rect.height/2};
-    // rec_angle = 0;
     Vector2 new_origin = rotate_point(origin, center, -rec_angle);
-    // std::cout << Vector2Subtract(new_origin, origin).x << " " << Vector2Subtract(new_origin, origin).y << std::endl;
     Vector2 ixn;
     bool is_ixn = CheckCollisionRay2dRect(new_origin, dirn_angle - rec_angle, rect, &ixn);
 

@@ -27,15 +27,15 @@ void Pages::GameRenderer::draw(const Game::GameState& gs, int player_id)
     { // draw tanks
         for (size_t i = 0; i < gs.player_vector.size(); ++ i){
             if (!(gs.player_vector[i].exists and gs.player_vector[i].is_alive)) continue;
-
+            
             DrawRectanglePro(
                 camera.transform(
                     {
                         gs.player_vector[i].position.x, gs.player_vector[i].position.y,
-                        static_cast<float>(Game::Data::tank_types[i].width), static_cast<float>(Game::Data::tank_types[i].height)
+                        static_cast<float>(Game::Data::tank_types[gs.player_vector[i].tank_type].width), static_cast<float>(Game::Data::tank_types[gs.player_vector[i].tank_type].height)
                     }
                 ), camera.scale(Vector2{
-                    static_cast<float>(Game::Data::tank_types[i].width/2), static_cast<float>(Game::Data::tank_types[i].height/2)
+                    static_cast<float>(Game::Data::tank_types[gs.player_vector[i].tank_type].width/2), static_cast<float>(Game::Data::tank_types[gs.player_vector[i].tank_type].height/2)
                 }), -RAD2DEG*gs.player_vector[i].angle, WHITE
             );
         }

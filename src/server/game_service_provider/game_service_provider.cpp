@@ -15,13 +15,11 @@ void GameServiceProvider::start_async()
 
 void GameServiceProvider::on_start()
 {
-    log("HELLO");
     const size_t hostname_sz = 16;
     char hostname[hostname_sz];
     enet_address_get_host_ip(&address, hostname, hostname_sz);
     
     peers.assign(12, nullptr);
-    log(settings.map);
     game_state.init_game_state(settings.map);
     dead_times.assign(12, 0);
     respawn_ok_sent.assign(12, true);
@@ -66,7 +64,6 @@ void GameServiceProvider::handle_message(ENetPeer *peer, Communication::Command 
 {
     using namespace Communication::Game;
     if (game_over) return;
-    log(type);
     switch (static_cast<Client>(type)){
         case Client::IDENTIFY: {
             
@@ -153,7 +150,9 @@ void GameServiceProvider::timed_loop_func()
             game_state.update_projectiles(delta_time);
             game_state.update_explosions(delta_time);
             auto [message, sz] = serialize_game_state(game_state);
+            
             broadcast_message(Communication::Game::Server::GAME_STATE_BROADCAST, message.get(), sz);
+            enet_host_flush(host);
         }
 
         for(size_t i=0; i < game_state.player_vector.size(); ++i)
