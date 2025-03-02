@@ -10,6 +10,9 @@
 #include "misc/task.hpp"
 #include "core/dragonlib.hpp"
 #include "game_client.hpp"
+#include "core/utils/animation_controller.hpp"
+#include "core/utils/camera.hpp"
+
 
 namespace Pages
 {
@@ -66,6 +69,55 @@ namespace Pages
         Game::GameState game_state;
 
         Game::Frame curr_frame;
+
+        struct PlayerInfo
+        {
+            std::string name;
+            int score;
+        };
+
+        std::vector<PlayerInfo> leaderboard;
+
+        struct CrosshairData
+        {
+            Vector2 mouse_position; // Relative
+            double mouse_distance; // Relative
+            Vector2 tracker_position; // Relative and wrt top left
+            double tracker_distance; // Relative
+            double tracker_radius;
+            double tracker_radial_speed;
+            Color circle_color = WHITE; 
+
+            void init();
+        }crosshair_data;
+
+        /**
+         * To update tracker circle to after delta_time
+         */
+        void set_tracker(float delta_time);
+
+        Texture2D player_spritesheet;
+        Image player_spritesheet_image;
+        
+        std::vector<Utils::AnimationController> player_controllers;
+        size_t player_idle_idx;
+        size_t player_moving_idx;
+
+        std::vector<Utils::AnimationController> gun_controllers;
+        size_t gun_idle_idx;
+        size_t gun_shot_idx;
+
+        int map_idx;
+
+        Utils::Animation *player_idle;
+        Utils::Animation *player_moving;
+        Utils::Animation *gun_idle;
+        Utils::Animation *gun_shot;
+
+        Texture2D map;
+        Image map_image;
+
+        Utils::Camera camera;
 
     };
 } // namespace Pages
