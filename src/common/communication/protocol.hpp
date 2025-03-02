@@ -69,6 +69,7 @@ namespace Communication
         // The commands sent by the game server
         enum Server{
             RESPAWN_OK,
+            GAME_OVER,
             GAME_STATE_BROADCAST,
         };
 

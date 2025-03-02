@@ -442,7 +442,7 @@ void Game::GameState::update_projectiles(float delta_time)
         }
         else
         {
-            projectile_vector.erase(projectile_vector.begin() + i);
+            projectile_vector.erase(projectile_vector.begin() + i--);
         }
     }
     return;
@@ -483,7 +483,9 @@ void Game::GameState::update_explosions(float delta_time)
                     }
                 }
             }
-            explosion_vector.erase(explosion_vector.begin() + i);
+
+            // TODO: This erase seems fucked !
+            explosion_vector.erase(explosion_vector.begin() + --i);
         }
     }
     return;

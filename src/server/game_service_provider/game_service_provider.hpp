@@ -1,12 +1,13 @@
 #ifndef H_GAME_SERVICE_PROVIDER
 #define H_GAME_SERVICE_PROVIDER
 
+#include <mutex>
+
 #include "game.hpp"
 #include "../service_provider.hpp"
 #include "communication/protocol.hpp"
 #include "misc/task.hpp"
 #include "game_communication.hpp"
-#include "thread"
 
 struct GameServiceProvider: public ServiceProvider{
 public:
@@ -32,17 +33,21 @@ private:
 
     std::vector<ENetPeer *> peers;
 
-    size_t num_of_players_joined;
+    int num_of_players_joined;
 
     std::vector<double> dead_times;
+    std::vector<bool> respawn_ok_sent;
 
     bool game_already_started = false;
+    bool game_over = false;
 
     double time_at_last_broadcast;
 
     Utils::Task timed_loop;
 
     Utils::Task life;
+
+    std::mutex gs_mutex;
 };
 
 #endif
