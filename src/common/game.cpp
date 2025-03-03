@@ -82,7 +82,7 @@ void Game::GameState::handle_movement()
 
     Rectangle collider = Physics::make_rect({
         .x = player_vector[ID].position.x,
-        .y = player_vector[ID].position.y,
+        .y = player_vector[ID].position.y, // BOTTOM LEFT (after make_rect() otherwise center)
         .width = static_cast<float>(Game::Data::tank_types[player_vector[ID].tank_type].width),
         .height = static_cast<float>(Game::Data::tank_types[player_vector[ID].tank_type].height),
     });
@@ -97,11 +97,11 @@ void Game::GameState::handle_movement()
         for(size_t wall_x = pos_x-scanning_radius_tiles; wall_x<pos_x+scanning_radius_tiles; wall_x++)
         {
             size_t wall_idx = ((Maps::maps[map_num].map_width_tiles)*wall_y) + wall_x;
-            if((Vector2Distance({static_cast<float>(wall_x), static_cast<float>(wall_y)}, {static_cast<float>(pos_x), static_cast<float>(pos_y)})<=scanning_radius_tiles) && Maps::maps[map_num].walls[wall_idx]==0)
+            if((wall_x>=0) && (wall_y>=0) && (wall_x<=Maps::maps[map_num].map_width_tiles-1) && (wall_y<=Maps::maps[map_num].map_height_tiles-1) && Maps::maps[map_num].walls[wall_idx]==0)
             {
                 Rectangle wall = {
                     .x = static_cast<float>(wall_x)*(Maps::maps[map_num].tile_width_units),
-                    .y = static_cast<float>(Maps::maps[map_num].map_height_tiles - wall_y)*(Maps::maps[map_num].tile_width_units),
+                    .y = static_cast<float>(Maps::maps[map_num].map_height_tiles - wall_y - 1)*(Maps::maps[map_num].tile_width_units), // TOP LEFT
                     .width = (Maps::maps[map_num].tile_width_units),
                     .height = (Maps::maps[map_num].tile_width_units),
                 };
@@ -172,16 +172,17 @@ void Game::GameState::handle_movement()
     {
         for(size_t wall_x = pos_x-scanning_radius_tiles; wall_x<pos_x+scanning_radius_tiles; wall_x++)
         {
+            
             size_t wall_idx = ((Maps::maps[map_num].map_width_tiles)*wall_y) + wall_x;
-            if((Vector2Distance({static_cast<float>(wall_x), static_cast<float>(wall_y)}, {static_cast<float>(pos_x), static_cast<float>(pos_y)})<=scanning_radius_tiles) && Maps::maps[map_num].walls[wall_idx]==0)
+            if((wall_x>=0) && (wall_y>=0) && (wall_x<=Maps::maps[map_num].map_width_tiles-1) && (wall_y<=Maps::maps[map_num].map_height_tiles-1) && Maps::maps[map_num].walls[wall_idx]==0)
             {
                 Rectangle wall = {
                     .x = static_cast<float>(wall_x)*(Maps::maps[map_num].tile_width_units),
-                    .y = static_cast<float>(Maps::maps[map_num].map_height_tiles - wall_y)*(Maps::maps[map_num].tile_width_units),
+                    .y = static_cast<float>(Maps::maps[map_num].map_height_tiles - wall_y - 1)*(Maps::maps[map_num].tile_width_units),
                     .width = (Maps::maps[map_num].tile_width_units),
                     .height = (Maps::maps[map_num].tile_width_units),
                 };
-                if(!player_colliding_rot) player_colliding = Physics::sat_collision_detection(wall, 0, collider, projected_angle);
+                if(!player_colliding_rot) player_colliding_rot = Physics::sat_collision_detection(wall, 0, collider, projected_angle);
 
                 if(player_colliding_rot){break;}
             }
@@ -203,7 +204,7 @@ void Game::GameState::handle_movement()
                     .width = static_cast<float>(Game::Data::tank_types[player_vector[i].tank_type].width),
                     .height = static_cast<float>(Game::Data::tank_types[player_vector[i].tank_type].height),
                 };
-                if(!player_colliding_rot) player_colliding = Physics::sat_collision_detection(collider, player_vector[ID].angle, other_player_collider, projected_angle);
+                if(!player_colliding_rot) player_colliding_rot = Physics::sat_collision_detection(collider, projected_angle, other_player_collider, player_vector[i].angle);
 
                 if(player_colliding_rot){break;}
             }
@@ -215,10 +216,11 @@ void Game::GameState::handle_movement()
     if(!player_colliding_rot)
     {
         player_vector[ID].angle = projected_angle;
+        std::cout << "0" << std::endl;
     }
     else
     {
-        // Do nothing
+        std::cout << "cant turn" << std::endl;
     }
 }
 
@@ -282,11 +284,11 @@ void Game::GameState::handle_shots()
                             if (wall_idx >= Maps::maps[map_num].walls.size()){
                                 continue;
                             }
-                            if(Maps::maps[map_num].walls[wall_idx]==0)
+                            if((wall_x>=0) && (wall_y>=0) && (wall_x<=Maps::maps[map_num].map_width_tiles-1) && (wall_y<=Maps::maps[map_num].map_height_tiles-1) && Maps::maps[map_num].walls[wall_idx]==0)
                             {
                                 Rectangle wall = {
                                     .x = static_cast<float>(wall_x)*(Maps::maps[map_num].tile_width_units),
-                                    .y = static_cast<float>(Maps::maps[map_num].map_height_tiles - wall_y)*(Maps::maps[map_num].tile_width_units),
+                                    .y = static_cast<float>(Maps::maps[map_num].map_height_tiles - wall_y - 1)*(Maps::maps[map_num].tile_width_units),
                                     .width = (Maps::maps[map_num].tile_width_units),
                                     .height = (Maps::maps[map_num].tile_width_units),
                                 };
@@ -406,11 +408,11 @@ void Game::GameState::update_projectiles(float delta_time)
             for(size_t wall_x = pos_x-scanning_radius_tiles; wall_x<pos_x+scanning_radius_tiles; wall_x++)
             {
                 size_t wall_idx = ((Maps::maps[map_num].map_width_tiles)*wall_y) + wall_x;
-                if(Maps::maps[map_num].walls[wall_idx]==0)
+                if((wall_x>=0) && (wall_y>=0) && (wall_x<=Maps::maps[map_num].map_width_tiles-1) && (wall_y<=Maps::maps[map_num].map_height_tiles-1) && Maps::maps[map_num].walls[wall_idx]==0)
                 {
                     Rectangle wall = {
                         .x = static_cast<float>(wall_x)*(Maps::maps[map_num].tile_width_units),
-                        .y = static_cast<float>(Maps::maps[map_num].map_height_tiles - wall_y)*(Maps::maps[map_num].tile_width_units),
+                        .y = static_cast<float>(Maps::maps[map_num].map_height_tiles - wall_y - 1)*(Maps::maps[map_num].tile_width_units),
                         .width = (Maps::maps[map_num].tile_width_units),
                         .height = (Maps::maps[map_num].tile_width_units),
                     };
