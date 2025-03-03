@@ -11,7 +11,7 @@
 
 struct GameServiceProvider: public ServiceProvider{
 public:
-    GameServiceProvider(std::string name, std::function<void(int)> destroy_callback, std::vector<Communication::Room::PlayerDetail> players_list, Communication::Room::RoomSettings settings): ServiceProvider(0), name(name), destroy_callback(destroy_callback), players_list(players_list), settings(settings) {};
+    GameServiceProvider(std::string name, std::function<void(int)> destroy_callback, std::vector<Communication::Room::PlayerDetail> players_list, Communication::Room::RoomSettings settings): ServiceProvider(0, 20), name(name), destroy_callback(destroy_callback), players_list(players_list), settings(settings) {};
     void start_async();
     std::string name;  
     std::function<void(int)> destroy_callback;  

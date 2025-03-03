@@ -14,7 +14,7 @@ public:
     /**
      * NOTE: Setting port to 0 will choose a random port
      */
-    ServiceProvider(int port = 0);
+    ServiceProvider(int port = 0, size_t timeout = 500);
     
     /**
      * Starts listening for requests.
@@ -32,6 +32,7 @@ public:
     ENetAddress address;
 
 protected:
+    size_t timeout;
     /**
      * Called before enet_host_service is called
      */

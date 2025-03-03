@@ -28,10 +28,13 @@ public:
     void stop();
 
     virtual ~ServiceConsumer();
+
+    ServiceConsumer(size_t timeout = 500): timeout(timeout){};
     
     ENetAddress address;
 
 protected:
+    size_t timeout;    
     /**
      * Callback when `start` is called
      */

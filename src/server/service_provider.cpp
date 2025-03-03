@@ -1,11 +1,11 @@
 #include "service_provider.hpp"
 
 const size_t max_host_peers = 16;
-const size_t timeout = 50;
 
-ServiceProvider::ServiceProvider(int port){
+ServiceProvider::ServiceProvider(int port, size_t _timeout){
     address.host = ENET_HOST_ANY;
     address.port = port;
+    timeout = _timeout;
 
     host = enet_host_create(
         &address,           // the address to bind the server host to 
@@ -21,6 +21,8 @@ ServiceProvider::ServiceProvider(int port){
 
     enet_socket_get_address(host->socket, &address);
 }
+
+
 
 void ServiceProvider::start()
 {

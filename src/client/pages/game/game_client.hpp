@@ -12,7 +12,7 @@ namespace ServiceConsumers
 {
     struct GameClient: public ServiceConsumer{
         public:
-        GameClient(std::function<void(const Game::GameState, size_t)> game_update_callback): game_update_callback(game_update_callback){
+        GameClient(std::function<void(const Game::GameState, size_t)> game_update_callback): ServiceConsumer(30), game_update_callback(game_update_callback){
             //
         }
 

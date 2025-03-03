@@ -64,6 +64,7 @@ void GameServiceProvider::handle_message(ENetPeer *peer, Communication::Command 
 {
     using namespace Communication::Game;
     if (game_over) return;
+    std::unique_lock<std::mutex> lk(gs_mutex);
     switch (static_cast<Client>(type)){
         case Client::IDENTIFY: {
             
@@ -83,7 +84,6 @@ void GameServiceProvider::handle_message(ENetPeer *peer, Communication::Command 
         }
 
         case Client::FRAME: {
-            std::unique_lock<std::mutex> lk(gs_mutex);
             auto t1 = game_state.curtime();
             game_state.apply_frame(*static_cast<const Game::Frame*>(message));
             auto t2 = game_state.curtime();
@@ -92,7 +92,7 @@ void GameServiceProvider::handle_message(ENetPeer *peer, Communication::Command 
         }
 
         case Client::TYPES_SELECTION: {
-            std::unique_lock<std::mutex> lk(gs_mutex);
+            
             
             Game::TypeSelection selection = *static_cast<const Game::TypeSelection*>(message);
     
