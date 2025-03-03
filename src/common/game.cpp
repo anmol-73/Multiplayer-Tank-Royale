@@ -92,9 +92,9 @@ void Game::GameState::handle_movement()
     size_t pos_y = Maps::maps[map_num].map_height_tiles - (size_t)(player_vector[ID].position.y/Maps::maps[map_num].tile_width_units) - 1;
     size_t pos_x = (size_t)(player_vector[ID].position.x/Maps::maps[map_num].tile_width_units);
     // size_t pos_idx = ((Maps::maps[map_num].map_width_tiles)*pos_y) + pos_x;
-    for(size_t wall_y = pos_y-scanning_radius_tiles; wall_y<pos_y+scanning_radius_tiles; wall_y++)
+    for(size_t wall_y = pos_y-std::min(pos_y, scanning_radius_tiles); wall_y<pos_y+scanning_radius_tiles; wall_y++)
     {
-        for(size_t wall_x = pos_x-scanning_radius_tiles; wall_x<pos_x+scanning_radius_tiles; wall_x++)
+        for(size_t wall_x = pos_x-std::min(pos_x, scanning_radius_tiles); wall_x<pos_x+scanning_radius_tiles; wall_x++)
         {
             size_t wall_idx = ((Maps::maps[map_num].map_width_tiles)*wall_y) + wall_x;
             if((wall_x>=0) && (wall_y>=0) && (wall_x<=Maps::maps[map_num].map_width_tiles-1) && (wall_y<=Maps::maps[map_num].map_height_tiles-1) && Maps::maps[map_num].walls[wall_idx]==0)
@@ -160,17 +160,21 @@ void Game::GameState::handle_movement()
 
 
     // Rotation
-    collider.x = player_vector[ID].position.x;
-    collider.y = player_vector[ID].position.y;
-    scanning_radius = 1.5*(sqrt((Game::Data::tank_types[player_vector[ID].tank_type].width)*(Game::Data::tank_types[player_vector[ID].tank_type].width) + (Game::Data::tank_types[player_vector[ID].tank_type].height)*(Game::Data::tank_types[player_vector[ID].tank_type].height)));
-    scanning_radius_tiles = (size_t)ceil(scanning_radius/Maps::maps[map_num].tile_width_units);
+    collider = Physics::make_rect({
+        .x = player_vector[ID].position.x,
+        .y = player_vector[ID].position.y, // BOTTOM LEFT (after make_rect() otherwise center)
+        .width = static_cast<float>(Game::Data::tank_types[player_vector[ID].tank_type].width),
+        .height = static_cast<float>(Game::Data::tank_types[player_vector[ID].tank_type].height),
+    });
     // Player wall
     pos_y = Maps::maps[map_num].map_height_tiles - (size_t)(player_vector[ID].position.y/Maps::maps[map_num].tile_width_units) - 1;
     pos_x = (size_t)(player_vector[ID].position.x/Maps::maps[map_num].tile_width_units);
+    
+    
     // size_t pos_idx = ((Maps::maps[map_num].map_width_tiles)*pos_y) + pos_x;
-    for(size_t wall_y = pos_y-scanning_radius_tiles; wall_y<pos_y+scanning_radius_tiles; wall_y++)
+    for(size_t wall_y = pos_y-std::min(pos_y, scanning_radius_tiles); wall_y<pos_y+scanning_radius_tiles; wall_y++)
     {
-        for(size_t wall_x = pos_x-scanning_radius_tiles; wall_x<pos_x+scanning_radius_tiles; wall_x++)
+        for(size_t wall_x = pos_x-std::min(pos_x, scanning_radius_tiles); wall_x<pos_x+scanning_radius_tiles; wall_x++)
         {
             
             size_t wall_idx = ((Maps::maps[map_num].map_width_tiles)*wall_y) + wall_x;
@@ -210,17 +214,6 @@ void Game::GameState::handle_movement()
             }
             if(player_colliding_rot){break;}
         }
-    }
-
-    // Resolve collision (rotation)
-    if(!player_colliding_rot)
-    {
-        player_vector[ID].angle = projected_angle;
-        std::cout << "0" << std::endl;
-    }
-    else
-    {
-        std::cout << "cant turn" << std::endl;
     }
 }
 
@@ -403,9 +396,9 @@ void Game::GameState::update_projectiles(float delta_time)
         double scanning_radius = 1.5*(sqrt((Game::Data::projectile_types[projectile_vector[i].type].width)*(Game::Data::projectile_types[projectile_vector[i].type].width) + (Game::Data::projectile_types[projectile_vector[i].type].height)*(Game::Data::projectile_types[projectile_vector[i].type].height)));
         size_t scanning_radius_tiles = (size_t)ceil(scanning_radius/Maps::maps[map_num].tile_width_units);
 
-        for(size_t wall_y = pos_y-scanning_radius_tiles; wall_y<pos_y+scanning_radius_tiles; wall_y++)
+        for(size_t wall_y = pos_y-std::min(pos_y, scanning_radius_tiles); wall_y<pos_y+scanning_radius_tiles; wall_y++)
         {
-            for(size_t wall_x = pos_x-scanning_radius_tiles; wall_x<pos_x+scanning_radius_tiles; wall_x++)
+            for(size_t wall_x = pos_x-std::min(pos_x, scanning_radius_tiles); wall_x<pos_x+scanning_radius_tiles; wall_x++)
             {
                 size_t wall_idx = ((Maps::maps[map_num].map_width_tiles)*wall_y) + wall_x;
                 if((wall_x>=0) && (wall_y>=0) && (wall_x<=Maps::maps[map_num].map_width_tiles-1) && (wall_y<=Maps::maps[map_num].map_height_tiles-1) && Maps::maps[map_num].walls[wall_idx]==0)

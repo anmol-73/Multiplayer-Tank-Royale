@@ -63,12 +63,7 @@ void Pages::RoomScene::_update()
 
     auto nss = client->get_name_set_status();
     if (nss == Communication::RequestStatus::DENIED){
-        std::cout << "NAME Denied!" << std::endl;
         return;
-    }
-    
-    if (nss == Communication::RequestStatus::ACCEPTED){
-        std::cout << "NAME Accepted!" << std::endl;
     }
     
     if (nss == Communication::RequestStatus::IDLE){
