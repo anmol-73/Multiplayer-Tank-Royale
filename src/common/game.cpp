@@ -215,6 +215,11 @@ void Game::GameState::handle_movement()
             if(player_colliding_rot){break;}
         }
     }
+
+    if(!player_colliding_rot)
+    {
+        player_vector[ID].angle = projected_angle;
+    }
 }
 
 void Game::GameState::set_gun_angle()
