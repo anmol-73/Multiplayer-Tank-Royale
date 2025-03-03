@@ -27,36 +27,21 @@ Pages::RoomUI::RoomUI()
         map_preview = new UI::Elements::ImageView(
             map_images[0], [this](UI::Elements::ImageView *) -> UI::DrawParameters::Box{
                 return {
-                    .size = {
-                        .value = {0.3f, 0.3f},
+                    .position = { 
+                        .value = {0.66f, 0.3f},
                         .mode = {Mode::SCREEN_W, Mode::SCREEN_H}
-                    }    
-                };
-            }
-        )
-    );
-
-    bg->register_element(
-        new UI::Elements::Span(
-            [this](UI::Elements::Span* span){
-                return UI::DrawParameters::TextBox{
-                    .content = "Room: " + room_name,
-                    .font_size = 2 * Global::rem,
-                    .font_color = {0x45, 0x41, 0x39, 0xff},
-                    
-                    .position = {
-                        .value = {0.01, 0.05},
-                        .mode = {Mode::SCREEN_W, Mode::SCREEN_W}
                     },
-
-                    .rect_origin = { // Specifies the origin of the rect
-                        .value = {0, 0},
-                        .mode = {Mode::ABSOLUTE, Mode::ABSOLUTE}
-                    }
+                    .size = { 
+                        .value = {0.3f, 0.16875f},
+                        .mode = {Mode::SCREEN_W, Mode::SCREEN_W} 
+                    },
+                    .origin = {0} 
                 };
             }
         )
     );
+    
+
 
     // bg->register_element(
     //     new UI::Elements::Span(
@@ -182,8 +167,8 @@ Pages::RoomUI::RoomUI()
     { // Room creation
         bg->register_element(
             name_input = Components::create_sl_input(
-                "Room Name:", "...", {
-                    .value = {0.5f, 0.5f},
+                "Player Name:", "...", {
+                    .value = {0.33f, 0.20f},
                     .mode = {Mode::SCREEN_W, Mode::SCREEN_H}
                 }, {
                     .value = {0.55f, 0.05f},
@@ -195,9 +180,9 @@ Pages::RoomUI::RoomUI()
     
         bg->register_element(
             set_name_button = Components::create_span_button(
-                "Create Room",
+                "Join",
                 {
-                    .value = {0.5, 0.7},
+                    .value = {0.64f, 0.20f},
                     .mode = {Mode::SCREEN_W, Mode::SCREEN_H}
                 }
             )
