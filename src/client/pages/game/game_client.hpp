@@ -24,11 +24,16 @@ namespace ServiceConsumers
         bool allow_respawn();
 
         protected:
+            std::string on_connection_established();
+            void handle_disconnection();
             virtual void handle_message(Communication::Command type, const void *message, size_t size);
 
             bool game_over = false;
             bool respawn_ok = false;
             std::function<void(const Game::GameState, size_t)> game_update_callback;
+
+        private:
+            bool _is_connected = false;
 
     };
 } // namespace Pages

@@ -128,7 +128,8 @@ void GameServiceProvider::timed_loop_func()
     {
         // TODO: Consider making the sleep like sleep properly (the code doesnt take 0 time to run....)
         // 60 fps
-        std::this_thread::sleep_for(std::chrono::milliseconds(17));
+        
+        
         
         double t = game_state.curtime();
         
@@ -154,7 +155,7 @@ void GameServiceProvider::timed_loop_func()
             broadcast_message(Communication::Game::Server::GAME_STATE_BROADCAST, message.get(), sz);
             enet_host_flush(host);
         }
-
+        
         for(size_t i=0; i < game_state.player_vector.size(); ++i)
         {
             if((!game_state.player_vector[i].is_alive) and (!respawn_ok_sent[i]))
@@ -167,6 +168,9 @@ void GameServiceProvider::timed_loop_func()
                 }
             }
         }
+        double t2 = game_state.curtime();
+        log(t2 - t);
+        std::this_thread::sleep_for(std::chrono::milliseconds(17));
     }
 }
 
