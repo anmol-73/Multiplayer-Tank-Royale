@@ -1,7 +1,7 @@
 #include "service_provider.hpp"
 
 const size_t max_host_peers = 16;
-const size_t timeout = 20;
+const size_t timeout = 50;
 
 ServiceProvider::ServiceProvider(int port){
     address.host = ENET_HOST_ANY;

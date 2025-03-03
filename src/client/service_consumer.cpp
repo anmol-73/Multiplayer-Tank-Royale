@@ -1,6 +1,6 @@
 #include "service_consumer.hpp"
 
-const size_t timeout = 30;
+const size_t timeout = 60;
 
 std::string ServiceConsumer::connect(Communication::Address _address)
 {

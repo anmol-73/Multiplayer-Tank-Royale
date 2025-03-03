@@ -173,7 +173,7 @@ void GameServiceProvider::timed_loop_func()
         }
         double t2 = game_state.curtime();
         log(t2 - t);
-        std::this_thread::sleep_for(std::chrono::milliseconds(17));
+        std::this_thread::sleep_for(std::chrono::milliseconds(12));
     }
 }
 

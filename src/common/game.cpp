@@ -204,12 +204,12 @@ void Game::GameState::handle_movement()
             if (!player_vector[i].is_alive) continue;
             if(i!=ID)
             {
-                Rectangle other_player_collider = {
+                Rectangle other_player_collider = Physics::make_rect({
                     .x = player_vector[i].position.x,
                     .y = player_vector[i].position.y,
                     .width = static_cast<float>(Game::Data::tank_types[player_vector[i].tank_type].width),
                     .height = static_cast<float>(Game::Data::tank_types[player_vector[i].tank_type].height),
-                };
+                });
                 if(!player_colliding_rot) player_colliding_rot = Physics::sat_collision_detection(collider, projected_angle, other_player_collider, player_vector[i].angle);
 
                 if(player_colliding_rot){break;}

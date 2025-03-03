@@ -1,5 +1,7 @@
 #include "game_window.hpp"
 
+double td = 0;
+
 void Pages::GameWindowScene::_update()
 {
     if (WindowShouldClose()){
@@ -164,8 +166,11 @@ void Pages::GameWindowScene::_cleanup_with_context()
 
 void Pages::GameWindowScene::game_update_callback(const Game::GameState server_gs, size_t size)
 {
+    auto t2 = game_state.curtime();
     std::unique_lock<std::mutex> lk(gs_mutex);
     game_state = server_gs;
+    std::cout << "GS DELAY: " << t2 - td << std::endl;
+    td = t2;
 }
 
 void Pages::GameWindowScene::logic_update()
@@ -175,10 +180,14 @@ void Pages::GameWindowScene::logic_update()
 
     made_frames.push_back(curr_frame);
     
+    auto t1 = game_state.curtime();
+    int todo = curr_frame.frame_num - game_state.player_vector[prepared_args.pi.id].last_frame_processed_num;
     for(size_t i = game_state.player_vector[prepared_args.pi.id].last_frame_processed_num+1; i<=curr_frame.frame_num; i++)
     {
         game_state.apply_frame(made_frames[i]);
     }
+    auto t2 = game_state.curtime();
+    std::cout << t2 - t1 << ' ' << todo << std::endl;
 }
 
 void Pages::GameWindowScene::set_curr_frame()
