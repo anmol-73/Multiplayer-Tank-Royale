@@ -118,8 +118,9 @@ void Game::GameState::handle_movement()
     if(!(player_colliding && player_colliding_x && player_colliding_y))
     {
         // Player player
-        for(size_t i=0; i<num_of_players; i++)
+        for(size_t i=0; i<12; i++)
         {
+            if (!player_vector[i].exists) continue;
             if (!player_vector[i].is_alive) continue;
             if(i!=ID)
             {
@@ -197,8 +198,9 @@ void Game::GameState::handle_movement()
     if(!player_colliding_rot)
     {
         // Player player
-        for(size_t i=0; i<num_of_players; i++)
+        for(size_t i=0; i<12; i++)
         {
+            if (!player_vector[i].exists) continue;
             if (!player_vector[i].is_alive) continue;
             if(i!=ID)
             {

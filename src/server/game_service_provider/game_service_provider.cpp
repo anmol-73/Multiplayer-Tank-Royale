@@ -84,7 +84,10 @@ void GameServiceProvider::handle_message(ENetPeer *peer, Communication::Command 
 
         case Client::FRAME: {
             std::unique_lock<std::mutex> lk(gs_mutex);
+            auto t1 = game_state.curtime();
             game_state.apply_frame(*static_cast<const Game::Frame*>(message));
+            auto t2 = game_state.curtime();
+            log("APPLY " << t2 - t1);
             break;
         }
 
@@ -142,7 +145,7 @@ void GameServiceProvider::timed_loop_func()
         }
         
         double delta_time = t - time_at_last_broadcast;
-        
+        log(delta_time << "!");
         // TODO: Consider putting a mutex
         time_at_last_broadcast = t;
 
