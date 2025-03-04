@@ -11,6 +11,8 @@ Pages::GameRenderer::GameRenderer()
 
 void Pages::GameRenderer::draw(const Game::GameState& gs, int player_id)
 {
+    SetMouseCursor(MOUSE_CURSOR_CROSSHAIR);
+
     camera.follow(gs.player_vector[player_id].position);
 
     { // draw map
@@ -40,13 +42,107 @@ void Pages::GameRenderer::draw(const Game::GameState& gs, int player_id)
             );
         }
     }
+
+    { // draw tracker
+        DrawCircleLinesV(
+            camera.transform(
+                Vector2Add(crosshair_data.tracker_position, gs.player_vector[player_id].position)
+            ),
+            crosshair_data.tracker_radius,
+            crosshair_data.circle_color
+        );
+    }
+
+    { // gun
+        for (size_t i = 0; i < gs.player_vector.size(); ++ i)
+        {
+            switch (gs.player_vector[i].gun_type)
+            {
+                case 0: // Gun behaviour
+                { // Draw traces
+                    if(gs.player_vector[i].time_since_last_shot <= prev_times_since_last_shot[i])
+                    {
+                        DrawLineEx(
+                            camera.transform(gs.player_vector[i].position),
+                            camera.transform(gs.player_vector[i].ray_contact),
+                            4, WHITE
+                        );
+                    }
+                    DrawRectanglePro(
+                        camera.transform(
+                            {
+                                gs.player_vector[i].position.x, gs.player_vector[i].position.y,
+                                static_cast<float>(Game::Data::gun_types[gs.player_vector[i].tank_type].width), static_cast<float>(Game::Data::gun_types[gs.player_vector[i].tank_type].height)
+                            }
+                        ), camera.scale(Vector2{
+                            0, static_cast<float>(Game::Data::gun_types[gs.player_vector[i].tank_type].height/2)
+                        }), -RAD2DEG*gs.player_vector[i].gun_angle, RED
+                    );
+                    break;
+                }
+
+                case 1:
+                {
+                    DrawRectanglePro(
+                        camera.transform(
+                            {
+                                gs.player_vector[i].position.x, gs.player_vector[i].position.y,
+                                static_cast<float>(Game::Data::gun_types[gs.player_vector[i].tank_type].width), static_cast<float>(Game::Data::gun_types[gs.player_vector[i].tank_type].height)
+                            }
+                        ), camera.scale(Vector2{
+                            0, static_cast<float>(Game::Data::gun_types[gs.player_vector[i].tank_type].height/2)
+                        }), -RAD2DEG*gs.player_vector[i].gun_angle, RED
+                    );
+                    break;
+                }
+
+                case 2:
+                {
+                    DrawRectanglePro(
+                        camera.transform(
+                            {
+                                gs.player_vector[i].position.x, gs.player_vector[i].position.y,
+                                static_cast<float>(Game::Data::gun_types[gs.player_vector[i].tank_type].width), static_cast<float>(Game::Data::gun_types[gs.player_vector[i].tank_type].height)
+                            }
+                        ), camera.scale(Vector2{
+                            0, static_cast<float>(Game::Data::gun_types[gs.player_vector[i].tank_type].height/2)
+                        }), -RAD2DEG*gs.player_vector[i].gun_angle, RED
+                    );
+                    break;
+                }
+            }
+            prev_times_since_last_shot[i] = gs.player_vector[i].time_since_last_shot;
+        }
+    }
+
+    { // draw projectiles
+        for (size_t i = 0; i < gs.projectile_vector.size(); i++){
+            DrawRectanglePro(
+                camera.transform({
+                    gs.projectile_vector[i].position.x, gs.projectile_vector[i].position.y,
+                    static_cast<float>(Game::Data::projectile_types[gs.projectile_vector[i].type].width), static_cast<float>(Game::Data::projectile_types[gs.projectile_vector[i].type].height)
+                }), 
+                camera.scale(Vector2{
+                    static_cast<float>(Game::Data::projectile_types[gs.projectile_vector[i].type].width/2), static_cast<float>(Game::Data::projectile_types[gs.projectile_vector[i].type].height/2)
+                }), 
+                -gs.projectile_vector[i].angle*RAD2DEG, RED
+            );
+        }
+    }
+
+    { // draw explosions
+        for (size_t i = 0; i < gs.explosion_vector.size(); i++){
+            DrawCircleGradient(camera.transform(gs.explosion_vector[i].position).x, camera.transform(gs.explosion_vector[i].position).y, 20, MAGENTA, RED);
+            DrawCircleLines(camera.transform(gs.explosion_vector[i].position).x, camera.transform(gs.explosion_vector[i].position).y, 20, RED);
+        }
+    }
 }
 
 void Pages::GameRenderer::prepare(size_t _map_idx, size_t _player_tank_type)
 {
     map_index = _map_idx;
     tank_index = _player_tank_type;
-
+    prev_times_since_last_shot.assign(12, 0);
     camera.init({Maps::maps[map_index].width(), Maps::maps[map_index].height()}, {Maps::maps[map_index].vwidth(), Maps::maps[map_index].vheight()}, {static_cast<float>(Game::Data::tank_types[tank_index].width), static_cast<float>(Game::Data::tank_types[tank_index].height)});
 }
 

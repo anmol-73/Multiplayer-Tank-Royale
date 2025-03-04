@@ -227,7 +227,7 @@ void Game::GameState::handle_movement()
 void Game::GameState::set_gun_angle()
 {
     size_t ID = curr_frame.player_id;
-    double expected_gun_angle = normalize_angle(atan2(curr_frame.mouse_position_screen.y - (Maps::maps[map_num].tiles_in_screen_y*Maps::maps[map_num].tile_width_units)/2, curr_frame.mouse_position_screen.x - (Maps::maps[map_num].tiles_in_screen_x*Maps::maps[map_num].tile_width_units)/2));
+    double expected_gun_angle = normalize_angle(atan2(-curr_frame.mouse_position_screen.y + (Maps::maps[map_num].tiles_in_screen_y*Maps::maps[map_num].tile_width_units)/2, curr_frame.mouse_position_screen.x - (Maps::maps[map_num].tiles_in_screen_x*Maps::maps[map_num].tile_width_units)/2));
     double angle_difference = normalize_angle(expected_gun_angle - player_vector[ID].gun_angle);
     
     // Take shortest path to targeted gun_angle
@@ -252,6 +252,9 @@ void Game::GameState::set_gun_angle()
         }
     }
     player_vector[ID].gun_angle = normalize_angle(player_vector[ID].gun_angle);
+    // std::cout << "GA " << player_vector[ID].gun_angle << std::endl;
+    // std::cout << "EGA " << expected_gun_angle << std::endl;
+    // std::cout << "AD " << angle_difference << std::endl;
 }
 
 void Game::GameState::handle_shots()
@@ -391,7 +394,7 @@ void Game::GameState::handle_shots()
 void Game::GameState::update_projectiles(float delta_time)
 {
 
-    for(size_t i=1; i<projectile_vector.size(); i++)
+    for(size_t i=0; i<projectile_vector.size(); i++)
     {
         bool not_colliding = true;
 
@@ -468,7 +471,7 @@ void Game::GameState::update_projectiles(float delta_time)
 
 void Game::GameState::update_explosions(float delta_time)
 {
-    for(size_t i=1; i<explosion_vector.size(); i++)
+    for(size_t i=0; i<explosion_vector.size(); i++)
     {
         if(explosion_vector[i].time_alive<Game::Data::explosion_types[explosion_vector[i].type].lifetime)
         {

@@ -87,7 +87,7 @@ void GameServiceProvider::handle_message(ENetPeer *peer, Communication::Command 
             auto t1 = game_state.curtime();
             game_state.apply_frame(*static_cast<const Game::Frame*>(message));
             auto t2 = game_state.curtime();
-            log("APPLY " << t2 - t1);
+            // log("APPLY " << t2 - t1);
             break;
         }
 
@@ -145,7 +145,7 @@ void GameServiceProvider::timed_loop_func()
         }
         
         double delta_time = t - time_at_last_broadcast;
-        log(delta_time << "!");
+        // log(delta_time << "!");
         // TODO: Consider putting a mutex
         time_at_last_broadcast = t;
 
@@ -171,8 +171,8 @@ void GameServiceProvider::timed_loop_func()
                 }
             }
         }
-        double t2 = game_state.curtime();
-        log(t2 - t);
+        // double t2 = game_state.curtime();
+        // log(t2 - t);
         std::this_thread::sleep_for(std::chrono::milliseconds(12));
     }
 }

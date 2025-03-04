@@ -30,6 +30,21 @@ namespace Pages
         size_t tank_index = 0;
 
         std::vector<DragonLib::DImage> map_images;
+
+        struct CrosshairData
+        {
+            Vector2 mouse_position; // Relative
+            double mouse_distance; // Relative
+            Vector2 tracker_position; // Relative and wrt top left
+            double tracker_distance; // Relative
+            double tracker_radius;
+            double tracker_radial_speed;
+            Color circle_color = RED; 
+    
+            void init();
+        } crosshair_data;
+
+        std::vector<double> prev_times_since_last_shot;
     };
 } // namespace Pages
 
