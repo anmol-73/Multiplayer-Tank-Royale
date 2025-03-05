@@ -24,6 +24,10 @@ namespace Utils
         Vector2 scale(Vector2 size);
         Rectangle scale(Rectangle size);
 
+        /** Undoes scale */
+        Vector2 descale(Vector2 size);
+        Rectangle descale(Rectangle size);
+
         Rectangle viewport();
 
     private:

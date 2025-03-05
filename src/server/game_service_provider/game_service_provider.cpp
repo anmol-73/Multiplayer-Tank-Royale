@@ -84,9 +84,9 @@ void GameServiceProvider::handle_message(ENetPeer *peer, Communication::Command 
         }
 
         case Client::FRAME: {
-            auto t1 = game_state.curtime();
+            // auto t1 = game_state.curtime();
             game_state.apply_frame(*static_cast<const Game::Frame*>(message));
-            auto t2 = game_state.curtime();
+            // auto t2 = game_state.curtime();
             // log("APPLY " << t2 - t1);
             break;
         }

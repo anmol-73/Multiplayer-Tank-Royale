@@ -136,7 +136,7 @@ void Pages::GameWindowScene::_load()
         client->start();
     });
     
-    crosshair_data.init();
+    renderer.crosshair_data.init();
 
     renderer.prepare(prepared_args.settings.map, 0);
     curr_frame.frame_num = 0;   
@@ -186,7 +186,7 @@ void Pages::GameWindowScene::logic_update()
     // int todo = curr_frame.frame_num - game_state.player_vector[prepared_args.pi.id].last_frame_processed_num;
     for(size_t i = game_state.player_vector[prepared_args.pi.id].last_frame_processed_num+1; i<=curr_frame.frame_num; i++)
     {
-        game_state.apply_frame(made_frames[i]);
+        // game_state.apply_frame(made_frames[i]);
     }
     set_tracker();
     // auto t2 = game_state.curtime();
@@ -203,45 +203,38 @@ void Pages::GameWindowScene::set_curr_frame()
     curr_frame.delta_time = GetFrameTime();
     curr_frame.frame_num = made_frames.size();
     curr_frame.player_id = prepared_args.pi.id;
-    // Vector2 temp = GetMousePosition();
-    // curr_frame.mouse_position_screen = {temp.x, GetScreenHeight()-temp.y};
-    curr_frame.mouse_position_screen = GetMousePosition();
+    Vector2 temp = GetMousePosition();
+    renderer.crosshair_data.mouse_position = {temp.x, GetScreenHeight()-temp.y};
+    curr_frame.mouse_position_screen = renderer.camera.descale(renderer.crosshair_data.mouse_position);
 }
 
 void Pages::GameWindowScene::set_tracker()
 {
     // Targeted radial distance (mouse distance)
-    crosshair_data.mouse_distance = sqrt(((curr_frame.mouse_position_screen.x-(Maps::maps[0].tiles_in_screen_x*Maps::maps[0].tile_width_units)/2)*(curr_frame.mouse_position_screen.x-(Maps::maps[0].tiles_in_screen_x*Maps::maps[0].tile_width_units)/2) + (curr_frame.mouse_position_screen.y-(Maps::maps[0].tiles_in_screen_y*Maps::maps[0].tile_width_units)/2)*(curr_frame.mouse_position_screen.y-(Maps::maps[0].tiles_in_screen_y*Maps::maps[0].tile_width_units)/2)));
+    
+    renderer.crosshair_data.mouse_distance = sqrt(((renderer.crosshair_data.mouse_position.x-(GetScreenWidth())/2)*(renderer.crosshair_data.mouse_position.x-(GetScreenWidth())/2) + (curr_frame.mouse_position_screen.y-(GetScreenHeight())/2)*(curr_frame.mouse_position_screen.y-(GetScreenHeight())/2)));
     
     // Move tracker radially
-    if (crosshair_data.mouse_distance - crosshair_data.tracker_distance > 0){
-        crosshair_data.tracker_distance += crosshair_data.tracker_radial_speed * curr_frame.delta_time;
-        if (crosshair_data.tracker_distance > crosshair_data.mouse_distance){
-            crosshair_data.tracker_distance = crosshair_data.mouse_distance;
+    if (renderer.crosshair_data.mouse_distance - renderer.crosshair_data.tracker_distance > 0){
+        renderer.crosshair_data.tracker_distance += renderer.crosshair_data.tracker_radial_speed * curr_frame.delta_time;
+        if (renderer.crosshair_data.tracker_distance > renderer.crosshair_data.mouse_distance){
+            renderer.crosshair_data.tracker_distance = renderer.crosshair_data.mouse_distance;
         }
     } else{
-        crosshair_data.tracker_distance -= crosshair_data.tracker_radial_speed * curr_frame.delta_time;
-        if (crosshair_data.tracker_distance < crosshair_data.mouse_distance){
-            crosshair_data.tracker_distance = crosshair_data.mouse_distance;
+        renderer.crosshair_data.tracker_distance -= renderer.crosshair_data.tracker_radial_speed * curr_frame.delta_time;
+        if (renderer.crosshair_data.tracker_distance < renderer.crosshair_data.mouse_distance){
+            renderer.crosshair_data.tracker_distance = renderer.crosshair_data.mouse_distance;
         }
     }
 
     // Prevent tracker from being on tank
-    crosshair_data.tracker_distance = std::max(crosshair_data.tracker_distance, Game::Data::gun_types[game_state.player_vector[prepared_args.pi.id].gun_type].width-5);
+    renderer.crosshair_data.tracker_distance = std::max(renderer.crosshair_data.tracker_distance, Game::Data::gun_types[game_state.player_vector[prepared_args.pi.id].gun_type].width-5);
 
     // Update coordinates
-    crosshair_data.tracker_position.x = crosshair_data.tracker_distance*cos(game_state.player_vector[prepared_args.pi.id].gun_angle);
-    crosshair_data.tracker_position.y = crosshair_data.tracker_distance*sin(game_state.player_vector[prepared_args.pi.id].gun_angle);
+    renderer.crosshair_data.tracker_position.x = renderer.crosshair_data.tracker_distance*cos(game_state.player_vector[prepared_args.pi.id].gun_angle);
+    renderer.crosshair_data.tracker_position.y = renderer.crosshair_data.tracker_distance*sin(game_state.player_vector[prepared_args.pi.id].gun_angle);
 
-    std::cout << crosshair_data.tracker_position.x  << " " << curr_frame.mouse_position_screen.x << std::endl;
-    std::cout << crosshair_data.tracker_distance  << " " << crosshair_data.mouse_distance << std::endl;
+    // std::cout << renderer.crosshair_data.tracker_position.x  << " " << curr_frame.mouse_position_screen.x << std::endl;
+    std::cout << renderer.crosshair_data.tracker_distance  << " " << renderer.crosshair_data.mouse_distance << std::endl;
 
-}
-
-void Pages::GameWindowScene::CrosshairData::init()
-{
-    tracker_position = Vector2();
-    tracker_radial_speed = 500;
-    tracker_radius = 10;
-    tracker_distance = 0;
 }

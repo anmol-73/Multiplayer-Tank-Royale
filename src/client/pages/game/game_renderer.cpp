@@ -44,16 +44,27 @@ void Pages::GameRenderer::draw(const Game::GameState& gs, int player_id)
     }
 
     { // draw tracker
+        Vector2 x = camera.transform(gs.player_vector[player_id].position);
         DrawCircleLinesV(
-            camera.transform(
-                Vector2Add(crosshair_data.tracker_position, gs.player_vector[player_id].position)
-            ),
+            // Vector2{
+            //     x.x + crosshair_data.tracker_position.x,
+            //     x.y - crosshair_data.tracker_position.y,
+            // },
+            GetMousePosition(),
             crosshair_data.tracker_radius,
             crosshair_data.circle_color
         );
+        DrawCircleLinesV(
+            x,
+            crosshair_data.tracker_radius,
+            BLUE
+
+        );
+        std::cout << GetMousePosition().x << ',' << GetMousePosition().y << ';' << std::endl;
+        std::cout << x.x << ',' << x.y << ' ' << crosshair_data.tracker_position.x << ',' << crosshair_data.tracker_position.y << ' ' << gs.player_vector[player_id].position.x << ',' << gs.player_vector[player_id].position.y << ';' << std::endl;
     }
 
-    { // gun
+    { // draw gun
         for (size_t i = 0; i < gs.player_vector.size(); ++ i)
         {
             switch (gs.player_vector[i].gun_type)
@@ -172,4 +183,13 @@ void Pages::GameRenderer::cleanup_sync()
     for (size_t i = 0; i < Maps::map_count; ++i){
         map_images[i].unload_tex();
     }
+}
+
+
+void Pages::GameRenderer::CrosshairData::init()
+{
+    tracker_position = Vector2();
+    tracker_radial_speed = 500;
+    tracker_radius = 10;
+    tracker_distance = 0;
 }

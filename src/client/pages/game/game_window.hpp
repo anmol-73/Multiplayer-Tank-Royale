@@ -70,19 +70,8 @@ namespace Pages
 
         void set_tracker();
 
-        GameRenderer renderer;     
-        
-        struct CrosshairData
-        {
-            double mouse_distance; // Relative
-            Vector2 tracker_position; // Relative and wrt top left
-            double tracker_distance; // Relative
-            double tracker_radius;
-            double tracker_radial_speed;
-            Color circle_color = WHITE; 
-    
-            void init();
-        } crosshair_data;
+        GameRenderer renderer;
+
     };
 } // namespace Pages
 

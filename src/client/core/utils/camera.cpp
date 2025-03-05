@@ -1,5 +1,5 @@
 #include "camera.hpp"
-
+#include <stdio.h>
 
 void Utils::Camera::init(Vector2 map_size_, Vector2 viewport_size_, Vector2 player_size_)
 {
@@ -50,6 +50,22 @@ Rectangle Utils::Camera::scale(Rectangle size)
         size.y * scaling_factor.y,
         size.width * scaling_factor.x,
         size.height * scaling_factor.y
+    };
+}
+
+Vector2 Utils::Camera::descale(Vector2 size)
+{
+    auto res = Vector2Divide(size, scaling_factor);
+    return Vector2Divide(size, scaling_factor);
+}
+
+Rectangle Utils::Camera::descale(Rectangle size)
+{
+    return {
+        size.x / scaling_factor.x,
+        size.y / scaling_factor.y,
+        size.width / scaling_factor.x,
+        size.height / scaling_factor.y
     };
 }
 
