@@ -45,7 +45,7 @@ namespace Pages
         DragonLib::UI::Elements::Span *set_name_button;
         DragonLib::UI::Elements::Input *name_input;
 
-        std::vector<DragonLib::DImage> map_images;        
+        std::vector<DragonLib::DImage> map_images;   
     };
 } // namespace Pages
 

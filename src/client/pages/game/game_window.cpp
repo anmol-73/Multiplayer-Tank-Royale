@@ -13,7 +13,7 @@ void Pages::GameWindowScene::_update()
         BeginDrawing();{
             ClearBackground({0x1e, 0x1e, 0x1e, 0xff});
             DragonLib::Utils::Drawing::draw_text({
-                .content = "GMAE OVER!",
+                .content = "GAME OVER!",
                 .font_size = Global::rem * 2,
                 .font_color = {0, 0, 0, 0x60}
             });
@@ -41,8 +41,8 @@ void Pages::GameWindowScene::_update()
     
     if (ui.should_respawn()){
         Game::TypeSelection selection;
-        selection.gun_type = 0;
-        selection.tank_type = 0;
+        selection.gun_type = ui.turret_idx;
+        selection.tank_type = ui.tank_idx;
         selection.player_id = prepared_args.pi.id;
         client->send_selection(selection);
         renderer.prepare(prepared_args.settings.map, selection.tank_type);

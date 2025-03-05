@@ -4,6 +4,7 @@
 #include <raylib.h>
 #include <stdlib.h>
 #include <vector>
+#include <string>
 
 namespace Game
 {
@@ -63,8 +64,10 @@ namespace Game
     namespace Data
     {
         extern std::vector<Game::Types::TankType> tank_types;
-
+        extern std::vector<std::pair<std::string, std::string>> tank_resources;
+        
         extern std::vector<Game::Types::GunType> gun_types;
+        extern std::vector<std::pair<std::string, std::string>> gun_resources;
 
         extern std::vector<Game::Types::ProjectileType> projectile_types;
 

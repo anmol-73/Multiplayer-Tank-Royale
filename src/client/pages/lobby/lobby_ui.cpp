@@ -21,6 +21,64 @@ Pages::LobbyUI::LobbyUI()
     );
     register_element(bg);
 
+    { // Title text
+        bg->register_element(
+            new UI::Elements::Text(
+                [](auto _) -> std::pair<UI::DrawParameters::Box, UI::DrawParameters::Text> {
+                    return {
+                        { // Box (for alignment)
+                            .position = {
+                                .value = {0.10f, 0.14f},
+                                .mode = {Mode::SCREEN_W, Mode::SCREEN_H}
+                            }
+                        },
+                        { // Text properties
+                            .content = "Server Address : 127.0.0.1",
+                            .font_size = Global::rem,
+                            .font_color = {0x45, 0x41, 0x39, 0xc0},
+                            .position = {
+                                .value = {0.0f, 0.5f},  // Centered within the box
+                                .mode = {Mode::SELF_W, Mode::SELF_H}
+                            },
+                            .origin = {
+                                .value = {0, 0.5},  // Align vertically
+                                .mode = {Mode::SELF_W, Mode::SELF_H}
+                            }
+                        }
+                    };
+                }
+            )
+        );
+        
+        bg->register_element(
+            new UI::Elements::Text(
+                [](auto _) -> std::pair<UI::DrawParameters::Box, UI::DrawParameters::Text> {
+                    return {
+                        { // Box (for alignment)
+                            .position = {
+                                .value = {0.10f, y_position},  // Position of "Room Name"
+                                .mode = {Mode::SCREEN_W, Mode::SCREEN_H}
+                            }
+                        },
+                        { // Text properties
+                            .content = "Room Name:",
+                            .font_size = Global::rem,
+                            .font_color = {0x45, 0x41, 0x39, 0xc0},
+                            .position = {
+                                .value = {0.0f, 0.5f},  // Centered within the box
+                                .mode = {Mode::SELF_W, Mode::SELF_H}
+                            },
+                            .origin = {
+                                .value = {0, 0.5},  // Align vertically
+                                .mode = {Mode::SELF_W, Mode::SELF_H}
+                            }
+                        }
+                    };
+                }
+            )
+        );
+    }
+
     { // Active rooms
         for (size_t i = 0; i < max_room_count; ++i){
             bg->register_element(
@@ -60,61 +118,7 @@ Pages::LobbyUI::LobbyUI()
             );
         }
     }
-    auto *ip_name_text = new UI::Elements::Text(
-        [](auto _) -> std::pair<UI::DrawParameters::Box, UI::DrawParameters::Text> {
-            return {
-                { // Box (for alignment)
-                    .position = {
-                        .value = {0.10f, 0.14f},  // Position of "Room Name"
-                        .mode = {Mode::SCREEN_W, Mode::SCREEN_H}
-                    }
-                },
-                { // Text properties
-                    .content = "Server Address : 127.0.0.1",
-                    .font_size = Global::rem,
-                    .font_color = {0x45, 0x41, 0x39, 0xc0},
-                    .position = {
-                        .value = {0.0f, 0.5f},  // Centered within the box
-                        .mode = {Mode::SELF_W, Mode::SELF_H}
-                    },
-                    .origin = {
-                        .value = {0, 0.5},  // Align vertically
-                        .mode = {Mode::SELF_W, Mode::SELF_H}
-                    }
-                }
-            };
-        }
-    );
-    bg->register_element(ip_name_text);
-
-    auto *room_name_text = new UI::Elements::Text(
-        [](auto _) -> std::pair<UI::DrawParameters::Box, UI::DrawParameters::Text> {
-            return {
-                { // Box (for alignment)
-                    .position = {
-                        .value = {0.10f, y_position},  // Position of "Room Name"
-                        .mode = {Mode::SCREEN_W, Mode::SCREEN_H}
-                    }
-                },
-                { // Text properties
-                    .content = "Room Name:",
-                    .font_size = Global::rem,
-                    .font_color = {0x45, 0x41, 0x39, 0xc0},
-                    .position = {
-                        .value = {0.0f, 0.5f},  // Centered within the box
-                        .mode = {Mode::SELF_W, Mode::SELF_H}
-                    },
-                    .origin = {
-                        .value = {0, 0.5},  // Align vertically
-                        .mode = {Mode::SELF_W, Mode::SELF_H}
-                    }
-                }
-            };
-        }
-    );
-    bg->register_element(room_name_text);
-
-
+    
     { // Room creation
         bg->register_element(
             create_room_name_input = Components::create_sl_input(

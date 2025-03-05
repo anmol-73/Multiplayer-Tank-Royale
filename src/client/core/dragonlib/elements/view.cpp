@@ -38,6 +38,7 @@ void DragonLib::UI::Elements::View::reset()
 
 void DragonLib::UI::Elements::View::hide()
 {
+    if (!visible) return;
     reset();
     visible = false;
 }

@@ -26,6 +26,7 @@ namespace Maps{
         float vheight();
 
         std::string resource_path;
+        std::string name;
     };
 
     constexpr size_t map_count = 1;
