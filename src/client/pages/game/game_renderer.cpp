@@ -9,7 +9,7 @@ Pages::GameRenderer::GameRenderer()
     }
 }
 
-void Pages::GameRenderer::draw(const Game::GameState& gs, int player_id)
+void Pages::GameRenderer::draw(const Game::GameState& gs, int player_id, const std::vector<Communication::Game::PlayerIdentification>& pd)
 {
     SetMouseCursor(MOUSE_CURSOR_CROSSHAIR);
 
@@ -44,34 +44,26 @@ void Pages::GameRenderer::draw(const Game::GameState& gs, int player_id)
     }
 
     { // draw tracker
-        Vector2 x = camera.transform(gs.player_vector[player_id].position);
         DrawCircleLinesV(
-            // Vector2{
-            //     x.x + crosshair_data.tracker_position.x,
-            //     x.y - crosshair_data.tracker_position.y,
-            // },
-            GetMousePosition(),
+            camera.transform(
+                Vector2Add(camera.descale(crosshair_data.tracker_position), gs.player_vector[player_id].position)
+            ),
             crosshair_data.tracker_radius,
             crosshair_data.circle_color
         );
-        DrawCircleLinesV(
-            x,
-            crosshair_data.tracker_radius,
-            BLUE
-
-        );
-        std::cout << GetMousePosition().x << ',' << GetMousePosition().y << ';' << std::endl;
-        std::cout << x.x << ',' << x.y << ' ' << crosshair_data.tracker_position.x << ',' << crosshair_data.tracker_position.y << ' ' << gs.player_vector[player_id].position.x << ',' << gs.player_vector[player_id].position.y << ';' << std::endl;
+        // std::cout << GetMousePosition().x << ',' << GetMousePosition().y << ';' << std::endl;
+        // std::cout << x.x << ',' << x.y << ' ' << crosshair_data.tracker_position.x << ',' << crosshair_data.tracker_position.y << ' ' << gs.player_vector[player_id].position.x << ',' << gs.player_vector[player_id].position.y << ';' << std::endl;
     }
 
     { // draw gun
         for (size_t i = 0; i < gs.player_vector.size(); ++ i)
         {
+            if((!gs.player_vector[i].exists) || (!gs.player_vector[i].is_alive)) continue;
             switch (gs.player_vector[i].gun_type)
             {
                 case 0: // Gun behaviour
                 { // Draw traces
-                    if(gs.player_vector[i].time_since_last_shot <= prev_times_since_last_shot[i])
+                    if(gs.player_vector[i].time_since_last_shot <= 0.1)
                     {
                         DrawLineEx(
                             camera.transform(gs.player_vector[i].position),
@@ -145,6 +137,41 @@ void Pages::GameRenderer::draw(const Game::GameState& gs, int player_id)
         for (size_t i = 0; i < gs.explosion_vector.size(); i++){
             DrawCircleGradient(camera.transform(gs.explosion_vector[i].position).x, camera.transform(gs.explosion_vector[i].position).y, 20, MAGENTA, RED);
             DrawCircleLines(camera.transform(gs.explosion_vector[i].position).x, camera.transform(gs.explosion_vector[i].position).y, 20, RED);
+        }
+    }
+
+    { // draw health bar and name
+        for (size_t i = 0; i < gs.player_vector.size(); ++ i)
+        {
+            if((!gs.player_vector[i].exists) || (!gs.player_vector[i].is_alive)) continue;
+            float factor = gs.player_vector[i].health/Game::Data::tank_types[gs.player_vector[i].tank_type].max_health;
+
+            Rectangle health_bar = {
+                .x = gs.player_vector[i].position.x,
+                .y = gs.player_vector[i].position.y,
+                .width = 100,
+                .height = 10
+            };
+
+            health_bar = camera.transform(health_bar);
+            Vector2 offset = camera.scale(Vector2{-50, -Game::Data::tank_types[gs.player_vector[i].tank_type].height});
+            
+            health_bar.x += offset.x;
+            health_bar.y += offset.y;
+            DrawRectangleRounded(health_bar, 1.0, 6, RED);
+
+            float actual_width = health_bar.width;
+
+            health_bar.width *= factor; 
+            DrawRectangleRounded(health_bar, 5, 6, GREEN);
+            
+            auto rec = DragonLib::Utils::Drawing::draw_text({
+                .content = pd[i].name,
+                .sdf=false,
+                .font_size = Global::rem * 0.5f,
+                .font_color = BLACK,
+                .position = {.value = {health_bar.x + actual_width/2, health_bar.y + health_bar.height/2}, .mode = {DragonLib::UI::DrawParameters::ABSOLUTE, DragonLib::UI::DrawParameters::ABSOLUTE}},
+            });
         }
     }
 }

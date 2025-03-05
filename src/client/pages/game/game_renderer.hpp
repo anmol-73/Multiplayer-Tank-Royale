@@ -4,6 +4,7 @@
 #include "game.hpp"
 #include "core/dragonlib.hpp"
 #include "core/utils/camera.hpp"
+#include "game_client.hpp"
 
 namespace Pages
 {
@@ -11,7 +12,7 @@ namespace Pages
     public:
         GameRenderer();
 
-        void draw(const Game::GameState& gs, int player_id);
+        void draw(const Game::GameState& gs, int player_id, const std::vector<Communication::Game::PlayerIdentification>& pd);
 
 
         struct CrosshairData

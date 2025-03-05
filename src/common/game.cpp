@@ -16,6 +16,7 @@ void Game::GameState::init_game_state(size_t map)
         empty_player.score = 0;
         empty_player.time_since_last_shot = 0;
         empty_player.last_frame_processed_num = 0;
+        empty_player.ray_contact = empty_player.position;
         player_vector.push_back(empty_player);
     }
     
