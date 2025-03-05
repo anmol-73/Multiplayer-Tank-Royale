@@ -11,7 +11,9 @@ Pages::GameRenderer::GameRenderer()
 
 void Pages::GameRenderer::draw(const Game::GameState& gs, int player_id, const std::vector<Communication::Game::PlayerIdentification>& pd)
 {
-    SetMouseCursor(MOUSE_CURSOR_CROSSHAIR);
+    if (gs.player_vector[player_id].is_alive){
+        SetMouseCursor(MOUSE_CURSOR_CROSSHAIR);
+    }
 
     camera.follow(gs.player_vector[player_id].position);
 
@@ -154,7 +156,7 @@ void Pages::GameRenderer::draw(const Game::GameState& gs, int player_id, const s
             };
 
             health_bar = camera.transform(health_bar);
-            Vector2 offset = camera.scale(Vector2{-50, -Game::Data::tank_types[gs.player_vector[i].tank_type].height});
+            Vector2 offset = camera.scale(Vector2{-50, -static_cast<float>(Game::Data::tank_types[gs.player_vector[i].tank_type].height)});
             
             health_bar.x += offset.x;
             health_bar.y += offset.y;

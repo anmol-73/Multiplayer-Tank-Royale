@@ -95,11 +95,11 @@ Pages::GameUI::GameUI()
         register_element(
             new UI::Elements::Span([this](UI::Elements::Span* _){
                 return UI::DrawParameters::TextBox{
-                    .content = Game::Data::tank_resources[turret_idx].second,
+                    .content = Game::Data::gun_resources[turret_idx].second,
                     .font_size = 0.8f * Global::rem,
                     .font_color =  {0x45, 0x41, 0x39, 0xff},
                     .position = {
-                        .value = {0.81, 0.62},
+                        .value = {0.81, 0.82},
                         .mode = {Mode::SCREEN_W, Mode::SCREEN_H}
                     }
                 };
@@ -208,11 +208,11 @@ void Pages::GameUI::poll_events()
     UI::Elements::PageView::poll_events();
 
     if (right_tank_select->clicked - left_tank_select->clicked != 0){
-        tank_idx = (tank_images.size() + tank_idx + right_tank_select->clicked - left_tank_select->clicked) % tank_images.size();
+        tank_idx = (static_cast<int>(tank_images.size()) + tank_idx + right_tank_select->clicked - left_tank_select->clicked) % tank_images.size();
         tank_preview->image = tank_images[tank_idx];
     }
     if (right_turret_select->clicked - left_turret_select->clicked != 0){
-        turret_idx = (turret_images.size() + turret_idx + right_turret_select->clicked - left_turret_select->clicked) % turret_images.size();
+        turret_idx = (static_cast<int>(turret_images.size()) + turret_idx + right_turret_select->clicked - left_turret_select->clicked) % turret_images.size();
         turret_preview->image = turret_images[turret_idx];
     }
 }

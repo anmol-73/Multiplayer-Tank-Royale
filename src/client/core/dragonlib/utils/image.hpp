@@ -1,6 +1,7 @@
 #ifndef H_DLIB_IMAGE
 #define H_DLIB_IMAGE
 
+#include <cassert>
 #include <raylib.h>
 #include <string>
 
