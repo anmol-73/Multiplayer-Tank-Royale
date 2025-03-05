@@ -33,7 +33,7 @@ void Pages::GameWindowScene::_update()
         ClearBackground({0x1e, 0x1e, 0x1e, 0xff});
 
         std::unique_lock<std::mutex> lk(gs_mutex);
-        renderer.draw(game_state, prepared_args.pi.id);
+        renderer.draw(game_state, prepared_args.pi.id, prepared_args.player_details);
         ui.draw();
     }
     EndDrawing();
@@ -199,7 +199,7 @@ void Pages::GameWindowScene::set_curr_frame()
     curr_frame.s_pressed = IsKeyDown(KEY_S);
     curr_frame.d_pressed = IsKeyDown(KEY_D);
     curr_frame.w_pressed = IsKeyDown(KEY_W);
-    curr_frame.lmb_pressed = IsKeyDown(MOUSE_BUTTON_LEFT);
+    curr_frame.lmb_pressed = IsMouseButtonDown(MOUSE_BUTTON_LEFT);
     curr_frame.delta_time = GetFrameTime();
     curr_frame.frame_num = made_frames.size();
     curr_frame.player_id = prepared_args.pi.id;
@@ -235,6 +235,6 @@ void Pages::GameWindowScene::set_tracker()
     renderer.crosshair_data.tracker_position.y = renderer.crosshair_data.tracker_distance*sin(game_state.player_vector[prepared_args.pi.id].gun_angle);
 
     // std::cout << renderer.crosshair_data.tracker_position.x  << " " << curr_frame.mouse_position_screen.x << std::endl;
-    std::cout << renderer.crosshair_data.tracker_distance  << " " << renderer.crosshair_data.mouse_distance << std::endl;
+    // std::cout << renderer.crosshair_data.tracker_distance  << " " << renderer.crosshair_data.mouse_distance << std::endl;
 
 }
