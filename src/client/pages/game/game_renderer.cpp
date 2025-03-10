@@ -45,18 +45,6 @@ void Pages::GameRenderer::draw(const Game::GameState& gs, int player_id, const s
         }
     }
 
-    { // draw tracker
-        DrawCircleLinesV(
-            camera.transform(
-                Vector2Add(camera.descale(crosshair_data.tracker_position), gs.player_vector[player_id].position)
-            ),
-            crosshair_data.tracker_radius,
-            crosshair_data.circle_color
-        );
-        // std::cout << GetMousePosition().x << ',' << GetMousePosition().y << ';' << std::endl;
-        // std::cout << x.x << ',' << x.y << ' ' << crosshair_data.tracker_position.x << ',' << crosshair_data.tracker_position.y << ' ' << gs.player_vector[player_id].position.x << ',' << gs.player_vector[player_id].position.y << ';' << std::endl;
-    }
-
     { // draw gun
         for (size_t i = 0; i < gs.player_vector.size(); ++ i)
         {
@@ -64,7 +52,7 @@ void Pages::GameRenderer::draw(const Game::GameState& gs, int player_id, const s
             switch (gs.player_vector[i].gun_type)
             {
                 case 0: // Gun behaviour
-                { // Draw traces
+                {   // Draw traces
                     if(gs.player_vector[i].time_since_last_shot <= 0.1)
                     {
                         DrawLineEx(
@@ -73,6 +61,7 @@ void Pages::GameRenderer::draw(const Game::GameState& gs, int player_id, const s
                             4, WHITE
                         );
                     }
+                    // Draw Gun
                     DrawRectanglePro(
                         camera.transform(
                             {
@@ -83,11 +72,19 @@ void Pages::GameRenderer::draw(const Game::GameState& gs, int player_id, const s
                             0, static_cast<float>(Game::Data::gun_types[gs.player_vector[i].tank_type].height/2)
                         }), -RAD2DEG*gs.player_vector[i].gun_angle, RED
                     );
+                    // Draw tracker
+                    DrawCircleLinesV(
+                        camera.transform(
+                            Vector2Add(camera.descale(crosshair_data.tracker_position), gs.player_vector[player_id].position)
+                        ),
+                        crosshair_data.tracker_radius,
+                        crosshair_data.circle_color
+                    );
                     break;
                 }
 
                 case 1:
-                {
+                {   // Draw Gun
                     DrawRectanglePro(
                         camera.transform(
                             {
@@ -97,12 +94,21 @@ void Pages::GameRenderer::draw(const Game::GameState& gs, int player_id, const s
                         ), camera.scale(Vector2{
                             0, static_cast<float>(Game::Data::gun_types[gs.player_vector[i].tank_type].height/2)
                         }), -RAD2DEG*gs.player_vector[i].gun_angle, RED
+                    );
+                    // Draw tracker
+                    DrawCircleLinesV(
+                        camera.transform(
+                            Vector2Add(camera.descale(crosshair_data.tracker_position), gs.player_vector[player_id].position)
+                        ),
+                        crosshair_data.tracker_radius,
+                        crosshair_data.circle_color
                     );
                     break;
                 }
 
                 case 2:
                 {
+                    // Draw Gun
                     DrawRectanglePro(
                         camera.transform(
                             {
@@ -111,7 +117,13 @@ void Pages::GameRenderer::draw(const Game::GameState& gs, int player_id, const s
                             }
                         ), camera.scale(Vector2{
                             0, static_cast<float>(Game::Data::gun_types[gs.player_vector[i].tank_type].height/2)
-                        }), -RAD2DEG*gs.player_vector[i].gun_angle, RED
+                        }), -PI/2, RED
+                    );
+                    // Draw tracker
+                    DrawCircleLinesV(
+                        GetMousePosition(),
+                        crosshair_data.tracker_radius,
+                        crosshair_data.circle_color
                     );
                     break;
                 }
