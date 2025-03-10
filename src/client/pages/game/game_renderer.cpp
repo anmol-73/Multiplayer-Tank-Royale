@@ -159,7 +159,7 @@ void Pages::GameRenderer::draw(const Game::GameState& gs, int player_id, const s
         for (size_t i = 0; i < gs.player_vector.size(); ++ i)
         {
             if((!gs.player_vector[i].exists) || (!gs.player_vector[i].is_alive)) continue;
-            float factor = gs.player_vector[i].health/Game::Data::tank_types[gs.player_vector[i].tank_type].max_health;
+            float factor = static_cast<float>(gs.player_vector[i].health)/static_cast<float>(Game::Data::tank_types[gs.player_vector[i].tank_type].max_health);
 
             Rectangle health_bar = {
                 .x = gs.player_vector[i].position.x,

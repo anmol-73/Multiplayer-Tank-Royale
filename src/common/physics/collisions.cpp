@@ -155,6 +155,6 @@ bool Physics::CheckCollisionCircleRectPro(Vector2 center, float radius, Rectangl
     rec.x = 0;
     rec.y = 0;
     float rotation_angle = rec_angle;
-    Vector2 rotated_center = Vector2Rotate(center, rotation_angle);
-    return CheckCollisionCircleRec(rotated_center, radius, rec);
+    Vector2 rotated_center = {center.x*cos(rec_angle)+center.y*sin(rec_angle), -center.x*sin(rec_angle)+center.y*cos(rec_angle)};
+    return CheckCollisionCircleRec(rotated_center, radius, {rec.x-rec.width/2, rec.y-rec.height/2, rec.width, rec.height});
 }

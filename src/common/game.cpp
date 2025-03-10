@@ -481,12 +481,12 @@ void Game::GameState::update_explosions(float delta_time)
         {   
             if(!player_vector[j].is_alive) continue;
             
-            Rectangle player_collider = Physics::make_rect({
+            Rectangle player_collider = {
                 .x = player_vector[j].position.x,
                 .y = player_vector[j].position.y,
                 .width = static_cast<float>(Game::Data::tank_types[player_vector[j].tank_type].width),
                 .height = static_cast<float>(Game::Data::tank_types[player_vector[j].tank_type].height),
-            });
+            };
 
             bool explosion_colliding = Physics::CheckCollisionCircleRectPro(explosion_vector[i].position, Game::Data::explosion_types[explosion_vector[i].type].radius, player_collider, player_vector[j].angle);
             if(!explosion_colliding) continue;
