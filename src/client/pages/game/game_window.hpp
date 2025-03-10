@@ -68,8 +68,6 @@ namespace Pages
          */
         void set_curr_frame();
 
-        void set_tracker();
-
         GameRenderer renderer;
 
     };

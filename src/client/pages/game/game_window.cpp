@@ -188,7 +188,6 @@ void Pages::GameWindowScene::logic_update()
     {
         game_state.apply_frame(made_frames[i]);
     }
-    set_tracker();
     // auto t2 = game_state.curtime();
     // std::cout << t2 - t1 << ' ' << todo << std::endl;
 }
@@ -206,35 +205,4 @@ void Pages::GameWindowScene::set_curr_frame()
     Vector2 temp = GetMousePosition();
     renderer.crosshair_data.mouse_position = {temp.x, GetScreenHeight()-temp.y};
     curr_frame.mouse_position_screen = renderer.camera.descale(renderer.crosshair_data.mouse_position);
-}
-
-void Pages::GameWindowScene::set_tracker()
-{
-    // Targeted radial distance (mouse distance)
-    Vector2 ppos = renderer.camera.transform(game_state.player_vector[prepared_args.pi.id].position);
-    renderer.crosshair_data.mouse_distance = Vector2Distance(renderer.crosshair_data.mouse_position, ppos);
-
-    // Move tracker radially
-    if (renderer.crosshair_data.mouse_distance - renderer.crosshair_data.tracker_distance > 0){
-        renderer.crosshair_data.tracker_distance += renderer.crosshair_data.tracker_radial_speed * curr_frame.delta_time;
-        if (renderer.crosshair_data.tracker_distance > renderer.crosshair_data.mouse_distance){
-            renderer.crosshair_data.tracker_distance = renderer.crosshair_data.mouse_distance;
-        }
-    } else{
-        renderer.crosshair_data.tracker_distance -= renderer.crosshair_data.tracker_radial_speed * curr_frame.delta_time;
-        if (renderer.crosshair_data.tracker_distance < renderer.crosshair_data.mouse_distance){
-            renderer.crosshair_data.tracker_distance = renderer.crosshair_data.mouse_distance;
-        }
-    }
-
-    // Prevent tracker from being on tank
-    renderer.crosshair_data.tracker_distance = std::max(renderer.crosshair_data.tracker_distance, Game::Data::gun_types[game_state.player_vector[prepared_args.pi.id].gun_type].width-5);
-
-    // Update coordinates
-    renderer.crosshair_data.tracker_position.x = renderer.crosshair_data.tracker_distance*cos(game_state.player_vector[prepared_args.pi.id].gun_angle);
-    renderer.crosshair_data.tracker_position.y = -renderer.crosshair_data.tracker_distance*sin(game_state.player_vector[prepared_args.pi.id].gun_angle);
-
-    // std::cout << renderer.crosshair_data.tracker_position.x  << " " << curr_frame.mouse_position_screen.x << std::endl;
-    // std::cout << renderer.crosshair_data.tracker_distance  << " " << renderer.crosshair_data.mouse_distance << std::endl;
-
 }

@@ -11,6 +11,7 @@ Pages::GameRenderer::GameRenderer()
 
 void Pages::GameRenderer::draw(const Game::GameState& gs, int player_id, const std::vector<Communication::Game::PlayerIdentification>& pd)
 {
+    auto delta_time = GetFrameTime();
     if (gs.player_vector[player_id].is_alive){
         SetMouseCursor(MOUSE_CURSOR_CROSSHAIR);
     }
@@ -186,6 +187,60 @@ void Pages::GameRenderer::draw(const Game::GameState& gs, int player_id, const s
                 .font_color = BLACK,
                 .position = {.value = {health_bar.x + actual_width/2, health_bar.y + health_bar.height/2}, .mode = {DragonLib::UI::DrawParameters::ABSOLUTE, DragonLib::UI::DrawParameters::ABSOLUTE}},
             });
+        }
+    }
+
+    { // Draw tracker
+        switch (gs.player_vector[player_id].gun_type){
+            case 0:
+            case 1:
+            {
+                { // Tracker calculation
+                    // Targeted radial distance (mouse distance)
+                    Vector2 ppos = camera.transform(gs.player_vector[player_id].position);
+                    crosshair_data.mouse_distance = Vector2Distance(crosshair_data.mouse_position, ppos);
+
+                    // Move tracker radially
+                    if (crosshair_data.mouse_distance - crosshair_data.tracker_distance > 0){
+                        crosshair_data.tracker_distance += crosshair_data.tracker_radial_speed * delta_time;
+                        if (crosshair_data.tracker_distance > crosshair_data.mouse_distance){
+                            crosshair_data.tracker_distance = crosshair_data.mouse_distance;
+                        }
+                    } else{
+                        crosshair_data.tracker_distance -= crosshair_data.tracker_radial_speed * delta_time;
+                        if (crosshair_data.tracker_distance < crosshair_data.mouse_distance){
+                            crosshair_data.tracker_distance = crosshair_data.mouse_distance;
+                        }
+                    }
+
+                    // Prevent tracker from being on tank
+                    crosshair_data.tracker_distance = std::max(crosshair_data.tracker_distance, Game::Data::gun_types[gs.player_vector[player_id].gun_type].width-5);
+
+                    // Update coordinates
+                    crosshair_data.tracker_position.x = crosshair_data.tracker_distance*cos(gs.player_vector[player_id].gun_angle);
+                    crosshair_data.tracker_position.y = -crosshair_data.tracker_distance*sin(gs.player_vector[player_id].gun_angle);
+                }
+                
+                // Draw tracker
+                DrawCircleLinesV(
+                    Vector2Add(camera.transform(
+                        gs.player_vector[player_id].position
+                    ), crosshair_data.tracker_position),
+                    crosshair_data.tracker_radius,
+                    crosshair_data.circle_color
+                );
+                break;
+            }
+
+            case 2:
+            {
+                DrawCircleLinesV(
+                    GetMousePosition(),
+                    crosshair_data.tracker_radius,
+                    crosshair_data.circle_color
+                );
+                break;
+            }
         }
     }
 }
