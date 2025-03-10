@@ -74,9 +74,9 @@ void Pages::GameRenderer::draw(const Game::GameState& gs, int player_id, const s
                     );
                     // Draw tracker
                     DrawCircleLinesV(
-                        camera.transform(
-                            Vector2Add(camera.descale(crosshair_data.tracker_position), gs.player_vector[player_id].position)
-                        ),
+                        Vector2Add(camera.transform(
+                            gs.player_vector[player_id].position
+                        ), crosshair_data.tracker_position),
                         crosshair_data.tracker_radius,
                         crosshair_data.circle_color
                     );
@@ -97,9 +97,9 @@ void Pages::GameRenderer::draw(const Game::GameState& gs, int player_id, const s
                     );
                     // Draw tracker
                     DrawCircleLinesV(
-                        camera.transform(
-                            Vector2Add(camera.descale(crosshair_data.tracker_position), gs.player_vector[player_id].position)
-                        ),
+                        Vector2Add(camera.transform(
+                            gs.player_vector[player_id].position
+                        ), crosshair_data.tracker_position),
                         crosshair_data.tracker_radius,
                         crosshair_data.circle_color
                     );
