@@ -101,7 +101,7 @@ void GameServiceProvider::handle_message(ENetPeer *peer, Communication::Command 
             game_state.player_vector[selection.player_id].gun_type = selection.gun_type;
             game_state.player_vector[selection.player_id].tank_type = selection.tank_type;
             game_state.player_vector[selection.player_id].is_alive = true;
-            game_state.player_vector[selection.player_id].health = Game::Data::tank_types[selection.player_id].max_health;
+            game_state.player_vector[selection.player_id].health = Game::Data::tank_types[selection.tank_type].max_health;
             game_state.player_vector[selection.player_id].angle = 0;
             game_state.player_vector[selection.player_id].position = Maps::maps[0].spawnpoints[selection.player_id];
             dead_times[selection.player_id] = 0;

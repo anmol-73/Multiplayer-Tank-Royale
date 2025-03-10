@@ -55,7 +55,6 @@ Rectangle Utils::Camera::scale(Rectangle size)
 
 Vector2 Utils::Camera::descale(Vector2 size)
 {
-    auto res = Vector2Divide(size, scaling_factor);
     return Vector2Divide(size, scaling_factor);
 }
 

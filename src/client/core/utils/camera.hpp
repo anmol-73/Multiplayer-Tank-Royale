@@ -30,7 +30,7 @@ namespace Utils
 
         Rectangle viewport();
 
-    private:
+        private:
         /** The position of the camera in world space */
         Vector2 position;
         /** The size of the viewport of the camera in world size */
