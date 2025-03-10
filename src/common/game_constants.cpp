@@ -15,26 +15,26 @@ extern std::vector<std::pair<std::string, std::string>> Game::Data::tank_resourc
 
 std::vector<Game::Types::GunType> Game::Data::gun_types = {
     {
-        48, // Height
-        12, // Width
-        1, // Dmg
+        48, // Width
+        12, // Height
         1, // Rot speed
+        1, // Dmg
         100000, // Range
         1, // Reload time
     }, // Gun
     {
-        48, // Height
-        12, // Width
-        0, // Dmg
+        48, // Width
+        12, // Height
         1, // Rot speed
+        0, // Dmg
         0, // Range
         1, // Reload time
     }, // Cannon
     {
         48, // Height
         12, // Width
-        0, // Dmg
         0, // Rot speed
+        0, // Dmg
         0, // Range
         2, // Reload time
     }, // Mortar
@@ -50,9 +50,9 @@ std::vector<Game::Types::ProjectileType> Game::Data::projectile_types = {
     {
         12, // Height
         12, // Width
-        200.0f, // Mov Speed
+        0.2, // Mov Speed
         1, // Dmg
-        5, // lifetime
+        5000, // lifetime
     },
 };
 
@@ -60,6 +60,6 @@ std::vector<Game::Types::ExplosionType> Game::Data::explosion_types = {
     {
         20, // Radius
         3, // Dmg
-        2, // Lifetime
+        2000, // Lifetime
     },
 };

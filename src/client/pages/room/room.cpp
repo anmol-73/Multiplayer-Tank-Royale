@@ -41,7 +41,7 @@ void Pages::RoomScene::_update()
 
         SceneManagement::SceneManager::prepare_scene(SceneManagement::SceneName::GAME, &addr, 0);
         SceneManagement::SceneManager::prepare_scene(SceneManagement::SceneName::GAME, &sz, 1);
-        SceneManagement::SceneManager::prepare_scene(SceneManagement::SceneName::GAME, &client->get_joined_players(), 2);
+        SceneManagement::SceneManager::prepare_scene(SceneManagement::SceneName::GAME, client->get_joined_players().data(), 2);
         SceneManagement::SceneManager::prepare_scene(SceneManagement::SceneName::GAME, &client->get_current_settings(), 3);
         SceneManagement::SceneManager::prepare_scene(SceneManagement::SceneName::GAME, &pi, 4);
         SceneManagement::SceneManager::load_scene(SceneManagement::SceneName::GAME);

@@ -186,7 +186,7 @@ void Pages::GameWindowScene::logic_update()
     // int todo = curr_frame.frame_num - game_state.player_vector[prepared_args.pi.id].last_frame_processed_num;
     for(size_t i = game_state.player_vector[prepared_args.pi.id].last_frame_processed_num+1; i<=curr_frame.frame_num; i++)
     {
-        // game_state.apply_frame(made_frames[i]);
+        game_state.apply_frame(made_frames[i]);
     }
     set_tracker();
     // auto t2 = game_state.curtime();

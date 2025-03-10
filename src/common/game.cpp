@@ -377,6 +377,7 @@ void Game::GameState::handle_shots()
                         };
                     new_explosion.time_alive = 0;
                     new_explosion.shot_id = ID;
+                    new_explosion.type = 0;
                     explosion_vector.push_back(new_explosion);
                     break;
                 }
@@ -402,7 +403,7 @@ void Game::GameState::update_projectiles(float delta_time)
         // size_t pos_idx = ((Maps::maps[map_num].map_width_tiles)*pos_y) + pos_x;
         
         double scanning_radius = 1.5*(sqrt((Game::Data::projectile_types[projectile_vector[i].type].width)*(Game::Data::projectile_types[projectile_vector[i].type].width) + (Game::Data::projectile_types[projectile_vector[i].type].height)*(Game::Data::projectile_types[projectile_vector[i].type].height)));
-        size_t scanning_radius_tiles = (size_t)ceil(scanning_radius/Maps::maps[map_num].tile_width_units);
+        size_t scanning_radius_tiles = 2;
 
         for(size_t wall_y = pos_y-std::min(pos_y, scanning_radius_tiles); wall_y<pos_y+scanning_radius_tiles; wall_y++)
         {
@@ -473,39 +474,34 @@ void Game::GameState::update_explosions(float delta_time)
     {
         if(explosion_vector[i].time_alive<Game::Data::explosion_types[explosion_vector[i].type].lifetime)
         {
-            explosion_vector[i].time_alive -= delta_time;
+            explosion_vector[i].time_alive += delta_time;
+            continue;
         }
-        else
-        {
-            for(size_t j=0; j<12; j++)
-            {   
-                if(player_vector[j].is_alive)
-                {
-                    Rectangle player_collider = Physics::make_rect({
-                        .x = player_vector[j].position.x,
-                        .y = player_vector[j].position.y,
-                        .width = static_cast<float>(Game::Data::tank_types[player_vector[j].tank_type].width),
-                        .height = static_cast<float>(Game::Data::tank_types[player_vector[j].tank_type].height),
-                    });
+        for(size_t j=0; j<12; j++)
+        {   
+            if(!player_vector[j].is_alive) continue;
+            
+            Rectangle player_collider = Physics::make_rect({
+                .x = player_vector[j].position.x,
+                .y = player_vector[j].position.y,
+                .width = static_cast<float>(Game::Data::tank_types[player_vector[j].tank_type].width),
+                .height = static_cast<float>(Game::Data::tank_types[player_vector[j].tank_type].height),
+            });
 
-                    bool explosion_colliding = Physics::CheckCollisionCircleRectPro(explosion_vector[i].position, Game::Data::explosion_types[explosion_vector[i].type].radius, player_collider, player_vector[j].angle);
-                    if(explosion_colliding)
-                    {
-                        if(player_vector[j].health <= Game::Data::explosion_types[explosion_vector[i].type].dmg){
-                            player_vector[j].is_alive = false;
-                            player_vector[j].health = 0;
-                            player_vector[explosion_vector[i].shot_id].score += 100;
-                        }
-                        else{
-                            player_vector[j].health -= Game::Data::explosion_types[explosion_vector[i].type].dmg;
-                        }
-                    }
-                }
+            bool explosion_colliding = Physics::CheckCollisionCircleRectPro(explosion_vector[i].position, Game::Data::explosion_types[explosion_vector[i].type].radius, player_collider, player_vector[j].angle);
+            if(!explosion_colliding) continue;
+            
+            if(player_vector[j].health <= Game::Data::explosion_types[explosion_vector[i].type].dmg){
+                player_vector[j].is_alive = false;
+                player_vector[j].health = 0;
+                player_vector[explosion_vector[i].shot_id].score += 100;
+            }
+            else{
+                player_vector[j].health -= Game::Data::explosion_types[explosion_vector[i].type].dmg;
             }
 
-            // TODO: This erase seems fucked !
-            explosion_vector.erase(explosion_vector.begin() + --i);
         }
+        explosion_vector.erase(explosion_vector.begin() + i--);
     }
     return;
 }
