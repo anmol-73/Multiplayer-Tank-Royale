@@ -11,16 +11,24 @@ uniform vec4 colDiffuse;
 // Output fragment color
 out vec4 finalColor;
 
-// NOTE: Add here your custom variables
+// Gaussian weights for a larger 7x7 blur kernel
+const float kernel[7] = float[](0.00598, 0.06062, 0.24184, 0.38310, 0.24184, 0.06062, 0.00598);
 
 void main()
 {
-    // Texel color fetching from texture sampler
-    // NOTE: Calculate alpha using signed distance field (SDF)
-    float distanceFromOutline = texture(texture0, fragTexCoord).a - 0.5;
-    float distanceChangePerFragment = length(vec2(dFdx(distanceFromOutline), dFdy(distanceFromOutline)));
-    float alpha = smoothstep(-distanceChangePerFragment, distanceChangePerFragment, distanceFromOutline);
+    // Texture size for sampling offsets
+    vec2 texelSize = 1.0 / textureSize(texture0, 0);
 
-    // Calculate final fragment color
-    finalColor = vec4(fragColor.rgb, fragColor.a*alpha);
+    // Gaussian blur approximation (7x7 kernel)
+    vec3 blurredColor = vec3(0.0);
+
+    for (int i = -3; i <= 3; i++) {
+        for (int j = -3; j <= 3; j++) {
+            vec2 offset = vec2(float(i), float(j)) * texelSize * 2.0; // Increased blur strength
+            blurredColor += texture(texture0, fragTexCoord + offset).rgb * kernel[abs(i)] * kernel[abs(j)];
+        }
+    }
+
+    // Output blurred texture color
+    finalColor = vec4(blurredColor, texture(texture0, fragTexCoord).a);
 }
