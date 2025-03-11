@@ -1,5 +1,5 @@
 #include "camera.hpp"
-#include <stdio.h>
+#include <iostream>
 
 void Utils::Camera::init(Vector2 map_size_, Vector2 viewport_size_, Vector2 player_size_)
 {
@@ -9,7 +9,7 @@ void Utils::Camera::init(Vector2 map_size_, Vector2 viewport_size_, Vector2 play
     half_screen_size = Vector2Scale({(float)GetScreenWidth(), -(float)GetScreenHeight()}, 0.5f);
     
     auto scaling_factor_v = Vector2Divide({(float)GetScreenWidth(), (float)GetScreenHeight()}, viewport_size);
-    assert(scaling_factor_v.x == scaling_factor_v.y);
+    std::cout << scaling_factor_v.x << ' ' << scaling_factor_v.y << "!" << std::endl;
 
     scaling_factor = scaling_factor_v.x;
 }
