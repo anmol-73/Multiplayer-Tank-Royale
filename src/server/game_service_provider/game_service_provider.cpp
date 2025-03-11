@@ -136,7 +136,7 @@ void GameServiceProvider::timed_loop_func()
         
         double t = game_state.curtime();
         
-        if (t > 60000){ // Game timer
+        if (t > 120000){ // Game timer
             game_over = true;
             log("Game over :)");
             broadcast_command(Communication::Game::Server::GAME_OVER);

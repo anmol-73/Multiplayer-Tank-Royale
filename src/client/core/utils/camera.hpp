@@ -3,6 +3,7 @@
 
 #include <raylib.h>
 #include <raymath.h>
+#include <cassert>
 
 namespace Utils
 {
@@ -21,6 +22,7 @@ namespace Utils
         Rectangle transform(Rectangle rect);
 
         /** Scales a size from world units to camera units */
+        float scale(float size);
         Vector2 scale(Vector2 size);
         Rectangle scale(Rectangle size);
 
@@ -40,7 +42,7 @@ namespace Utils
         /** The of the window we are working with */
         Vector2 half_screen_size;
 
-        Vector2 scaling_factor;
+        float scaling_factor;
         Vector2 player_size;
 
     };

@@ -8,7 +8,10 @@ void Utils::Camera::init(Vector2 map_size_, Vector2 viewport_size_, Vector2 play
     player_size = player_size_; // TODO: Remove this shit
     half_screen_size = Vector2Scale({(float)GetScreenWidth(), -(float)GetScreenHeight()}, 0.5f);
     
-    scaling_factor = Vector2Divide({(float)GetScreenWidth(), (float)GetScreenHeight()}, viewport_size);
+    auto scaling_factor_v = Vector2Divide({(float)GetScreenWidth(), (float)GetScreenHeight()}, viewport_size);
+    assert(scaling_factor_v.x == scaling_factor_v.y);
+
+    scaling_factor = scaling_factor_v.x;
 }
 
 void Utils::Camera::follow(Vector2 player_position)
@@ -34,37 +37,42 @@ Rectangle Utils::Camera::transform(Rectangle rect)
     return Rectangle{
         .x = point.x,
         .y = point.y,
-        .width = rect.width * scaling_factor.x,
-        .height = rect.height * scaling_factor.y,
+        .width = rect.width * scaling_factor,
+        .height = rect.height * scaling_factor,
     };
+}
+
+float Utils::Camera::scale(float size)
+{
+    return size * scaling_factor;
 }
 
 Vector2 Utils::Camera::scale(Vector2 size)
 {
-    return Vector2Multiply(size, scaling_factor);
+    return Vector2Scale(size, scaling_factor);
 }
 Rectangle Utils::Camera::scale(Rectangle size)
 {
     return {
-        size.x * scaling_factor.x,
-        size.y * scaling_factor.y,
-        size.width * scaling_factor.x,
-        size.height * scaling_factor.y
+        size.x * scaling_factor,
+        size.y * scaling_factor,
+        size.width * scaling_factor,
+        size.height * scaling_factor
     };
 }
 
 Vector2 Utils::Camera::descale(Vector2 size)
 {
-    return Vector2Divide(size, scaling_factor);
+    return Vector2Scale(size, 1 / scaling_factor);
 }
 
 Rectangle Utils::Camera::descale(Rectangle size)
 {
     return {
-        size.x / scaling_factor.x,
-        size.y / scaling_factor.y,
-        size.width / scaling_factor.x,
-        size.height / scaling_factor.y
+        size.x / scaling_factor,
+        size.y / scaling_factor,
+        size.width / scaling_factor,
+        size.height / scaling_factor
     };
 }
 

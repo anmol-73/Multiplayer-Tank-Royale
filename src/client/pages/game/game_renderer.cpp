@@ -150,8 +150,13 @@ void Pages::GameRenderer::draw(const Game::GameState& gs, int player_id, const s
 
     { // draw explosions
         for (size_t i = 0; i < gs.explosion_vector.size(); i++){
-            DrawCircleGradient(camera.transform(gs.explosion_vector[i].position).x, camera.transform(gs.explosion_vector[i].position).y, 20, MAGENTA, RED);
-            DrawCircleLines(camera.transform(gs.explosion_vector[i].position).x, camera.transform(gs.explosion_vector[i].position).y, 20, RED);
+            
+            auto position = camera.transform(gs.explosion_vector[i].position);
+            DrawCircleGradient(
+                position.x, position.y,
+                camera.scale(Game::Data::explosion_types[gs.explosion_vector[i].type].radius), 
+                MAGENTA, RED
+            );
         }
     }
 
