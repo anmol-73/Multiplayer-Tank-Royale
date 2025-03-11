@@ -9,7 +9,7 @@ std::vector<Game::Types::TankType> Game::Data::tank_types = {
         PI/2, // Rot speed
     },
 };
-extern std::vector<std::pair<std::string, std::string>> Game::Data::tank_resources = {
+std::vector<std::pair<std::string, std::string>> Game::Data::tank_resources = {
     {"resources/game_window/tank2_spritesheet.png", "Basic"}
 };
 
@@ -40,7 +40,7 @@ std::vector<Game::Types::GunType> Game::Data::gun_types = {
     }, // Mortar
 };
 
-extern std::vector<std::pair<std::string, std::string>> Game::Data::gun_resources = {
+std::vector<std::pair<std::string, std::string>> Game::Data::gun_resources = {
     {"resources/game_window/tank2_spritesheet.png", "Pistol"},
     {"resources/game_window/tank2_spritesheet.png", "Rocket"},
     {"resources/game_window/tank2_spritesheet.png", "Mortar"}

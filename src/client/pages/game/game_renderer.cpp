@@ -74,14 +74,6 @@ void Pages::GameRenderer::draw(const Game::GameState& gs, int player_id, const s
                             0, static_cast<float>(Game::Data::gun_types[gs.player_vector[i].tank_type].height/2)
                         }), -RAD2DEG*gs.player_vector[i].gun_angle, RED
                     );
-                    // Draw tracker
-                    DrawCircleLinesV(
-                        Vector2Add(camera.transform(
-                            gs.player_vector[player_id].position
-                        ), crosshair_data.tracker_position),
-                        crosshair_data.tracker_radius,
-                        crosshair_data.circle_color
-                    );
                     break;
                 }
 
@@ -96,14 +88,6 @@ void Pages::GameRenderer::draw(const Game::GameState& gs, int player_id, const s
                         ), camera.scale(Vector2{
                             0, static_cast<float>(Game::Data::gun_types[gs.player_vector[i].tank_type].height/2)
                         }), -RAD2DEG*gs.player_vector[i].gun_angle, RED
-                    );
-                    // Draw tracker
-                    DrawCircleLinesV(
-                        Vector2Add(camera.transform(
-                            gs.player_vector[player_id].position
-                        ), crosshair_data.tracker_position),
-                        crosshair_data.tracker_radius,
-                        crosshair_data.circle_color
                     );
                     break;
                 }
@@ -120,12 +104,6 @@ void Pages::GameRenderer::draw(const Game::GameState& gs, int player_id, const s
                         ), camera.scale(Vector2{
                             0, static_cast<float>(Game::Data::gun_types[gs.player_vector[i].tank_type].height/2)
                         }), -PI/2, RED
-                    );
-                    // Draw tracker
-                    DrawCircleLinesV(
-                        GetMousePosition(),
-                        crosshair_data.tracker_radius,
-                        crosshair_data.circle_color
                     );
                     break;
                 }
@@ -186,7 +164,7 @@ void Pages::GameRenderer::draw(const Game::GameState& gs, int player_id, const s
             health_bar.width *= factor; 
             DrawRectangleRounded(health_bar, 5, 6, GREEN);
             
-            auto rec = DragonLib::Utils::Drawing::draw_text({
+            DragonLib::Utils::Drawing::draw_text({
                 .content = pd[i].name,
                 .sdf=false,
                 .font_size = Global::rem * 0.5f,
@@ -299,7 +277,7 @@ void Pages::GameRenderer::CrosshairData::init()
 void Pages::GameRenderer::draw_leaderboard(const Game::GameState& gs, const std::vector<Communication::Game::PlayerIdentification>& pd)
 {
     int screenWidth = GetScreenWidth();
-    int screenHeight = GetScreenHeight();
+    // int screenHeight = GetScreenHeight();
 
     int leaderboardWidth = 220;
     int leaderboardHeight = 250;

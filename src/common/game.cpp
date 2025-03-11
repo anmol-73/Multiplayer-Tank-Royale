@@ -402,7 +402,7 @@ void Game::GameState::update_projectiles(float delta_time)
         size_t pos_x = (size_t)(collider.x/Maps::maps[map_num].tile_width_units);
         // size_t pos_idx = ((Maps::maps[map_num].map_width_tiles)*pos_y) + pos_x;
         
-        double scanning_radius = 1.5*(sqrt((Game::Data::projectile_types[projectile_vector[i].type].width)*(Game::Data::projectile_types[projectile_vector[i].type].width) + (Game::Data::projectile_types[projectile_vector[i].type].height)*(Game::Data::projectile_types[projectile_vector[i].type].height)));
+        // double scanning_radius = 1.5*(sqrt((Game::Data::projectile_types[projectile_vector[i].type].width)*(Game::Data::projectile_types[projectile_vector[i].type].width) + (Game::Data::projectile_types[projectile_vector[i].type].height)*(Game::Data::projectile_types[projectile_vector[i].type].height)));
         size_t scanning_radius_tiles = 2;
 
         for(size_t wall_y = pos_y-std::min(pos_y, scanning_radius_tiles); wall_y<pos_y+scanning_radius_tiles; wall_y++)

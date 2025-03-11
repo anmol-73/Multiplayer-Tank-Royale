@@ -12,7 +12,7 @@
 #include "core/dragonlib.hpp"
 #include "game_client.hpp"
 #include "game_ui.hpp"
-#include "core/utils/animation_controller.hpp"
+#include "core/utils/animations/animation_controller.hpp"
 #include "core/utils/camera.hpp"
 #include "game_renderer.hpp"
 
