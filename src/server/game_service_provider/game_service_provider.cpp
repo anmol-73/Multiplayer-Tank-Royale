@@ -131,11 +131,7 @@ void GameServiceProvider::timed_loop_func()
     {
         // TODO: Consider making the sleep like sleep properly (the code doesnt take 0 time to run....)
         // 60 fps
-        
-        
-        
         double t = game_state.curtime();
-        
         if (t > 120000){ // Game timer
             game_over = true;
             log("Game over :)");

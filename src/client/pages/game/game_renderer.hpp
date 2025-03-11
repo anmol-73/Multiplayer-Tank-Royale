@@ -13,6 +13,7 @@ namespace Pages
         GameRenderer();
 
         void draw(const Game::GameState& gs, int player_id, const std::vector<Communication::Game::PlayerIdentification>& pd);
+        void draw_leaderboard(const Game::GameState& gs, const std::vector<Communication::Game::PlayerIdentification>& pd);
 
 
         struct CrosshairData

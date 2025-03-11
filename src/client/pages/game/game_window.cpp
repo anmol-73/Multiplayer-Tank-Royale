@@ -34,6 +34,10 @@ void Pages::GameWindowScene::_update()
 
         std::unique_lock<std::mutex> lk(gs_mutex);
         renderer.draw(game_state, prepared_args.pi.id, prepared_args.player_details);
+
+        if (!prepared_args.player_details.empty()) {
+            renderer.draw_leaderboard(game_state, prepared_args.player_details);
+        }
         ui.draw();
     }
     EndDrawing();
@@ -173,6 +177,7 @@ void Pages::GameWindowScene::game_update_callback(const Game::GameState server_g
     game_state = server_gs;
     // std::cout << "GS DELAY: " << t2 - td << std::endl;
     // td = t2;
+    
 }
 
 void Pages::GameWindowScene::logic_update()

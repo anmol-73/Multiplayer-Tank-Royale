@@ -1,5 +1,6 @@
 #include "game_renderer.hpp"
 #include <iostream>
+#include<algorithm>
 
 Pages::GameRenderer::GameRenderer()
 {
@@ -294,3 +295,35 @@ void Pages::GameRenderer::CrosshairData::init()
     tracker_radius = 10;
     tracker_distance = 0;
 }
+
+void Pages::GameRenderer::draw_leaderboard(const Game::GameState& gs, const std::vector<Communication::Game::PlayerIdentification>& pd)
+{
+    int screenWidth = GetScreenWidth();
+    int screenHeight = GetScreenHeight();
+
+    int leaderboardWidth = 220;
+    int leaderboardHeight = 250;
+    int padding = 15;
+    int xPos = screenWidth - leaderboardWidth - padding; 
+    int yPos = padding;
+
+    DrawRectangle(xPos, yPos, leaderboardWidth, leaderboardHeight, Fade(DARKGRAY, 0.8f));
+
+    DrawText("Leaderboard", xPos + 10, yPos + 10, 22, RAYWHITE);
+
+    std::vector<std::pair<std::string, int>> leaderboard;
+    for (size_t i = 0; i < 12; i++) {
+        if (!gs.player_vector[i].exists || i >= pd.size()) continue;
+        leaderboard.push_back(std::make_pair(pd[i].name, gs.player_vector[i].score));
+    }
+    std::sort(leaderboard.begin(), leaderboard.end(), [](const auto& a, const auto& b) { return a.second > b.second;});
+
+   
+    int textY = yPos + 40;
+    for (const auto& player : leaderboard) {
+        std::string playerText = player.first + " - " + std::to_string(player.second);
+        DrawText(playerText.c_str(), xPos + 10, textY, 18, RAYWHITE);
+        textY += 30; 
+    }
+}
+
