@@ -383,7 +383,7 @@ void Pages::GameWindowScene::draw_game()
     size_t self = Global::ServiceProviders::room_client.get_id();
 
     
-
+    BeginShaderMode(Global::Rendering::Shaders::rendering_shader);{
     // Draw bg
     DrawTexturePro(
         map,
@@ -504,6 +504,8 @@ void Pages::GameWindowScene::draw_game()
         crosshair_data.tracker_radius,
         crosshair_data.circle_color
     );
+    }
+    EndShaderMode();
 }
 
 void Pages::GameWindowScene::draw_name_health(int i){

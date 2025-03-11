@@ -16,6 +16,11 @@ namespace Global
              * Shader to render fonts that use sdf
              */
             extern Shader sdf_font_shader;
+
+            /*
+               Shader to render game
+            */
+            extern Shader rendering_shader;
         } // namespace Shaders
 
         namespace Fonts

@@ -211,7 +211,7 @@ bool LogicUtils::handle_tank_collision()
                     .width = (Maps::maps[0].tile_width_units),
                     .height = (Maps::maps[0].tile_width_units),
                 };
-                player_colliding = Physics::sat_collision_detection(wall, 0, collider, projected_data.angle);
+                player_colliding = 0;
                 if(player_colliding){break;}
             }
             if(player_colliding){break;}
