@@ -379,6 +379,7 @@ void Game::GameState::handle_shots()
                         };
                     new_explosion.time_alive = 0;
                     new_explosion.shot_id = ID;
+                    player_vector[ID].ray_contact = new_explosion.position;
                     new_explosion.type = 0;
                     explosion_vector.push_back(new_explosion);
                     break;
