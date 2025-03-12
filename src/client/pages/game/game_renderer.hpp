@@ -6,6 +6,8 @@
 #include "core/utils/camera.hpp"
 #include "game_client.hpp"
 
+#include "core/utils/animations/animation_controller.hpp"
+
 namespace Pages
 {
     struct GameRenderer{
@@ -48,6 +50,9 @@ namespace Pages
 
         std::vector<DragonLib::DImage> tank_spritesheets;
         std::vector<DragonLib::DImage> gun_spritesheets;
+
+        std::vector<Utils::AnimationController> tank_acs;
+        std::vector<Utils::AnimationController> gun_acs;
 
         std::vector<double> prev_times_since_last_shot;
     };

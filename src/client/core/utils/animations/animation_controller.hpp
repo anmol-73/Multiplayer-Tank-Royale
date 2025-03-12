@@ -41,6 +41,7 @@ namespace Utils
       
         std::list<EffectAnimationData> active_effects;
 
+    public:
         /**
          * To be called every frame, updates the animation timer and the animation frame
          */
@@ -80,6 +81,7 @@ namespace Utils
         void reset();
 
     public:
+        AnimationController(): current_anim(0){}
         /**
          * The number of times the currently playing animation has looped
          */
