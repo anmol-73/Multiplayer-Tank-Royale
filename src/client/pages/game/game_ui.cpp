@@ -37,7 +37,7 @@ Pages::GameUI::GameUI()
                 return UI::DrawParameters::TextBox{
                     .content = Game::Data::tank_resources[tank_idx][1],
                     .font_size = 1.5f * Global::rem,
-                    .font_color =  {0x45, 0x41, 0x39, 0xff},
+                    .font_color =  GRAY,
                     .position = {
                         .value = {0.2, 0.5},
                         .mode = {Mode::SCREEN_W, Mode::SCREEN_H}
@@ -98,7 +98,7 @@ Pages::GameUI::GameUI()
                 return UI::DrawParameters::TextBox{
                     .content = Game::Data::gun_resources[turret_idx][1],
                     .font_size = 1.5f * Global::rem,
-                    .font_color =  {0x45, 0x41, 0x39, 0xff},
+                    .font_color =  GRAY,
                     .position = {
                         .value = {0.5, 0.5},
                         .mode = {Mode::SCREEN_W, Mode::SCREEN_H}
@@ -222,14 +222,13 @@ void Pages::GameUI::draw()
 {
     if (!visible) return;
 
-    std::cout << "YO" << std::endl;
     DragonLib::Utils::Drawing::draw_box(
         UI::DrawParameters::Box{
             .size = {
-                .value = {0.6, 0.6},
+                .value = {1.0f, 1.0f},
                 .mode = {UI::DrawParameters::SizeMode::SCREEN_W, UI::DrawParameters::SizeMode::SCREEN_H}
             },
-            .fill = Color{0, 0, 0, 200}
+            .fill = Color{0, 0, 0, 130}
         }
     );
 

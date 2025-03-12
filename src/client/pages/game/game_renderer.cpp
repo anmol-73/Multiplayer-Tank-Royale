@@ -382,7 +382,7 @@ void Pages::GameRenderer::draw_leaderboard(const Game::GameState& gs, const std:
     int xPos = screenWidth - leaderboardWidth - padding; 
     int yPos = padding;
 
-    DrawRectangle(xPos, yPos, leaderboardWidth, leaderboardHeight, Fade(DARKGRAY, 0.8f));
+    DrawRectangle(xPos, yPos, leaderboardWidth, leaderboardHeight, {0x45, 0x41, 0x39, 0xf0});
 
     DrawText("Leaderboard", xPos + 10, yPos + 10, 22, RAYWHITE);
 
