@@ -46,6 +46,9 @@ namespace Pages
 
         std::vector<DragonLib::DImage> map_images;
 
+        std::vector<DragonLib::DImage> tank_spritesheets;
+        std::vector<DragonLib::DImage> gun_spritesheets;
+
         std::vector<double> prev_times_since_last_shot;
     };
 } // namespace Pages

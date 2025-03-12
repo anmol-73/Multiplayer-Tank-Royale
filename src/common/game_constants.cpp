@@ -8,9 +8,25 @@ std::vector<Game::Types::TankType> Game::Data::tank_types = {
         120.0f, // Mov speed
         PI/2, // Rot speed
     },
+    {
+        72, // Height
+        56, // Width
+        7, // Health
+        80.0f, // Mov speed
+        PI/3, // Rot speed
+    },
+    {
+        56, // Height
+        40, // Width
+        4, // Health
+        150.0f, // Mov speed
+        PI, // Rot speed
+    },
 };
-std::vector<std::pair<std::string, std::string>> Game::Data::tank_resources = {
-    {"resources/game_window/tank2_spritesheet.png", "Basic"}
+std::vector<std::array<std::string, 3>> Game::Data::tank_resources = {
+    {"resources/game_window/tank2_spritesheet.png", "Basic", "resources/game_window/tanks/BASIC.png"},
+    {"resources/game_window/tank2_spritesheet.png", "Heavy", "resources/game_window/tanks/HEAVY.png"},
+    {"resources/game_window/tank2_spritesheet.png", "Quick", "resources/game_window/tanks/QUICK.png"}
 };
 
 std::vector<Game::Types::GunType> Game::Data::gun_types = {
@@ -40,10 +56,10 @@ std::vector<Game::Types::GunType> Game::Data::gun_types = {
     }, // Mortar
 };
 
-std::vector<std::pair<std::string, std::string>> Game::Data::gun_resources = {
-    {"resources/game_window/tank2_spritesheet.png", "Pistol"},
-    {"resources/game_window/tank2_spritesheet.png", "Rocket"},
-    {"resources/game_window/tank2_spritesheet.png", "Mortar"}
+std::vector<std::array<std::string, 3>> Game::Data::gun_resources = {
+    {"resources/game_window/tank2_spritesheet.png", "Pistol", "resources/game_window/tank2_spritesheet.png"},
+    {"resources/game_window/tank2_spritesheet.png", "Rocket", "resources/game_window/tank2_spritesheet.png"},
+    {"resources/game_window/tank2_spritesheet.png", "Mortar", "resources/game_window/tank2_spritesheet.png"}
 };
 
 std::vector<Game::Types::ProjectileType> Game::Data::projectile_types = {

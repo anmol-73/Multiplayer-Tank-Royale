@@ -16,6 +16,13 @@ namespace Utils
         Animation(float duration): duration(duration) {}
 
         const float duration;
+        virtual void draw(float time, Rectangle draw_box, float angle);
+    };
+    struct AAnimation: public Animation{
+    public:
+        AAnimation(float duration, std::function<void(float, Rectangle, float)> drawer): Animation(duration), drawer(drawer) {}
+
+        const std::function<void(float, Rectangle, float)> drawer;
         void draw(float time, Rectangle draw_box, float angle);
     };
     

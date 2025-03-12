@@ -6,11 +6,11 @@ Pages::GameUI::GameUI()
     
     tank_images.assign(Game::Data::tank_resources.size(), {});
     for (size_t i = 0; i < tank_images.size(); ++i){
-        tank_images[i].path = Game::Data::tank_resources[i].first;
+        tank_images[i].path = Game::Data::tank_resources[i][0];
     }
     turret_images.assign(Game::Data::gun_resources.size(), {});
     for (size_t i = 0; i < turret_images.size(); ++i){
-        turret_images[i].path = Game::Data::gun_resources[i].first;
+        turret_images[i].path = Game::Data::gun_resources[i][0];
     }
     
     { // Tank select
@@ -34,7 +34,7 @@ Pages::GameUI::GameUI()
         register_element(
             new UI::Elements::Span([this](UI::Elements::Span* _){
                 return UI::DrawParameters::TextBox{
-                    .content = Game::Data::tank_resources[tank_idx].second,
+                    .content = Game::Data::tank_resources[tank_idx][1],
                     .font_size = 0.8f * Global::rem,
                     .font_color =  {0x45, 0x41, 0x39, 0xff},
                     .position = {
@@ -95,7 +95,7 @@ Pages::GameUI::GameUI()
         register_element(
             new UI::Elements::Span([this](UI::Elements::Span* _){
                 return UI::DrawParameters::TextBox{
-                    .content = Game::Data::gun_resources[turret_idx].second,
+                    .content = Game::Data::gun_resources[turret_idx][1],
                     .font_size = 0.8f * Global::rem,
                     .font_color =  {0x45, 0x41, 0x39, 0xff},
                     .position = {

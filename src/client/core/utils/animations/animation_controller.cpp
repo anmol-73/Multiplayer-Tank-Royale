@@ -64,3 +64,8 @@ size_t Utils::EffectAnimationController::register_animation(Animation *anim)
     animations.emplace_back(anim);
     return animations.size() - 1;
 }
+
+void Utils::AAnimation::draw(float time, Rectangle draw_box, float angle)
+{
+    drawer(time, draw_box, angle);
+}

@@ -5,6 +5,9 @@
 Pages::GameRenderer::GameRenderer()
 {
     map_images.assign(Maps::map_count, {});
+    tank_spritesheets.assign(Game::Data::tank_resources.size(), {});
+    gun_spritesheets.assign(Game::Data::gun_resources.size(), {});
+    map_images.assign(Maps::map_count, {});
     for (size_t i = 0; i < Maps::map_count; ++i){
         map_images[i].path = Maps::maps[i].resource_path;
     }
@@ -174,7 +177,7 @@ void Pages::GameRenderer::draw(const Game::GameState& gs, int player_id, const s
         }
     }
 
-    { // Draw tracker
+    if (gs.player_vector[player_id].is_alive){ // Draw tracker
         switch (gs.player_vector[player_id].gun_type){
             case 0:
             case 1:
