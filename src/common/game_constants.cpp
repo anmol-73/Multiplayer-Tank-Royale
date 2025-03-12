@@ -57,9 +57,9 @@ std::vector<Game::Types::GunType> Game::Data::gun_types = {
 };
 
 std::vector<std::array<std::string, 3>> Game::Data::gun_resources = {
-    {"resources/game_window/tank2_spritesheet.png", "Pistol", "resources/game_window/tank2_spritesheet.png"},
-    {"resources/game_window/tank2_spritesheet.png", "Rocket", "resources/game_window/tank2_spritesheet.png"},
-    {"resources/game_window/tank2_spritesheet.png", "Mortar", "resources/game_window/tank2_spritesheet.png"}
+    {"resources/game_window/icons/PISTOL_ICON.png", "Pistol", "resources/game_window/turrets/PISTOL.png"},
+    {"resources/game_window/icons/ROCKET_ICON.png", "Rocket", "resources/game_window/turrets/ROCKET.png"},
+    {"resources/game_window/icons/MORTAR_ICON.png", "Mortar", "resources/game_window/turrets/MORTAR.png"}
 };
 
 std::vector<Game::Types::ProjectileType> Game::Data::projectile_types = {
