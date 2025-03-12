@@ -1,4 +1,5 @@
 #include "game_ui.hpp"
+#include <iostream>
 
 Pages::GameUI::GameUI()
 {
@@ -215,4 +216,22 @@ void Pages::GameUI::poll_events()
         turret_idx = (static_cast<int>(turret_images.size()) + turret_idx + right_turret_select->clicked - left_turret_select->clicked) % turret_images.size();
         turret_preview->image = turret_images[turret_idx];
     }
+}
+
+void Pages::GameUI::draw()
+{
+    if (!visible) return;
+
+    std::cout << "YO" << std::endl;
+    DragonLib::Utils::Drawing::draw_box(
+        UI::DrawParameters::Box{
+            .size = {
+                .value = {0.6, 0.6},
+                .mode = {UI::DrawParameters::SizeMode::SCREEN_W, UI::DrawParameters::SizeMode::SCREEN_H}
+            },
+            .fill = Color{0, 0, 0, 200}
+        }
+    );
+
+    UI::Elements::PageView::draw();
 }

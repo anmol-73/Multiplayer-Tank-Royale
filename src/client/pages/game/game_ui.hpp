@@ -26,6 +26,7 @@ namespace Pages
         void cleanup_sync();
 
         void poll_events();
+        void draw();
 
 
         int tank_idx = 0;
