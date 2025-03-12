@@ -50,9 +50,14 @@ namespace Pages
 
         std::vector<DragonLib::DImage> tank_spritesheets;
         std::vector<DragonLib::DImage> gun_spritesheets;
+        DragonLib::DImage explosion_spritesheet;
+        DragonLib::DImage skull_spritesheet;
+
+        Utils::EffectAnimationController effect_ac;
 
         std::vector<Utils::AnimationController> tank_acs;
         std::vector<Utils::AnimationController> gun_acs;
+
 
         std::vector<double> prev_times_since_last_shot;
     };

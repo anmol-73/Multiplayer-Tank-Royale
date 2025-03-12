@@ -60,12 +60,8 @@ namespace Utils
 
     struct AnimationController{
     private:
-        /**
-         * ID of the animation currently playing
-        */
-       size_t current_anim = 0;
-
-        /**
+    
+    /**
          * All animation used by the animation controller
          */
         std::vector<std::unique_ptr<Animation>> animations;
@@ -81,6 +77,10 @@ namespace Utils
         void reset();
 
     public:
+        /**
+         * ID of the animation currently playing
+        */
+        size_t current_anim = 0;
         AnimationController(): current_anim(0){}
         /**
          * The number of times the currently playing animation has looped

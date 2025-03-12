@@ -18,6 +18,9 @@ Pages::GameRenderer::GameRenderer()
     for (size_t i = 0; i < gun_spritesheets.size(); ++i){
         gun_spritesheets[i].path = Game::Data::gun_resources[i][2];
     }
+
+    explosion_spritesheet.path = "resources/game_window/misc/ONLY_EXPLOSION.png";
+    skull_spritesheet.path = "resources/game_window/misc/TARGET.png";
     
 }
 
@@ -28,6 +31,7 @@ void Pages::GameRenderer::draw(const Game::GameState& gs, int player_id, const s
         SetMouseCursor(MOUSE_CURSOR_CROSSHAIR);
     }
 
+    
     camera.follow(gs.player_vector[player_id].position);
     
     { // draw map
@@ -40,7 +44,7 @@ void Pages::GameRenderer::draw(const Game::GameState& gs, int player_id, const s
             WHITE
         );
     }
-    
+    effect_ac.draw(delta_time);
     { // draw tanks
         for (size_t i = 0; i < gs.player_vector.size(); ++ i){
             if (!(gs.player_vector[i].exists and gs.player_vector[i].is_alive)) continue;
@@ -66,10 +70,26 @@ void Pages::GameRenderer::draw(const Game::GameState& gs, int player_id, const s
             }
         }
         
-        { // draw gun
-            for (size_t i = 0; i < gs.player_vector.size(); ++ i)
+    { // draw gun
+        for (size_t i = 0; i < gs.player_vector.size(); ++ i)
         {
             if((!gs.player_vector[i].exists) || (!gs.player_vector[i].is_alive)) continue;
+            
+            bool has_shot = gs.player_vector[i].time_since_last_shot < prev_times_since_last_shot[i];
+            if (gun_acs[i].current_anim % 2 == 0 or gun_acs[i].current_iteration_count > 0){
+                gun_acs[i].play(gs.player_vector[i].gun_type * 2 + has_shot, false);
+
+                if (has_shot){
+                    if (gs.player_vector[i].gun_type == 2){
+                        Rectangle rect = {
+                            gs.player_vector[i].ray_contact.x, gs.player_vector[i].ray_contact.y, Game::Data::explosion_types[0].radius * 2, Game::Data::explosion_types[0].radius * 2
+                        };
+                        effect_ac.play(0, [rect, this](float _){
+                            return std::pair<Rectangle, float>{camera.transform(rect), 0};
+                        });
+                    }
+                }
+            }
             switch (gs.player_vector[i].gun_type)
             {
                 case 0: // Gun behaviour
@@ -82,48 +102,18 @@ void Pages::GameRenderer::draw(const Game::GameState& gs, int player_id, const s
                             4, WHITE
                         );
                     }
-                    // Draw Gun
-                    DrawRectanglePro(
-                        camera.transform(
-                            {
-                                gs.player_vector[i].position.x, gs.player_vector[i].position.y,
-                                static_cast<float>(Game::Data::gun_types[gs.player_vector[i].tank_type].width), static_cast<float>(Game::Data::gun_types[gs.player_vector[i].tank_type].height)
-                            }
-                        ), camera.scale(Vector2{
-                            0, static_cast<float>(Game::Data::gun_types[gs.player_vector[i].tank_type].height/2)
-                        }), -RAD2DEG*gs.player_vector[i].gun_angle, RED
-                    );
-                    break;
                 }
 
                 case 1:
-                {   // Draw Gun
-                    DrawRectanglePro(
-                        camera.transform(
-                            {
-                                gs.player_vector[i].position.x, gs.player_vector[i].position.y,
-                                static_cast<float>(Game::Data::gun_types[gs.player_vector[i].tank_type].width), static_cast<float>(Game::Data::gun_types[gs.player_vector[i].tank_type].height)
-                            }
-                        ), camera.scale(Vector2{
-                            0, static_cast<float>(Game::Data::gun_types[gs.player_vector[i].tank_type].height/2)
-                        }), -RAD2DEG*gs.player_vector[i].gun_angle, RED
-                    );
-                    break;
-                }
-
                 case 2:
-                {
-                    // Draw Gun
-                    DrawRectanglePro(
-                        camera.transform(
-                            {
-                                gs.player_vector[i].position.x, gs.player_vector[i].position.y,
-                                static_cast<float>(Game::Data::gun_types[gs.player_vector[i].tank_type].width), static_cast<float>(Game::Data::gun_types[gs.player_vector[i].tank_type].height)
-                            }
-                        ), camera.scale(Vector2{
-                            0, static_cast<float>(Game::Data::gun_types[gs.player_vector[i].tank_type].height/2)
-                        }), -PI/2, RED
+                {   // Draw Gun
+                    auto rect = camera.transform(
+                        {
+                            gs.player_vector[i].position.x, gs.player_vector[i].position.y,
+                            static_cast<float>(Game::Data::gun_types[gs.player_vector[i].tank_type].width), static_cast<float>(Game::Data::gun_types[gs.player_vector[i].tank_type].height)
+                        }
                     );
+                    gun_acs[i].draw(delta_time, rect, gs.player_vector[i].gun_angle);
                     break;
                 }
             }
@@ -131,6 +121,7 @@ void Pages::GameRenderer::draw(const Game::GameState& gs, int player_id, const s
         }
     }
 
+    
     { // draw projectiles
         for (auto it = gs.projectile_vector.begin(); it != gs.projectile_vector.end(); ++it){
             DrawRectanglePro(
@@ -146,17 +137,18 @@ void Pages::GameRenderer::draw(const Game::GameState& gs, int player_id, const s
         }
     }
 
-    { // draw explosions
-        for (auto it = gs.explosion_vector.begin(); it != gs.explosion_vector.end(); ++it){
+
+    // { // draw explosions
+    //     for (auto it = gs.explosion_vector.begin(); it != gs.explosion_vector.end(); ++it){
             
-            auto position = camera.transform((*it).position);
-            DrawCircleGradient(
-                position.x, position.y,
-                camera.scale(Game::Data::explosion_types[(*it).type].radius), 
-                MAGENTA, RED
-            );
-        }
-    }
+    //         auto position = camera.transform((*it).position);
+    //         DrawCircleGradient(
+    //             position.x, position.y,
+    //             camera.scale(Game::Data::explosion_types[(*it).type].radius), 
+    //             MAGENTA, RED
+    //         );
+    //     }
+    // }
 
     { // draw health bar and name
         for (size_t i = 0; i < gs.player_vector.size(); ++ i)
@@ -246,6 +238,8 @@ void Pages::GameRenderer::draw(const Game::GameState& gs, int player_id, const s
             }
         }
     }
+
+    
 }
 
 void Pages::GameRenderer::prepare(size_t _map_idx, size_t _player_tank_type)
@@ -267,6 +261,9 @@ void Pages::GameRenderer::load_async()
     for (size_t i = 0; i < gun_spritesheets.size(); ++i){
         gun_spritesheets[i].load_im();
     }
+
+    explosion_spritesheet.load_im();
+    skull_spritesheet.load_im();
 
     tank_acs.reserve(12);
     const float tank_anim_duration = 0.4;
@@ -298,7 +295,7 @@ void Pages::GameRenderer::load_async()
                     tank_anim_duration,
                     [tank_type, this, tank_anim_frame_count, tank_anim_duration](float time, Rectangle rect, float angle){
                         int frame = time * tank_anim_frame_count / tank_anim_duration;
-                        frame = std::min(frame, tank_anim_frame_count);
+                        frame = std::min(frame, tank_anim_frame_count - 1);
                         int height = tank_spritesheets[tank_type].tex.height / tank_anim_frame_count;
                         DrawTexturePro(
                             tank_spritesheets[tank_type].tex,
@@ -317,7 +314,119 @@ void Pages::GameRenderer::load_async()
         }
     }
     // Do the same scene for gun animations!
-    // gun_acs.assign(12, {});
+    const float gun_anim_duration = 0.7;
+    gun_acs.reserve(12);
+    for (size_t i = 0; i < 12; ++i){
+        gun_acs.emplace_back();
+        for (size_t gun_type = 0; gun_type < gun_spritesheets.size(); ++gun_type){
+            int gun_animation_frame_count = gun_type > 1 ? 6 : 4;
+            gun_acs[i].register_animation(
+                new Utils::AAnimation(
+                    gun_anim_duration,
+                    [gun_type, this, gun_animation_frame_count](float time, Rectangle rect, float angle){
+                        int height = gun_spritesheets[gun_type].tex.height / gun_animation_frame_count;
+                        DrawTexturePro(
+                            gun_spritesheets[gun_type].tex,
+                            {
+                                .x = 0,
+                                .y = 0,
+                                .width = static_cast<float>(gun_spritesheets[gun_type].tex.width),
+                                .height = static_cast<float>(height)
+                            },
+                            rect,
+                            {rect.width / 2, rect.height / 2}, -RAD2DEG*angle, WHITE
+                        );
+                    }
+                )
+            );
+            gun_acs[i].register_animation(
+                new Utils::AAnimation(
+                    gun_anim_duration,
+                    [gun_type, this, gun_animation_frame_count, gun_anim_duration](float time, Rectangle rect, float angle){
+                        int frame = time * gun_animation_frame_count / gun_anim_duration;
+                        frame = std::min(frame, gun_animation_frame_count - 1);
+                        int height = gun_spritesheets[gun_type].tex.height / gun_animation_frame_count;
+                        DrawTexturePro(
+                            gun_spritesheets[gun_type].tex,
+                            {
+                                .x = 0,
+                                .y = static_cast<float>(frame * height),
+                                .width = static_cast<float>(gun_spritesheets[gun_type].tex.width),
+                                .height = static_cast<float>(height)
+                            },
+                            rect,
+                            {rect.width / 2, rect.height / 2}, -RAD2DEG*angle, WHITE
+                        );
+                    }
+                )
+            );
+        }
+    }
+
+    effect_ac.register_animation(
+        new Utils::AAnimation(
+            2.3, [this](float time, Rectangle rect, float _angle){
+                std::cout << time << rect.x << ' ' << rect.y << std::endl;
+                if (time < 1.5){
+                    float width = std::min((time / 0.5f) * rect.width, rect.width);
+                    // TODO: PLS INCREASE WIDHT
+                    DrawCircleLines(
+                        rect.x, rect.y, rect.width / 2, {230, 10, 10, 200}
+                    );
+                    rect.width = width; rect.height = width;
+                    DrawTexturePro(
+                        skull_spritesheet.tex,
+                        {
+                            .x = 0,
+                            .y = 0,
+                            .width = static_cast<float>(skull_spritesheet.tex.width),
+                            .height = static_cast<float>(skull_spritesheet.tex.height)
+                        },
+                        rect,
+                        {rect.width / 2, rect.height / 2}, 0, WHITE
+                    );
+                    return;
+                }
+                if (time < 2){
+                    float ratio = ((time - 1.5)/ 0.5);
+                    float width = (1 - ratio) * rect.width;
+                    DrawCircleLines(
+                        rect.x, rect.y, rect.width / 2, {230, 10, 10, 230}
+                    );
+                    rect.width = width; rect.height = width;
+                    DrawTexturePro(
+                        skull_spritesheet.tex,
+                        {
+                            .x = 0,
+                            .y = 0,
+                            .width = static_cast<float>(skull_spritesheet.tex.width),
+                            .height = static_cast<float>(skull_spritesheet.tex.height)
+                        },
+                        rect,
+                        {rect.width / 2, rect.height / 2}, PI * 2 * RAD2DEG * ratio, {255, 255, 255, 255}
+                    );
+                    return;
+                }
+                int frame_count = 8;
+
+                int frame = (time - 2) * frame_count / 0.3f;
+                frame = std::min(frame, frame_count - 1);
+                int width = explosion_spritesheet.tex.width / frame_count;
+                DrawTexturePro(
+                    explosion_spritesheet.tex,
+                    {
+                        .x = static_cast<float>(frame * width),
+                        .y = 0,
+                        .width = static_cast<float>(width),
+                        .height = static_cast<float>(explosion_spritesheet.tex.height)
+                    },
+                    rect,
+                    {rect.width / 2, rect.height / 2}, 0, WHITE
+                );
+
+            }
+        )
+    );
 }
 
 void Pages::GameRenderer::load_sync()
@@ -331,6 +440,9 @@ void Pages::GameRenderer::load_sync()
     for (size_t i = 0; i < gun_spritesheets.size(); ++i){
         gun_spritesheets[i].load_tex();
     }
+
+    skull_spritesheet.load_tex();
+    explosion_spritesheet.load_tex();
 
 }
 
@@ -347,6 +459,8 @@ void Pages::GameRenderer::cleanup_async()
     for (size_t i = 0; i < gun_spritesheets.size(); ++i){
         gun_spritesheets[i].unload_im();
     }
+    skull_spritesheet.unload_im();
+    explosion_spritesheet.unload_im();
 }
 
 void Pages::GameRenderer::cleanup_sync()
@@ -360,6 +474,8 @@ void Pages::GameRenderer::cleanup_sync()
     for (size_t i = 0; i < gun_spritesheets.size(); ++i){
         gun_spritesheets[i].unload_tex();
     }
+    skull_spritesheet.unload_tex();
+    explosion_spritesheet.unload_tex();
 }
 
 

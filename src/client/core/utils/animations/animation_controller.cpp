@@ -1,4 +1,5 @@
 #include "animation_controller.hpp"
+#include <iostream>
 
 void Utils::Animation::draw(float time, Rectangle draw_box, float angle){}
 
@@ -41,7 +42,8 @@ void Utils::EffectAnimationController::draw(float delta_time)
 {
     for (auto it = active_effects.begin(); it != active_effects.end();){
         it->counter += delta_time;
-        if (animations[it->animation_id]->duration > it->counter){
+        std::cout << it->animation_id << ' ' << animations[0]->duration << ' ' << it->counter << std::endl;
+        if (animations[it->animation_id]->duration < it->counter){
             it = active_effects.erase(it); continue;
         }
         const auto [rect, angle] = it->draw_box_provider(it->counter);

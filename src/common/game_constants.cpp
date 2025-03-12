@@ -31,24 +31,24 @@ std::vector<std::array<std::string, 3>> Game::Data::tank_resources = {
 
 std::vector<Game::Types::GunType> Game::Data::gun_types = {
     {
-        48, // Width
-        12, // Height
+        120, // Width
+        40, // Height
         1, // Rot speed
         1, // Dmg
         100000, // Range
         1, // Reload time
     }, // Gun
     {
-        48, // Width
-        12, // Height
+        160, // Width
+        48, // Height
         1, // Rot speed
         0, // Dmg
         0, // Range
         1, // Reload time
     }, // Cannon
     {
-        48, // Height
-        12, // Width
+        40, // Height
+        24, // Width
         0, // Rot speed
         0, // Dmg
         0, // Range
@@ -74,7 +74,7 @@ std::vector<Game::Types::ProjectileType> Game::Data::projectile_types = {
 
 std::vector<Game::Types::ExplosionType> Game::Data::explosion_types = {
     {
-        20, // Radius
+        72, // Radius
         3, // Dmg
         2000, // Lifetime
     },
