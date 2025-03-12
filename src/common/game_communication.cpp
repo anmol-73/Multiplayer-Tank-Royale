@@ -7,14 +7,16 @@ const void* destore(const void* ptr, T& item) {
 }
 
 template<typename T>
-const void* destore_vector(const void* ptr, std::vector<T>& vec)
+const void* destore_list(const void* ptr, std::list<T>& vec)
 {
     size_t size;
     ptr = destore(ptr, size);  // Extract vector size
 
-    vec.resize(size);
+    
     for (size_t i = 0; i < size; i++) {
-        ptr = destore(ptr, vec[i]);
+        T item;
+        ptr = destore(ptr, item);
+        vec.push_back(item);
     }
     return ptr;
 }
@@ -33,8 +35,8 @@ Game::GameState Game::deserialize_game_state(const void *message, size_t sz)
     for (size_t i = 0; i < 12; i++) {
         ptr = destore(ptr, game_state.player_vector[i]);
     }
-    ptr = destore_vector(ptr, game_state.projectile_vector);
-    ptr = destore_vector(ptr, game_state.explosion_vector);
+    ptr = destore_list(ptr, game_state.projectile_vector);
+    ptr = destore_list(ptr, game_state.explosion_vector);
     ptr = destore(ptr, game_state.curr_frame);
     return game_state;
 
@@ -93,9 +95,9 @@ std::pair<Utils::unique_void_ptr, size_t> Game::serialize_game_state(Game::GameS
     ptr = store(ptr, projectiles_num);
 
     // sz += projectiles_num*sizeof(Game::GameState::Projectile);
-    for(size_t i=0; i<projectiles_num; i++)
+    for(auto it = game_state.projectile_vector.begin(); it != game_state.projectile_vector.end(); ++it)
     {
-        ptr = store(ptr, game_state.projectile_vector[i]);
+        ptr = store(ptr, *it);
     }
 
     // size_t explosions_num = game_state.explosion_vector.size();
@@ -103,9 +105,9 @@ std::pair<Utils::unique_void_ptr, size_t> Game::serialize_game_state(Game::GameS
     ptr = store(ptr, explosions_num);
 
     // sz += explosions_num*sizeof(Game::GameState::Explosion);
-    for(size_t i=0; i<explosions_num; i++)
+    for(auto it = game_state.explosion_vector.begin(); it != game_state.explosion_vector.end(); ++it)
     {
-        ptr = store(ptr, game_state.explosion_vector[i]);
+        ptr = store(ptr, *it);
     }
 
     // sz += sizeof(Game::Frame);

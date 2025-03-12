@@ -4,6 +4,7 @@
 #include <raylib.h>
 #include <stdlib.h>
 #include <vector>
+#include <list>
 #include <raymath.h>
 #include <chrono>
 
@@ -88,7 +89,7 @@ namespace Game
             size_t shot_id;
         };
         
-        std::vector<Game::GameState::Projectile> projectile_vector;
+        std::list<Game::GameState::Projectile> projectile_vector;
 
         struct Explosion
         {
@@ -101,7 +102,7 @@ namespace Game
             size_t shot_id;
         };
         
-        std::vector<Game::GameState::Explosion> explosion_vector;
+        std::list<Game::GameState::Explosion> explosion_vector;
 
         // Current frame being processed, so that it doesnt need to be passed around to functions
         Frame curr_frame;

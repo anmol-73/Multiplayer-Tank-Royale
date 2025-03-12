@@ -4,8 +4,10 @@
 
 #include <vector>
 #include <memory>
+#include <functional>
 #include <stdexcept>
 #include <raylib.h>
+#include <list>
 
 namespace Utils
 {
@@ -14,7 +16,38 @@ namespace Utils
         Animation(float duration): duration(duration) {}
 
         const float duration;
-        void draw(float time, Rectangle draw_box);
+        void draw(float time, Rectangle draw_box, float angle);
+    };
+    
+    struct EffectAnimationController{
+        /**
+         * All animation used by the animation controller
+         */
+        std::vector<std::unique_ptr<Animation>> animations;
+
+        struct EffectAnimationData{
+            std::function<std::pair<Rectangle, float>(float)> draw_box_provider;
+
+            float counter;
+            size_t animation_id;
+        };
+      
+        std::list<EffectAnimationData> active_effects;
+
+        /**
+         * To be called every frame, updates the animation timer and the animation frame
+         */
+        void draw(float delta_time);
+        
+        /**
+         * Starts playing the animation corresponding to the given idx
+         */
+        void play(size_t anim_id, std::function<std::pair<Rectangle, float>(float)> draw_box_provider);
+
+        /**
+         * Registers the animation and returns the idx
+         */
+        size_t register_animation(Animation *anim);
     };
 
     struct AnimationController{
@@ -48,7 +81,7 @@ namespace Utils
         /**
          * To be called every frame, updates the animation timer and the animation frame
          */
-        void draw(float delta_time, Rectangle draw_box);
+        void draw(float delta_time, Rectangle draw_box, float angle);
         
         /**
          * Starts playing the animation corresponding to the given idx

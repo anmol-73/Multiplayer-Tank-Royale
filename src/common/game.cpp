@@ -393,16 +393,16 @@ void Game::GameState::handle_shots()
 void Game::GameState::update_projectiles(float delta_time)
 {
 
-    for(size_t i=0; i<projectile_vector.size(); i++)
+    for(auto projectile_itr = projectile_vector.begin(); projectile_itr != projectile_vector.end();)
     {
         bool not_colliding = true;
 
-        Rectangle collider = Physics::make_rect({projectile_vector[i].position.x, projectile_vector[i].position.y, static_cast<float>(Game::Data::projectile_types[projectile_vector[i].type].width), static_cast<float>(Game::Data::projectile_types[projectile_vector[i].type].height)});
+        Rectangle collider = Physics::make_rect({(*projectile_itr).position.x, (*projectile_itr).position.y, static_cast<float>(Game::Data::projectile_types[(*projectile_itr).type].width), static_cast<float>(Game::Data::projectile_types[(*projectile_itr).type].height)});
         size_t pos_y = Maps::maps[map_num].map_height_tiles - (size_t)(collider.y/Maps::maps[map_num].tile_width_units) - 1;
         size_t pos_x = (size_t)(collider.x/Maps::maps[map_num].tile_width_units);
         // size_t pos_idx = ((Maps::maps[map_num].map_width_tiles)*pos_y) + pos_x;
         
-        // double scanning_radius = 1.5*(sqrt((Game::Data::projectile_types[projectile_vector[i].type].width)*(Game::Data::projectile_types[projectile_vector[i].type].width) + (Game::Data::projectile_types[projectile_vector[i].type].height)*(Game::Data::projectile_types[projectile_vector[i].type].height)));
+        // double scanning_radius = 1.5*(sqrt((Game::Data::projectile_types[(*projectile_itr).type].width)*(Game::Data::projectile_types[(*projectile_itr).type].width) + (Game::Data::projectile_types[(*projectile_itr).type].height)*(Game::Data::projectile_types[(*projectile_itr).type].height)));
         size_t scanning_radius_tiles = 2;
 
         for(size_t wall_y = pos_y-std::min(pos_y, scanning_radius_tiles); wall_y<pos_y+scanning_radius_tiles; wall_y++)
@@ -418,7 +418,7 @@ void Game::GameState::update_projectiles(float delta_time)
                         .width = (Maps::maps[map_num].tile_width_units),
                         .height = (Maps::maps[map_num].tile_width_units),
                     };
-                    not_colliding = !(Physics::sat_collision_detection(wall, 0, collider, projectile_vector[i].angle));
+                    not_colliding = !(Physics::sat_collision_detection(wall, 0, collider, (*projectile_itr).angle));
                     if(!not_colliding){break;}
                 }
             }
@@ -438,31 +438,33 @@ void Game::GameState::update_projectiles(float delta_time)
                     .width = static_cast<float>(Game::Data::tank_types[player_vector[j].tank_type].width),
                     .height = static_cast<float>(Game::Data::tank_types[player_vector[j].tank_type].height),
                 });
-                not_colliding = !(Physics::sat_collision_detection(collider, projectile_vector[i].angle, other_player_collider, player_vector[j].angle));
+                not_colliding = !(Physics::sat_collision_detection(collider, (*projectile_itr).angle, other_player_collider, player_vector[j].angle));
                 if(!not_colliding){
-                    if(player_vector[j].health <= Game::Data::projectile_types[projectile_vector[i].type].dmg){
+                    if(player_vector[j].health <= Game::Data::projectile_types[(*projectile_itr).type].dmg){
                         player_vector[j].is_alive = false;
                         player_vector[j].health = 0;
-                        player_vector[projectile_vector[i].shot_id].score +=100;
+                        player_vector[(*projectile_itr).shot_id].score +=100;
                     }
                     else{
-                        player_vector[j].health -= Game::Data::projectile_types[projectile_vector[i].type].dmg;
+                        player_vector[j].health -= Game::Data::projectile_types[(*projectile_itr).type].dmg;
                     }
                     break;
                 }
             }
         }
 
-        if(projectile_vector[i].time_alive<Game::Data::projectile_types[projectile_vector[i].type].lifetime && not_colliding)
+        if((*projectile_itr).time_alive<Game::Data::projectile_types[(*projectile_itr).type].lifetime && not_colliding)
         {
-            double displacement = (Game::Data::projectile_types[projectile_vector[i].type].mov_speed * delta_time);
-            projectile_vector[i].position.x += (displacement*cos(projectile_vector[i].angle));
-            projectile_vector[i].position.y += (displacement*sin(projectile_vector[i].angle));
-            projectile_vector[i].time_alive += delta_time;
+            double displacement = (Game::Data::projectile_types[(*projectile_itr).type].mov_speed * delta_time);
+            (*projectile_itr).position.x += (displacement*cos((*projectile_itr).angle));
+            (*projectile_itr).position.y += (displacement*sin((*projectile_itr).angle));
+            (*projectile_itr).time_alive += delta_time;
+
+            ++projectile_itr;
         }
         else
         {
-            projectile_vector.erase(projectile_vector.begin() + i--);
+            projectile_itr = projectile_vector.erase(projectile_itr);
         }
     }
     return;
@@ -470,11 +472,12 @@ void Game::GameState::update_projectiles(float delta_time)
 
 void Game::GameState::update_explosions(float delta_time)
 {
-    for(size_t i=0; i<explosion_vector.size(); i++)
+    for(auto explosion_itr = explosion_vector.begin(); explosion_itr != explosion_vector.end();)
     {
-        if(explosion_vector[i].time_alive<Game::Data::explosion_types[explosion_vector[i].type].lifetime)
+        if((*explosion_itr).time_alive<Game::Data::explosion_types[(*explosion_itr).type].lifetime)
         {
-            explosion_vector[i].time_alive += delta_time;
+            (*explosion_itr).time_alive += delta_time;
+            ++explosion_itr;
             continue;
         }
         for(size_t j=0; j<12; j++)
@@ -488,20 +491,20 @@ void Game::GameState::update_explosions(float delta_time)
                 .height = static_cast<float>(Game::Data::tank_types[player_vector[j].tank_type].height),
             };
 
-            bool explosion_colliding = Physics::CheckCollisionCircleRectPro(explosion_vector[i].position, Game::Data::explosion_types[explosion_vector[i].type].radius, player_collider, player_vector[j].angle);
+            bool explosion_colliding = Physics::CheckCollisionCircleRectPro((*explosion_itr).position, Game::Data::explosion_types[(*explosion_itr).type].radius, player_collider, player_vector[j].angle);
             if(!explosion_colliding) continue;
             
-            if(player_vector[j].health <= Game::Data::explosion_types[explosion_vector[i].type].dmg){
+            if(player_vector[j].health <= Game::Data::explosion_types[(*explosion_itr).type].dmg){
                 player_vector[j].is_alive = false;
                 player_vector[j].health = 0;
-                player_vector[explosion_vector[i].shot_id].score += 100;
+                player_vector[(*explosion_itr).shot_id].score += 100;
             }
             else{
-                player_vector[j].health -= Game::Data::explosion_types[explosion_vector[i].type].dmg;
+                player_vector[j].health -= Game::Data::explosion_types[(*explosion_itr).type].dmg;
             }
 
         }
-        explosion_vector.erase(explosion_vector.begin() + i--);
+        explosion_itr = explosion_vector.erase(explosion_itr);
     }
     return;
 }

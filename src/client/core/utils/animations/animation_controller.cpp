@@ -1,6 +1,6 @@
 #include "animation_controller.hpp"
 
-void Utils::Animation::draw(float time, Rectangle draw_box){}
+void Utils::Animation::draw(float time, Rectangle draw_box, float angle){}
 
 void Utils::AnimationController::reset()
 {
@@ -8,7 +8,7 @@ void Utils::AnimationController::reset()
     current_iteration_count = 0;
 }
 
-void Utils::AnimationController::draw(float delta_time, Rectangle draw_box)
+void Utils::AnimationController::draw(float delta_time, Rectangle draw_box, float angle)
 {
     counter += delta_time;
     while (counter >= animations[current_anim]->duration){
@@ -16,7 +16,7 @@ void Utils::AnimationController::draw(float delta_time, Rectangle draw_box)
         ++current_iteration_count;
     }
 
-    animations[current_anim]->draw(counter, draw_box);
+    animations[current_anim]->draw(counter, draw_box, angle);
 }
 
 void Utils::AnimationController::play(size_t anim_id, bool reset_if_already_playing)
@@ -32,6 +32,34 @@ void Utils::AnimationController::play(size_t anim_id, bool reset_if_already_play
 }
 
 size_t Utils::AnimationController::register_animation(Animation *anim)
+{
+    animations.emplace_back(anim);
+    return animations.size() - 1;
+}
+
+void Utils::EffectAnimationController::draw(float delta_time)
+{
+    for (auto it = active_effects.begin(); it != active_effects.end();){
+        it->counter += delta_time;
+        if (animations[it->animation_id]->duration > it->counter){
+            it = active_effects.erase(it); continue;
+        }
+        const auto [rect, angle] = it->draw_box_provider(it->counter);
+        animations[it->animation_id]->draw(it->counter, rect, angle);
+        ++it;
+    }
+}
+
+void Utils::EffectAnimationController::play(size_t anim_id, std::function<std::pair<Rectangle, float>(float)> draw_box_provider)
+{
+    active_effects.push_back(EffectAnimationData{
+        .draw_box_provider = draw_box_provider,
+        .counter = 0,
+        .animation_id = anim_id
+    });
+}
+
+size_t Utils::EffectAnimationController::register_animation(Animation *anim)
 {
     animations.emplace_back(anim);
     return animations.size() - 1;
