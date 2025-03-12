@@ -19,11 +19,11 @@ Pages::GameUI::GameUI()
                 tank_images[0], [this](UI::Elements::ImageView *) -> UI::DrawParameters::Box{
                     return {
                         .position = { 
-                            .value = {0.66f, 0.3f},
+                            .value = {0.1f, 0.1f},
                             .mode = {Mode::SCREEN_W, Mode::SCREEN_H}
                         },
                         .size = { 
-                            .value = {0.3f, 0.16875f},
+                            .value = {0.2f, 0.2},
                             .mode = {Mode::SCREEN_W, Mode::SCREEN_W} 
                         },
                         .origin = {0} 
@@ -35,10 +35,10 @@ Pages::GameUI::GameUI()
             new UI::Elements::Span([this](UI::Elements::Span* _){
                 return UI::DrawParameters::TextBox{
                     .content = Game::Data::tank_resources[tank_idx][1],
-                    .font_size = 0.8f * Global::rem,
+                    .font_size = 1.5f * Global::rem,
                     .font_color =  {0x45, 0x41, 0x39, 0xff},
                     .position = {
-                        .value = {0.81, 0.62},
+                        .value = {0.2, 0.5},
                         .mode = {Mode::SCREEN_W, Mode::SCREEN_H}
                     }
                 };
@@ -48,7 +48,7 @@ Pages::GameUI::GameUI()
         register_element(
             left_tank_select = Components::create_text_button(
                 "<", {
-                    .value = {0.65, 0.66},
+                    .value = {0.1, 0.61},
                     .mode = {Mode::SCREEN_W, Mode::SCREEN_H},
                 },
                 {
@@ -61,7 +61,7 @@ Pages::GameUI::GameUI()
         register_element(
             right_tank_select = Components::create_text_button(
                 ">", {
-                    .value = {0.83, 0.66},
+                    .value = {0.26, 0.61},
                     .mode = {Mode::SCREEN_W, Mode::SCREEN_H},
                 },
                 {
@@ -80,11 +80,11 @@ Pages::GameUI::GameUI()
                 turret_images[0], [this](UI::Elements::ImageView *) -> UI::DrawParameters::Box{
                     return {
                         .position = { 
-                            .value = {0.66f, 0.3f},
+                            .value = {0.4f, 0.1f},
                             .mode = {Mode::SCREEN_W, Mode::SCREEN_H}
                         },
                         .size = { 
-                            .value = {0.3f, 0.16875f},
+                            .value = {0.2f, 0.2},
                             .mode = {Mode::SCREEN_W, Mode::SCREEN_W} 
                         },
                         .origin = {0} 
@@ -96,10 +96,10 @@ Pages::GameUI::GameUI()
             new UI::Elements::Span([this](UI::Elements::Span* _){
                 return UI::DrawParameters::TextBox{
                     .content = Game::Data::gun_resources[turret_idx][1],
-                    .font_size = 0.8f * Global::rem,
+                    .font_size = 1.5f * Global::rem,
                     .font_color =  {0x45, 0x41, 0x39, 0xff},
                     .position = {
-                        .value = {0.81, 0.82},
+                        .value = {0.5, 0.5},
                         .mode = {Mode::SCREEN_W, Mode::SCREEN_H}
                     }
                 };
@@ -109,7 +109,7 @@ Pages::GameUI::GameUI()
         register_element(
             left_turret_select = Components::create_text_button(
                 "<", {
-                    .value = {0.65, 0.66},
+                    .value = {0.4, 0.61},
                     .mode = {Mode::SCREEN_W, Mode::SCREEN_H},
                 },
                 {
@@ -122,7 +122,7 @@ Pages::GameUI::GameUI()
         register_element(
             right_turret_select = Components::create_text_button(
                 ">", {
-                    .value = {0.83, 0.66},
+                    .value = {0.56, 0.61},
                     .mode = {Mode::SCREEN_W, Mode::SCREEN_H},
                 },
                 {
@@ -138,9 +138,9 @@ Pages::GameUI::GameUI()
     { // Action buttons
         register_element(
             respawn_button = Components::create_span_button(
-                "Create Room",
+                "Spawn!",
                 {
-                    .value = {0.5, 0.7},
+                    .value = {0.35, 0.8},
                     .mode = {Mode::SCREEN_W, Mode::SCREEN_H}
                 }
             )

@@ -497,7 +497,7 @@ void Game::GameState::update_explosions(float delta_time)
             if(player_vector[j].health <= Game::Data::explosion_types[(*explosion_itr).type].dmg){
                 player_vector[j].is_alive = false;
                 player_vector[j].health = 0;
-                player_vector[(*explosion_itr).shot_id].score += 100;
+                if(j!=(*explosion_itr).shot_id) player_vector[(*explosion_itr).shot_id].score += 100;
             }
             else{
                 player_vector[j].health -= Game::Data::explosion_types[(*explosion_itr).type].dmg;

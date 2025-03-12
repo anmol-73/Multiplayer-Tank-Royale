@@ -164,7 +164,7 @@ Pages::RoomUI::RoomUI()
             set_name_button = Components::create_span_button(
                 "Set Name",
                 {
-                    .value = {0.64f, 0.20f},
+                    .value = {0.68f, 0.20f},
                     .mode = {Mode::SCREEN_W, Mode::SCREEN_H}
                 }
             )

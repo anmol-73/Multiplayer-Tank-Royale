@@ -24,9 +24,9 @@ std::vector<Game::Types::TankType> Game::Data::tank_types = {
     },
 };
 std::vector<std::array<std::string, 3>> Game::Data::tank_resources = {
-    {"resources/game_window/tank2_spritesheet.png", "Basic", "resources/game_window/tanks/BASIC.png"},
-    {"resources/game_window/tank2_spritesheet.png", "Heavy", "resources/game_window/tanks/HEAVY.png"},
-    {"resources/game_window/tank2_spritesheet.png", "Quick", "resources/game_window/tanks/QUICK.png"}
+    {"resources/game_window/icons/BASIC_ICON.png", "Basic", "resources/game_window/tanks/BASIC.png"},
+    {"resources/game_window/icons/HEAVY_ICON.png", "Heavy", "resources/game_window/tanks/HEAVY.png"},
+    {"resources/game_window/icons/QUICK_ICON.png", "Quick", "resources/game_window/tanks/QUICK.png"}
 };
 
 std::vector<Game::Types::GunType> Game::Data::gun_types = {
