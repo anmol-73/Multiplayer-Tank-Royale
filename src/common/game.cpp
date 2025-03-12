@@ -10,6 +10,7 @@ void Game::GameState::init_game_state(size_t map)
         Game::GameState::PlayerState empty_player;
         empty_player.exists = false;
         empty_player.is_alive = false;
+        empty_player.is_moving = false;
         empty_player.angle = 0;
         empty_player.gun_angle = 0;
         empty_player.position = Maps::maps[map_num].spawnpoints[i];
@@ -54,6 +55,7 @@ void Game::GameState::handle_movement()
     double dy=0;
     if(curr_frame.a_pressed || curr_frame.d_pressed || curr_frame.s_pressed || curr_frame.w_pressed)
     {
+        player_vector[ID].is_moving = true;
         if (curr_frame.a_pressed) projected_angle += Game::Data::tank_types[player_vector[ID].tank_type].rot_speed * curr_frame.delta_time;
         if (curr_frame.d_pressed) projected_angle -= Game::Data::tank_types[player_vector[ID].tank_type].rot_speed * curr_frame.delta_time;
 
@@ -72,7 +74,7 @@ void Game::GameState::handle_movement()
     }
     else
     {
-
+        player_vector[ID].is_moving = false;
     }
 
     // Handle collision detection

@@ -53,6 +53,8 @@ namespace Game
 
             bool is_alive;
 
+            bool is_moving;
+
             size_t last_frame_processed_num;
 
             size_t tank_type;

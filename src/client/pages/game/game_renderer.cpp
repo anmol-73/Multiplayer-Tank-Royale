@@ -44,8 +44,7 @@ void Pages::GameRenderer::draw(const Game::GameState& gs, int player_id, const s
     { // draw tanks
         for (size_t i = 0; i < gs.player_vector.size(); ++ i){
             if (!(gs.player_vector[i].exists and gs.player_vector[i].is_alive)) continue;
-            bool is_moving = true;
-            tank_acs[i].play(gs.player_vector[i].tank_type * 2 + is_moving, false);
+            tank_acs[i].play(gs.player_vector[i].tank_type * 2 + gs.player_vector[i].is_moving, false);
             
             auto rect = camera.transform(
                 {
