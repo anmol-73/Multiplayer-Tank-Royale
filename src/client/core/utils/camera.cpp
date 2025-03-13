@@ -1,11 +1,10 @@
 #include "camera.hpp"
 #include <iostream>
 
-void Utils::Camera::init(Vector2 map_size_, Vector2 viewport_size_, Vector2 player_size_)
+void Utils::Camera::init(Vector2 map_size_, Vector2 viewport_size_)
 {
     map_size = map_size_;
     viewport_size = viewport_size_;
-    player_size = player_size_; // TODO: Remove this shit
     half_screen_size = Vector2Scale({(float)GetScreenWidth(), -(float)GetScreenHeight()}, 0.5f);
     
     auto scaling_factor_v = Vector2Divide({(float)GetScreenWidth(), (float)GetScreenHeight()}, viewport_size);

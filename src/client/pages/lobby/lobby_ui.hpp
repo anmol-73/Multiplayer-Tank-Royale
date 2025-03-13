@@ -20,8 +20,10 @@ namespace Pages
         std::string new_room_request();
 
         std::vector<Communication::Lobby::RoomDetail> visible_rooms;
-
+        std::string error_message;
         void poll_events();
+
+        std::string address_string;
 
     private:
         DragonLib::UI::Elements::Span *create_room_button;

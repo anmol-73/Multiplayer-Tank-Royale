@@ -10,7 +10,7 @@ namespace Utils
     struct Camera{
     public:
         /** Initialize the camera based on the map*/
-        void init(Vector2 map_size, Vector2 viewport_size, Vector2 player_size);
+        void init(Vector2 map_size, Vector2 viewport_size);
 
         /** Update the camera position based on the player position */
         void follow(Vector2 player_position);
@@ -43,7 +43,6 @@ namespace Utils
         Vector2 half_screen_size;
 
         float scaling_factor;
-        Vector2 player_size;
 
     };
     

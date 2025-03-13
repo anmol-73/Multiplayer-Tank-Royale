@@ -95,7 +95,7 @@ void Pages::GameRenderer::draw(const Game::GameState& gs, int player_id, const s
             {
                 case 0: // Gun behaviour
                 {   // Draw traces
-                    if(gs.player_vector[i].time_since_last_shot <= 0.1)
+                    if(gs.player_vector[i].time_since_last_shot <= 0.07)
                     {
                         DrawLineEx(
                             camera.transform(gs.player_vector[i].position),
@@ -152,8 +152,9 @@ void Pages::GameRenderer::draw(const Game::GameState& gs, int player_id, const s
     // }
 
     { // draw health bar and name
-        for (size_t i = 0; i < gs.player_vector.size(); ++ i)
+        for (size_t j = 0; j < pd.size(); ++j)
         {
+            size_t i = pd[j].id;
             if((!gs.player_vector[i].exists) || (!gs.player_vector[i].is_alive)) continue;
             float factor = static_cast<float>(gs.player_vector[i].health)/static_cast<float>(Game::Data::tank_types[gs.player_vector[i].tank_type].max_health);
 
@@ -177,7 +178,7 @@ void Pages::GameRenderer::draw(const Game::GameState& gs, int player_id, const s
             DrawRectangleRounded(health_bar, 5, 6, GREEN);
             
             DragonLib::Utils::Drawing::draw_text({
-                .content = pd[i].name,
+                .content = pd[j].name,
                 .sdf=false,
                 .font_size = Global::rem * 0.5f,
                 .font_color = BLACK,
@@ -278,7 +279,7 @@ void Pages::GameRenderer::prepare(size_t _map_idx, size_t _player_tank_type)
     map_index = _map_idx;
     tank_index = _player_tank_type;
     prev_times_since_last_shot.assign(12, 0);
-    camera.init({Maps::maps[map_index].width(), Maps::maps[map_index].height()}, {Maps::maps[map_index].vwidth(), Maps::maps[map_index].vheight()}, {static_cast<float>(Game::Data::tank_types[tank_index].width), static_cast<float>(Game::Data::tank_types[tank_index].height)});
+    camera.init({Maps::maps[map_index].width(), Maps::maps[map_index].height()}, {Maps::maps[map_index].vwidth(), Maps::maps[map_index].vheight()});
 }
 
 void Pages::GameRenderer::load_async()
@@ -412,10 +413,13 @@ void Pages::GameRenderer::load_async()
                 std::cout << time << rect.x << ' ' << rect.y << std::endl;
                 if (time < 1.5){
                     float width = std::min((time / 0.5f) * rect.width, rect.width);
-                    // TODO: PLS INCREASE WIDHT
-                    DrawCircleLines(
-                        rect.x, rect.y, rect.width / 2, {230, 10, 10, 200}
+                    
+                    DrawRing(
+                        {rect.x, rect.y}, rect.width / 2 - 4, rect.width / 2, 0, 2 * PI, 10, {230, 10, 10, 200}
                     );
+                    // DrawCircleLines(
+                    //     rect.x, rect.y, rect.width / 2, {230, 10, 10, 200}
+                    // );
                     rect.width = width; rect.height = width;
                     DrawTexturePro(
                         skull_spritesheet.tex,
@@ -433,8 +437,8 @@ void Pages::GameRenderer::load_async()
                 if (time < 2){
                     float ratio = ((time - 1.5)/ 0.5);
                     float width = (1 - ratio) * rect.width;
-                    DrawCircleLines(
-                        rect.x, rect.y, rect.width / 2, {230, 10, 10, 230}
+                    DrawRing(
+                        {rect.x, rect.y}, rect.width / 2 - 4, rect.width / 2, 0, 2 * PI, 10, {230, 10, 10, 200}
                     );
                     rect.width = width; rect.height = width;
                     DrawTexturePro(
@@ -546,9 +550,9 @@ void Pages::GameRenderer::draw_leaderboard(const Game::GameState& gs, const std:
     DrawText("Leaderboard", xPos + 10, yPos + 10, 22, RAYWHITE);
 
     std::vector<std::pair<std::string, int>> leaderboard;
-    for (size_t i = 0; i < 12; i++) {
-        if (!gs.player_vector[i].exists || i >= pd.size()) continue;
-        leaderboard.push_back(std::make_pair(pd[i].name, gs.player_vector[i].score));
+    for (size_t i = 0; i < pd.size(); i++) {
+        if (!gs.player_vector[pd[i].id].exists) continue;
+        leaderboard.push_back(std::make_pair(pd[i].name, gs.player_vector[pd[i].id].score));
     }
     std::sort(leaderboard.begin(), leaderboard.end(), [](const auto& a, const auto& b) { return a.second > b.second;});
 

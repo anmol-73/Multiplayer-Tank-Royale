@@ -9,7 +9,7 @@ namespace Pages
     namespace UI = DragonLib::UI;
     struct SplashUI: public UI::Elements::PageView{
     public:
-        SplashUI(); // some way to talk bw scenes would be nice.... hmmm
+        SplashUI();
         
         UI::Elements::Input* address_input;
         UI::Elements::Span* connect_button;

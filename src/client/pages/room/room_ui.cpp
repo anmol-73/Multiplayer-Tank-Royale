@@ -37,7 +37,7 @@ Pages::RoomUI::RoomUI()
                                     .mode = {Mode::SCREEN_W, Mode::SCREEN_H}
                                 },
                                 .size = {
-                                    .value = {0.23f, 0.06f},
+                                    .value = {0.26f, 0.06f},
                                     .mode = {Mode::SCREEN_W, Mode::SCREEN_H}
                                 },
                                 .origin = {0},
@@ -156,7 +156,7 @@ Pages::RoomUI::RoomUI()
                     .value = {0.55f, 0.05f},
                     .mode = {Mode::SCREEN_W, Mode::SCREEN_H}
                 },
-                30 // Max input size
+                20 // Max input size
             )
         );
     

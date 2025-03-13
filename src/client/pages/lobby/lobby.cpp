@@ -17,7 +17,11 @@ void Pages::LobbyScene::_update()
     EndDrawing();
     ui.poll_events();
 
-    
+    if (client->get_new_room_status() == Communication::RequestStatus::DENIED){
+        ui.error_message = "Server rejected room creation!";
+    }
+
+
     std::optional<Communication::Lobby::RoomDetail> room_to_join = std::nullopt; {
         if (client->get_new_room_status() == Communication::RequestStatus::ACCEPTED){
             room_to_join = client->get_new_room_detail();
@@ -38,10 +42,11 @@ void Pages::LobbyScene::_update()
         return;
     }
 
-    if (client->get_new_room_status() == Communication::RequestStatus::DENIED){
+    if (client->get_new_room_status() == Communication::RequestStatus::IDLE){
         std::string new_room_name = ui.new_room_request();
         if (new_room_name.size() > 0){
             client->request_new_room(new_room_name);
+            ui.error_message = "";
         }
     }
 }
@@ -75,8 +80,7 @@ void Pages::LobbyScene::_prepare(const void *msg, size_t command)
         
         case 1: {
             assert(msg != nullptr);
-            // TODO: Add error message to lobby!
-            // ui.error_message = static_cast<const char*>(error_msg);
+            ui.error_message = static_cast<const char*>(msg);
             break;
         }
 
@@ -103,6 +107,7 @@ void Pages::LobbyScene::_load()
         return;
     }
 
+    ui.address_string = address.name + ":" + std::to_string(address.port);
     client_worker.accomplish([this](auto _){
         client->start();
     });
@@ -128,5 +133,6 @@ void Pages::LobbyScene::_load_with_context()
 
 void Pages::LobbyScene::_cleanup_with_context()
 {
+    ui.error_message = "";
     ui.cleanup_sync();
 }

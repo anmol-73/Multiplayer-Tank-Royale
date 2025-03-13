@@ -362,8 +362,8 @@ void Game::GameState::handle_shots()
                     new_projectile.type = 0;
                     new_projectile.angle = player_vector[ID].gun_angle;
                     new_projectile.position =  {
-                            .x = player_vector[ID].position.x + static_cast<float>((Game::Data::gun_types[player_vector[ID].gun_type].width/2 - 20)*cos(player_vector[ID].gun_angle)),
-                            .y = player_vector[ID].position.y + static_cast<float>((Game::Data::gun_types[player_vector[ID].gun_type].width/2 - 20)*sin(player_vector[ID].gun_angle)),
+                            .x = player_vector[ID].position.x + static_cast<float>((Game::Data::gun_types[player_vector[ID].gun_type].width/3)*cos(player_vector[ID].gun_angle)),
+                            .y = player_vector[ID].position.y + static_cast<float>((Game::Data::gun_types[player_vector[ID].gun_type].width/3)*sin(player_vector[ID].gun_angle)),
                         };
                     new_projectile.time_alive = 0;
                     new_projectile.shot_id = ID;
@@ -433,9 +433,10 @@ void Game::GameState::update_projectiles(float delta_time)
 
         if(not_colliding)
         {
-            for(size_t j=0; j<8; j++)
+            for(size_t j=0; j<12; j++)
             {
                 if (!player_vector[j].is_alive) continue;
+                if ((*projectile_itr).shot_id == j) continue;
                 Rectangle other_player_collider = Physics::make_rect({
                     .x = player_vector[j].position.x,
                     .y = player_vector[j].position.y,

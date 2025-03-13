@@ -1,6 +1,7 @@
 #ifndef H_PAGES_GAME_WINDOW
 #define H_PAGES_GAME_WINDOW
 
+#include <algorithm>
 #include <raylib.h>
 #include <vector>
 #include <mutex>
