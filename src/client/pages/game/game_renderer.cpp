@@ -1,6 +1,7 @@
 #include "game_renderer.hpp"
 #include <iostream>
-#include<algorithm>
+#include <algorithm>
+#include <stdlib.h>
 
 Pages::GameRenderer::GameRenderer()
 {
@@ -82,7 +83,7 @@ void Pages::GameRenderer::draw(const Game::GameState& gs, int player_id, const s
                 if (has_shot){
                     if (gs.player_vector[i].gun_type == 2){
                         Rectangle rect = {
-                            gs.player_vector[i].ray_contact.x, gs.player_vector[i].ray_contact.y, Game::Data::explosion_types[0].radius * 2, Game::Data::explosion_types[0].radius * 2
+                            gs.player_vector[i].ray_contact.x, gs.player_vector[i].ray_contact.y, static_cast<float>(Game::Data::explosion_types[0].radius) * 2, static_cast<float>(Game::Data::explosion_types[0].radius) * 2
                         };
                         effect_ac.play(0, [rect, this](float _){
                             return std::pair<Rectangle, float>{camera.transform(rect), 0};
@@ -182,6 +183,36 @@ void Pages::GameRenderer::draw(const Game::GameState& gs, int player_id, const s
                 .font_color = BLACK,
                 .position = {.value = {health_bar.x + actual_width/2, health_bar.y + health_bar.height/2}, .mode = {DragonLib::UI::DrawParameters::ABSOLUTE, DragonLib::UI::DrawParameters::ABSOLUTE}},
             });
+
+            float reloadfactor = std::min(static_cast<float>(gs.player_vector[i].time_since_last_shot)/static_cast<float>(Game::Data::gun_types[gs.player_vector[i].gun_type].reload_time), static_cast<float>(1));
+
+            Rectangle reload_bar = {
+                .x = gs.player_vector[i].position.x,
+                .y = gs.player_vector[i].position.y,
+                .width = 100,
+                .height = 10
+            };
+
+            reload_bar = camera.transform(reload_bar);
+            Vector2 rboffset = camera.scale(Vector2{-50, -static_cast<float>(Game::Data::tank_types[gs.player_vector[i].tank_type].height)-10});
+            
+            reload_bar.x += rboffset.x;
+            reload_bar.y += rboffset.y;
+            DrawRectangleRounded(reload_bar, 1.0, 6, GRAY);
+
+            float rb_actual_width = reload_bar.width;
+
+            reload_bar.width *= reloadfactor; 
+            DrawRectangleRounded(reload_bar, 5, 6, BLUE);
+            
+            DragonLib::Utils::Drawing::draw_text({
+                .content = "WEAPON READY",
+                .sdf=false,
+                .font_size = Global::rem * 0.5f,
+                .font_color = BLACK,
+                .position = {.value = {reload_bar.x + rb_actual_width/2, reload_bar.y + reload_bar.height/2}, .mode = {DragonLib::UI::DrawParameters::ABSOLUTE, DragonLib::UI::DrawParameters::ABSOLUTE}},
+            });
+
         }
     }
 
@@ -209,7 +240,7 @@ void Pages::GameRenderer::draw(const Game::GameState& gs, int player_id, const s
                     }
 
                     // Prevent tracker from being on tank
-                    crosshair_data.tracker_distance = std::max(crosshair_data.tracker_distance, Game::Data::gun_types[gs.player_vector[player_id].gun_type].width-5);
+                    crosshair_data.tracker_distance = std::max(crosshair_data.tracker_distance, Game::Data::gun_types[gs.player_vector[player_id].gun_type].width/2-20);
 
                     // Update coordinates
                     crosshair_data.tracker_position.x = crosshair_data.tracker_distance*cos(gs.player_vector[player_id].gun_angle);
@@ -314,11 +345,23 @@ void Pages::GameRenderer::load_async()
         }
     }
     // Do the same scene for gun animations!
-    const float gun_anim_duration = 0.7;
     gun_acs.reserve(12);
     for (size_t i = 0; i < 12; ++i){
         gun_acs.emplace_back();
         for (size_t gun_type = 0; gun_type < gun_spritesheets.size(); ++gun_type){
+            float gun_anim_duration;
+            if(gun_type == 0)
+            {
+                gun_anim_duration = 0.2;
+            }
+            else if(gun_type == 1)
+            {
+                gun_anim_duration = 0.5;
+            }
+            else
+            {
+                gun_anim_duration = 0.5;
+            }
             int gun_animation_frame_count = gun_type > 1 ? 6 : 4;
             gun_acs[i].register_animation(
                 new Utils::AAnimation(

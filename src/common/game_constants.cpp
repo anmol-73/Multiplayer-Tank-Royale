@@ -2,22 +2,22 @@
 
 std::vector<Game::Types::TankType> Game::Data::tank_types = {
     {
-        64, // Height
-        48, // Width
-        5, // Health
+        102.4, // Height
+        76.8, // Width
+        7, // Health
         120.0f, // Mov speed
         PI/2, // Rot speed
     },
     {
-        72, // Height
-        56, // Width
-        7, // Health
+        115.2, // Height
+        89.6, // Width
+        10, // Health
         80.0f, // Mov speed
         PI/3, // Rot speed
     },
     {
-        56, // Height
-        40, // Width
+        89.6, // Height
+        64, // Width
         4, // Health
         150.0f, // Mov speed
         PI, // Rot speed
@@ -31,24 +31,24 @@ std::vector<std::array<std::string, 3>> Game::Data::tank_resources = {
 
 std::vector<Game::Types::GunType> Game::Data::gun_types = {
     {
-        120, // Width
-        40, // Height
+        240, // Width
+        60, // Height
         1, // Rot speed
         1, // Dmg
         100000, // Range
         1, // Reload time
     }, // Gun
     {
-        160, // Width
-        48, // Height
+        200, // Width
+        50, // Height
         1, // Rot speed
         0, // Dmg
         0, // Range
         1, // Reload time
     }, // Cannon
     {
-        40, // Height
-        24, // Width
+        240, // Height
+        60, // Width
         0, // Rot speed
         0, // Dmg
         0, // Range

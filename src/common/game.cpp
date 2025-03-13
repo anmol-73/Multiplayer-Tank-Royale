@@ -255,6 +255,7 @@ void Game::GameState::set_gun_angle()
         }
     }
     player_vector[ID].gun_angle = normalize_angle(player_vector[ID].gun_angle);
+    if(player_vector[ID].gun_type == 2) player_vector[ID].gun_angle = PI/2;
 }
 
 void Game::GameState::handle_shots()
@@ -361,8 +362,8 @@ void Game::GameState::handle_shots()
                     new_projectile.type = 0;
                     new_projectile.angle = player_vector[ID].gun_angle;
                     new_projectile.position =  {
-                            .x = player_vector[ID].position.x + static_cast<float>((Game::Data::gun_types[player_vector[ID].gun_type].width + Game::Data::projectile_types[0].width + 1)*cos(player_vector[ID].gun_angle)),
-                            .y = player_vector[ID].position.y + static_cast<float>((Game::Data::gun_types[player_vector[ID].gun_type].width + Game::Data::projectile_types[0].width + 1)*sin(player_vector[ID].gun_angle)),
+                            .x = player_vector[ID].position.x + static_cast<float>((Game::Data::gun_types[player_vector[ID].gun_type].width/2 - 20)*cos(player_vector[ID].gun_angle)),
+                            .y = player_vector[ID].position.y + static_cast<float>((Game::Data::gun_types[player_vector[ID].gun_type].width/2 - 20)*sin(player_vector[ID].gun_angle)),
                         };
                     new_projectile.time_alive = 0;
                     new_projectile.shot_id = ID;
