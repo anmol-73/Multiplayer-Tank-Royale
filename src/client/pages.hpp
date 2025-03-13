@@ -2,3 +2,4 @@
 #include "pages/lobby/lobby.hpp"
 #include "pages/room/room.hpp"
 #include "pages/game/game_window.hpp"
+#include "pages/game_over/game_over.hpp"

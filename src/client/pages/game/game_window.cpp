@@ -9,7 +9,7 @@ void Pages::GameWindowScene::_update()
         return;
     }
     
-    if (client->is_game_over() or (IsKeyPressed(KEY_ESCAPE) and IsKeyPressed(KEY_LEFT_CONTROL))){
+    if (client->is_game_over() or (IsKeyDown(KEY_LEFT_CONTROL) and IsKeyPressed(KEY_C))){
         std::unique_lock<std::mutex> lk(gs_mutex);
         std::vector<std::pair<std::string, int>> leaderboard;
         for (size_t i = 0; i < prepared_args.player_details.size(); i++) {
