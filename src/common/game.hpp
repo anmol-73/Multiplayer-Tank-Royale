@@ -118,7 +118,7 @@ namespace Game
         /**
          * Takes a frame as input and updates game state accordingly
          */
-        void apply_frame(const Game::Frame& frame);
+        void apply_frame(const Game::Frame& frame, bool apply_changes=true);
 
         /**
          * Keeps angle between 0 and 2pi
