@@ -52,6 +52,7 @@ namespace Pages
         std::vector<DragonLib::DImage> gun_spritesheets;
         DragonLib::DImage explosion_spritesheet;
         DragonLib::DImage skull_spritesheet;
+        DragonLib::DImage projectile_spritesheet;
 
         Utils::EffectAnimationController effect_ac;
 

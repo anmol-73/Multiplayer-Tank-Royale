@@ -22,6 +22,7 @@ Pages::GameRenderer::GameRenderer()
 
     explosion_spritesheet.path = "resources/game_window/misc/ONLY_EXPLOSION.png";
     skull_spritesheet.path = "resources/game_window/misc/TARGET.png";
+    projectile_spritesheet.path = "resources/game_window/misc/PROJECTILE.png";
     
 }
 
@@ -125,15 +126,17 @@ void Pages::GameRenderer::draw(const Game::GameState& gs, int player_id, const s
     
     { // draw projectiles
         for (auto it = gs.projectile_vector.begin(); it != gs.projectile_vector.end(); ++it){
-            DrawRectanglePro(
+            DrawTexturePro(
+                projectile_spritesheet.tex,
+                {0,0,36,16},
                 camera.transform({
                     (*it).position.x, (*it).position.y,
                     static_cast<float>(Game::Data::projectile_types[(*it).type].width), static_cast<float>(Game::Data::projectile_types[(*it).type].height)
-                }), 
+                }),
                 camera.scale(Vector2{
                     static_cast<float>(Game::Data::projectile_types[(*it).type].width/2), static_cast<float>(Game::Data::projectile_types[(*it).type].height/2)
                 }), 
-                -(*it).angle*RAD2DEG, RED
+                -(*it).angle*RAD2DEG, WHITE
             );
         }
     }
@@ -296,6 +299,7 @@ void Pages::GameRenderer::load_async()
 
     explosion_spritesheet.load_im();
     skull_spritesheet.load_im();
+    projectile_spritesheet.load_im();
 
     tank_acs.reserve(12);
     const float tank_anim_duration = 0.4;
@@ -415,7 +419,7 @@ void Pages::GameRenderer::load_async()
                     float width = std::min((time / 0.5f) * rect.width, rect.width);
                     
                     DrawRing(
-                        {rect.x, rect.y}, rect.width / 2 - 4, rect.width / 2, 0, 2 * PI, 10, {230, 10, 10, 200}
+                        {rect.x, rect.y}, rect.width / 2 - 4, rect.width / 2, 0, 2 * RAD2DEG * PI, 10, {230, 10, 10, 200}
                     );
                     // DrawCircleLines(
                     //     rect.x, rect.y, rect.width / 2, {230, 10, 10, 200}
@@ -438,7 +442,7 @@ void Pages::GameRenderer::load_async()
                     float ratio = ((time - 1.5)/ 0.5);
                     float width = (1 - ratio) * rect.width;
                     DrawRing(
-                        {rect.x, rect.y}, rect.width / 2 - 4, rect.width / 2, 0, 2 * PI, 10, {230, 10, 10, 200}
+                        {rect.x, rect.y}, rect.width / 2 - 4, rect.width / 2, 0, 2 * RAD2DEG * PI, 10, {230, 10, 10, 200}
                     );
                     rect.width = width; rect.height = width;
                     DrawTexturePro(
@@ -490,6 +494,7 @@ void Pages::GameRenderer::load_sync()
 
     skull_spritesheet.load_tex();
     explosion_spritesheet.load_tex();
+    projectile_spritesheet.load_tex();
 
 }
 
@@ -508,6 +513,7 @@ void Pages::GameRenderer::cleanup_async()
     }
     skull_spritesheet.unload_im();
     explosion_spritesheet.unload_im();
+    projectile_spritesheet.unload_im();
 }
 
 void Pages::GameRenderer::cleanup_sync()
@@ -523,6 +529,7 @@ void Pages::GameRenderer::cleanup_sync()
     }
     skull_spritesheet.unload_tex();
     explosion_spritesheet.unload_tex();
+    projectile_spritesheet.unload_tex();
 }
 
 
