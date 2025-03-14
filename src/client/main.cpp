@@ -31,6 +31,7 @@ int main(int argc, char* argv[]){
     SceneManagement::SceneManager::register_scene(SceneManagement::SceneName::LOBBY, new Pages::LobbyScene());
     SceneManagement::SceneManager::register_scene(SceneManagement::SceneName::ROOM, new Pages::RoomScene());
     SceneManagement::SceneManager::register_scene(SceneManagement::SceneName::GAME, new Pages::GameWindowScene());
+    SceneManagement::SceneManager::register_scene(SceneManagement::SceneName::GOVER, new Pages::GameOverScene());
     SceneManagement::SceneManager::init();
 
     SceneManagement::SceneManager::load_scene(SceneManagement::SceneName::SPLASH);

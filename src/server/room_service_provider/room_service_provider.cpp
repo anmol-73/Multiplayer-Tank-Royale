@@ -156,7 +156,7 @@ void RoomServiceProvider::handle_message(ENetPeer *peer, Communication::Command 
             auto gsp = new GameServiceProvider(name, game_destroy_callback, get_player_details(), settings);
             
             int port = gsp->address.port;
-            gsp->start_async(); // TODO! GSPs have to self delete! (Thats very prone to leaking)
+            gsp->start_async();
             log(gsp->name <<  gsp->address.port);
             register_game(port, gsp);
             

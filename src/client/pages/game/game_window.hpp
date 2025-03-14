@@ -1,6 +1,7 @@
 #ifndef H_PAGES_GAME_WINDOW
 #define H_PAGES_GAME_WINDOW
 
+#include <algorithm>
 #include <raylib.h>
 #include <vector>
 #include <mutex>
@@ -12,7 +13,7 @@
 #include "core/dragonlib.hpp"
 #include "game_client.hpp"
 #include "game_ui.hpp"
-#include "core/utils/animation_controller.hpp"
+#include "core/utils/animations/animation_controller.hpp"
 #include "core/utils/camera.hpp"
 #include "game_renderer.hpp"
 

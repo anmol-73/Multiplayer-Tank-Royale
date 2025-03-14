@@ -17,7 +17,7 @@ void DragonLib::DImage::load_im()
 
 void DragonLib::DImage::unload_im()
 {
-    // TODO! For some reason UnloadImage gives a segfault!
+    // FIXME! For some reason UnloadImage gives a segfault!
     // Temporary fix... I have moved the Unload when the texture is loaded
     if (!is_im_loaded) return;
     is_im_loaded = false;

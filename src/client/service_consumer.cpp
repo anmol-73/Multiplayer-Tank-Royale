@@ -125,8 +125,8 @@ void ServiceConsumer::send_message(Communication::Command command, const void *d
 
 void ServiceConsumer::send_command(Communication::Command command, ENetPacketFlag flag)
 {
-    if (!is_running()){ // TODO: Throwing now just for sanity check. Remove this before rc
-        throw std::runtime_error("Tried to send command after disconnection!");
+    if (!is_running()){
+        return;
     }
     enet_peer_send(
         peer, 0,

@@ -129,13 +129,8 @@ void GameServiceProvider::timed_loop_func()
     time_at_last_broadcast = game_state.curtime();
     while(is_running())
     {
-        // TODO: Consider making the sleep like sleep properly (the code doesnt take 0 time to run....)
         // 60 fps
-        
-        
-        
         double t = game_state.curtime();
-        
         if (t > 120000){ // Game timer
             game_over = true;
             log("Game over :)");
@@ -145,8 +140,6 @@ void GameServiceProvider::timed_loop_func()
         }
         
         double delta_time = t - time_at_last_broadcast;
-        // log(delta_time << "!");
-        // TODO: Consider putting a mutex
         time_at_last_broadcast = t;
 
         {

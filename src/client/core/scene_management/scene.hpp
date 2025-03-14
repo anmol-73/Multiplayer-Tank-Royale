@@ -17,6 +17,7 @@ namespace SceneManagement
         LOBBY,
         ROOM,
         GAME,
+        GOVER,
         __NIL__ // NOTE: This must be the last position in the enum
     };
 

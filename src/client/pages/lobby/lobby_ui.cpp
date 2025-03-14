@@ -24,7 +24,7 @@ Pages::LobbyUI::LobbyUI()
     { // Title text
         bg->register_element(
             new UI::Elements::Text(
-                [](auto _) -> std::pair<UI::DrawParameters::Box, UI::DrawParameters::Text> {
+                [this](auto _) -> std::pair<UI::DrawParameters::Box, UI::DrawParameters::Text> {
                     return {
                         { // Box (for alignment)
                             .position = {
@@ -33,7 +33,7 @@ Pages::LobbyUI::LobbyUI()
                             }
                         },
                         { // Text properties
-                            .content = "Server Address : 127.0.0.1",
+                            .content = "Server Address : " + address_string,
                             .font_size = Global::rem,
                             .font_color = {0x45, 0x41, 0x39, 0xc0},
                             .position = {
@@ -144,6 +144,24 @@ Pages::LobbyUI::LobbyUI()
         );
     }
 
+    bg->register_element(
+        new UI::Elements::Span(
+            [this](UI::Elements::Span* _){
+                
+                return UI::DrawParameters::TextBox{
+                    .content = this->error_message,
+                    .font_size = Global::rem,
+                    .font_color = Components::ColorScheme::light_red,
+                    .position = {
+                        .value = {0.5, 0.85},
+                        .mode = {Mode::SCREEN_W, Mode::SCREEN_H}
+                    },
+                    .fill = {0}
+                };
+            }
+        )
+    );
+
     create_room_name_input->value = "Default Room";
 }
 
@@ -168,9 +186,11 @@ std::string Pages::LobbyUI::new_room_request()
 void Pages::LobbyUI::poll_events()
 {
     if ((!visible) || (!events_enabled)) return;
-    UI::Elements::PageView::poll_events();
-
+    
+    create_room_button->interactable = Utils::StringAlgorithms::stripped(create_room_name_input->value).size() > 0;
     for (size_t i = 0; i < room_selects.size(); ++i){
         room_selects[i]->interactable = (i < visible_rooms.size());
     }
+    
+    UI::Elements::PageView::poll_events();
 }

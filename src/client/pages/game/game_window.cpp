@@ -8,17 +8,20 @@ void Pages::GameWindowScene::_update()
         SceneManagement::SceneManager::quit();
         return;
     }
-
-    if (client->is_game_over()){
-        BeginDrawing();{
-            ClearBackground({0x1e, 0x1e, 0x1e, 0xff});
-            DragonLib::Utils::Drawing::draw_text({
-                .content = "GAME OVER!",
-                .font_size = Global::rem * 2,
-                .font_color = {0, 0, 0, 0x60}
-            });
+    
+    if (client->is_game_over() or (IsKeyDown(KEY_LEFT_CONTROL) and IsKeyPressed(KEY_C))){
+        std::unique_lock<std::mutex> lk(gs_mutex);
+        std::vector<std::pair<std::string, int>> leaderboard;
+        for (size_t i = 0; i < prepared_args.player_details.size(); i++) {
+            if (!game_state.player_vector[prepared_args.player_details[i].id].exists) continue;
+            leaderboard.push_back(std::make_pair(prepared_args.player_details[i].name, game_state.player_vector[prepared_args.player_details[i].id].score));
         }
-        EndDrawing();
+        std::sort(leaderboard.begin(), leaderboard.end(), [](const auto& a, const auto& b) { return a.second > b.second;});
+        
+        size_t sz = leaderboard.size();
+        SceneManagement::SceneManager::prepare_scene(SceneManagement::SceneName::GOVER, &sz, 0);
+        SceneManagement::SceneManager::prepare_scene(SceneManagement::SceneName::GOVER, leaderboard.data(), 1);
+        SceneManagement::SceneManager::load_scene(SceneManagement::SceneName::GOVER);
         return;
     }
 
@@ -34,6 +37,8 @@ void Pages::GameWindowScene::_update()
 
         std::unique_lock<std::mutex> lk(gs_mutex);
         renderer.draw(game_state, prepared_args.pi.id, prepared_args.player_details);
+        renderer.draw_leaderboard(game_state, prepared_args.player_details);
+
         ui.draw();
     }
     EndDrawing();
@@ -173,6 +178,7 @@ void Pages::GameWindowScene::game_update_callback(const Game::GameState server_g
     game_state = server_gs;
     // std::cout << "GS DELAY: " << t2 - td << std::endl;
     // td = t2;
+    
 }
 
 void Pages::GameWindowScene::logic_update()
@@ -183,13 +189,13 @@ void Pages::GameWindowScene::logic_update()
     made_frames.push_back(curr_frame);
     
     // auto t1 = game_state.curtime();
-    // int todo = curr_frame.frame_num - game_state.player_vector[prepared_args.pi.id].last_frame_processed_num;
+    // int time = curr_frame.frame_num - game_state.player_vector[prepared_args.pi.id].last_frame_processed_num;
     for(size_t i = game_state.player_vector[prepared_args.pi.id].last_frame_processed_num+1; i<=curr_frame.frame_num; i++)
     {
-        game_state.apply_frame(made_frames[i]);
+        game_state.apply_frame(made_frames[i], false);
     }
     // auto t2 = game_state.curtime();
-    // std::cout << t2 - t1 << ' ' << todo << std::endl;
+    // std::cout << t2 - t1 << ' ' << time << std::endl;
 }
 
 void Pages::GameWindowScene::set_curr_frame()

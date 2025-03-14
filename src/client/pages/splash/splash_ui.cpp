@@ -19,7 +19,7 @@ Pages::SplashUI::SplashUI()
 
     bg->register_element(
         address_input = Components::create_sl_input(
-            "Server Address:", "eg: 127.0.0.1:3000", {
+            "Server Address:", "eg: 127.0.0.1:8000", {
                 .value = {0.5f, 0.5f},
                 .mode = {Mode::SCREEN_W, Mode::SCREEN_H}
             }, {

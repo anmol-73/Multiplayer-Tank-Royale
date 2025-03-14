@@ -1,4 +1,5 @@
 #include "game_ui.hpp"
+#include <iostream>
 
 Pages::GameUI::GameUI()
 {
@@ -6,11 +7,11 @@ Pages::GameUI::GameUI()
     
     tank_images.assign(Game::Data::tank_resources.size(), {});
     for (size_t i = 0; i < tank_images.size(); ++i){
-        tank_images[i].path = Game::Data::tank_resources[i].first;
+        tank_images[i].path = Game::Data::tank_resources[i][0];
     }
     turret_images.assign(Game::Data::gun_resources.size(), {});
     for (size_t i = 0; i < turret_images.size(); ++i){
-        turret_images[i].path = Game::Data::gun_resources[i].first;
+        turret_images[i].path = Game::Data::gun_resources[i][0];
     }
     
     { // Tank select
@@ -19,11 +20,11 @@ Pages::GameUI::GameUI()
                 tank_images[0], [this](UI::Elements::ImageView *) -> UI::DrawParameters::Box{
                     return {
                         .position = { 
-                            .value = {0.66f, 0.3f},
+                            .value = {0.1f, 0.1f},
                             .mode = {Mode::SCREEN_W, Mode::SCREEN_H}
                         },
                         .size = { 
-                            .value = {0.3f, 0.16875f},
+                            .value = {0.2f, 0.2},
                             .mode = {Mode::SCREEN_W, Mode::SCREEN_W} 
                         },
                         .origin = {0} 
@@ -34,11 +35,11 @@ Pages::GameUI::GameUI()
         register_element(
             new UI::Elements::Span([this](UI::Elements::Span* _){
                 return UI::DrawParameters::TextBox{
-                    .content = Game::Data::tank_resources[tank_idx].second,
-                    .font_size = 0.8f * Global::rem,
-                    .font_color =  {0x45, 0x41, 0x39, 0xff},
+                    .content = Game::Data::tank_resources[tank_idx][1],
+                    .font_size = 1.5f * Global::rem,
+                    .font_color =  GRAY,
                     .position = {
-                        .value = {0.81, 0.62},
+                        .value = {0.2, 0.5},
                         .mode = {Mode::SCREEN_W, Mode::SCREEN_H}
                     }
                 };
@@ -48,7 +49,7 @@ Pages::GameUI::GameUI()
         register_element(
             left_tank_select = Components::create_text_button(
                 "<", {
-                    .value = {0.65, 0.66},
+                    .value = {0.1, 0.61},
                     .mode = {Mode::SCREEN_W, Mode::SCREEN_H},
                 },
                 {
@@ -61,7 +62,7 @@ Pages::GameUI::GameUI()
         register_element(
             right_tank_select = Components::create_text_button(
                 ">", {
-                    .value = {0.83, 0.66},
+                    .value = {0.26, 0.61},
                     .mode = {Mode::SCREEN_W, Mode::SCREEN_H},
                 },
                 {
@@ -80,11 +81,11 @@ Pages::GameUI::GameUI()
                 turret_images[0], [this](UI::Elements::ImageView *) -> UI::DrawParameters::Box{
                     return {
                         .position = { 
-                            .value = {0.66f, 0.3f},
+                            .value = {0.4f, 0.1f},
                             .mode = {Mode::SCREEN_W, Mode::SCREEN_H}
                         },
                         .size = { 
-                            .value = {0.3f, 0.16875f},
+                            .value = {0.2f, 0.2},
                             .mode = {Mode::SCREEN_W, Mode::SCREEN_W} 
                         },
                         .origin = {0} 
@@ -95,11 +96,11 @@ Pages::GameUI::GameUI()
         register_element(
             new UI::Elements::Span([this](UI::Elements::Span* _){
                 return UI::DrawParameters::TextBox{
-                    .content = Game::Data::gun_resources[turret_idx].second,
-                    .font_size = 0.8f * Global::rem,
-                    .font_color =  {0x45, 0x41, 0x39, 0xff},
+                    .content = Game::Data::gun_resources[turret_idx][1],
+                    .font_size = 1.5f * Global::rem,
+                    .font_color =  GRAY,
                     .position = {
-                        .value = {0.81, 0.82},
+                        .value = {0.5, 0.5},
                         .mode = {Mode::SCREEN_W, Mode::SCREEN_H}
                     }
                 };
@@ -109,7 +110,7 @@ Pages::GameUI::GameUI()
         register_element(
             left_turret_select = Components::create_text_button(
                 "<", {
-                    .value = {0.65, 0.66},
+                    .value = {0.4, 0.61},
                     .mode = {Mode::SCREEN_W, Mode::SCREEN_H},
                 },
                 {
@@ -122,7 +123,7 @@ Pages::GameUI::GameUI()
         register_element(
             right_turret_select = Components::create_text_button(
                 ">", {
-                    .value = {0.83, 0.66},
+                    .value = {0.56, 0.61},
                     .mode = {Mode::SCREEN_W, Mode::SCREEN_H},
                 },
                 {
@@ -138,9 +139,9 @@ Pages::GameUI::GameUI()
     { // Action buttons
         register_element(
             respawn_button = Components::create_span_button(
-                "Create Room",
+                "Spawn!",
                 {
-                    .value = {0.5, 0.7},
+                    .value = {0.35, 0.8},
                     .mode = {Mode::SCREEN_W, Mode::SCREEN_H}
                 }
             )
@@ -215,4 +216,21 @@ void Pages::GameUI::poll_events()
         turret_idx = (static_cast<int>(turret_images.size()) + turret_idx + right_turret_select->clicked - left_turret_select->clicked) % turret_images.size();
         turret_preview->image = turret_images[turret_idx];
     }
+}
+
+void Pages::GameUI::draw()
+{
+    if (!visible) return;
+
+    DragonLib::Utils::Drawing::draw_box(
+        UI::DrawParameters::Box{
+            .size = {
+                .value = {1.0f, 1.0f},
+                .mode = {UI::DrawParameters::SizeMode::SCREEN_W, UI::DrawParameters::SizeMode::SCREEN_H}
+            },
+            .fill = Color{0, 0, 0, 130}
+        }
+    );
+
+    UI::Elements::PageView::draw();
 }

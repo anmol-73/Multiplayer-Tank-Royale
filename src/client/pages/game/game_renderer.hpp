@@ -6,6 +6,8 @@
 #include "core/utils/camera.hpp"
 #include "game_client.hpp"
 
+#include "core/utils/animations/animation_controller.hpp"
+
 namespace Pages
 {
     struct GameRenderer{
@@ -13,6 +15,7 @@ namespace Pages
         GameRenderer();
 
         void draw(const Game::GameState& gs, int player_id, const std::vector<Communication::Game::PlayerIdentification>& pd);
+        void draw_leaderboard(const Game::GameState& gs, const std::vector<Communication::Game::PlayerIdentification>& pd);
 
 
         struct CrosshairData
@@ -44,6 +47,18 @@ namespace Pages
         size_t tank_index = 0;
 
         std::vector<DragonLib::DImage> map_images;
+
+        std::vector<DragonLib::DImage> tank_spritesheets;
+        std::vector<DragonLib::DImage> gun_spritesheets;
+        DragonLib::DImage explosion_spritesheet;
+        DragonLib::DImage skull_spritesheet;
+        DragonLib::DImage projectile_spritesheet;
+
+        Utils::EffectAnimationController effect_ac;
+
+        std::vector<Utils::AnimationController> tank_acs;
+        std::vector<Utils::AnimationController> gun_acs;
+
 
         std::vector<double> prev_times_since_last_shot;
     };

@@ -4,6 +4,7 @@
 #include <raylib.h>
 #include <stdlib.h>
 #include <vector>
+#include <list>
 #include <raymath.h>
 #include <chrono>
 
@@ -52,6 +53,8 @@ namespace Game
 
             bool is_alive;
 
+            bool is_moving;
+
             size_t last_frame_processed_num;
 
             size_t tank_type;
@@ -88,7 +91,7 @@ namespace Game
             size_t shot_id;
         };
         
-        std::vector<Game::GameState::Projectile> projectile_vector;
+        std::list<Game::GameState::Projectile> projectile_vector;
 
         struct Explosion
         {
@@ -101,7 +104,7 @@ namespace Game
             size_t shot_id;
         };
         
-        std::vector<Game::GameState::Explosion> explosion_vector;
+        std::list<Game::GameState::Explosion> explosion_vector;
 
         // Current frame being processed, so that it doesnt need to be passed around to functions
         Frame curr_frame;
@@ -115,7 +118,7 @@ namespace Game
         /**
          * Takes a frame as input and updates game state accordingly
          */
-        void apply_frame(const Game::Frame& frame);
+        void apply_frame(const Game::Frame& frame, bool apply_changes=true);
 
         /**
          * Keeps angle between 0 and 2pi

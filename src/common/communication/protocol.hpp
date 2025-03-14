@@ -37,7 +37,7 @@ namespace Communication
             unsigned long long int map = 0; // The index of the map used.
         };
 
-        // TODO: Think of a nice way for room to be joinable while game is running!
+        // FUTURE: Think of a nice way for room to be joinable while game is running! NO
         // The commands sent by the room server
         enum Server{
             JOIN_DENIED, // No data. Client is not allowed to join since room is full.

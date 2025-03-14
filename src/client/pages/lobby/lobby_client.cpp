@@ -14,6 +14,10 @@ const std::vector<Communication::Lobby::RoomDetail> &ServiceConsumers::LobbyClie
 
 Communication::RequestStatus ServiceConsumers::LobbyClient::get_new_room_status()
 {
+    if (status == Communication::RequestStatus::DENIED){
+        status = Communication::RequestStatus::IDLE;
+        return Communication::RequestStatus::DENIED;
+    }
     return status;
 }
 
@@ -27,7 +31,7 @@ void ServiceConsumers::LobbyClient::request_new_room(const std::string &room_nam
 {
     using namespace Communication::Lobby;
 
-    assert(status == Communication::RequestStatus::DENIED);
+    assert(status == Communication::RequestStatus::IDLE);
     status = Communication::RequestStatus::ONGOING;
     
     RoomName name;
@@ -71,7 +75,7 @@ void ServiceConsumers::LobbyClient::handle_message(Communication::Command type, 
 
 void ServiceConsumers::LobbyClient::on_start()
 {
-    status = Communication::RequestStatus::DENIED;
+    status = Communication::RequestStatus::IDLE;
     log("Listening :)");
 }
 

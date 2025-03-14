@@ -34,8 +34,6 @@ void LobbyServiceProvider::on_finish()
 {
     log("Stopped servicing :(");
 
-    // TODO: Consider joining all worker threads! (Reallly consider having a central unit that keeps track of all service providers)
-
     for (const auto& [port, rsp]: rooms){
         rsp->stop();
         log("Forcibly closed room `" << rsp->name << "`.");

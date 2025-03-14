@@ -16,7 +16,7 @@ namespace DragonLib
                 Color color = BLACK; // The color of the border
                 float offset = 0; // The offset around the box with which the border is drawn
                 
-                // TODO: Add support for border radius?
+                // FUTURE: Add support for border radius?
                 // (One of the initial commits has the struct definition to store radius information it doesn't have an implementation yet)
             };
             enum SizeMode{
