@@ -33,7 +33,11 @@ void Pages::GameRenderer::draw(const Game::GameState& gs, int player_id, const s
         SetMouseCursor(MOUSE_CURSOR_CROSSHAIR);
     }
 
-    
+    if(IsKeyPressed(KEY_P)){
+            
+        Global::Rendering::Shaders::rendering_shader = LoadShader(0, TextFormat("resources/shaders/postproc.fs"));
+    }
+    BeginShaderMode(Global::Rendering::Shaders::rendering_shader);{
     camera.follow(gs.player_vector[player_id].position);
     
     { // draw map
@@ -153,7 +157,8 @@ void Pages::GameRenderer::draw(const Game::GameState& gs, int player_id, const s
     //         );
     //     }
     // }
-
+    }
+    EndShaderMode();
     { // draw health bar and name
         for (size_t j = 0; j < pd.size(); ++j)
         {
