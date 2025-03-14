@@ -7,7 +7,7 @@ Pages::RoomUI::RoomUI()
 
     map_images.assign(Maps::map_count, {});
     for (size_t i = 0; i < Maps::map_count; ++i){
-        map_images[i].path = Maps::maps[i].resource_path;
+        map_images[i].path = Maps::maps[i].icon_path;
     }
 
     auto *bg = new UI::Elements::ImageView(

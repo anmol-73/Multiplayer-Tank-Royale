@@ -55,6 +55,7 @@ Maps::MapData Maps::maps[2] = {{
         {0, 0},
     },
     .resource_path = "resources/game_window/defaultmap.png",
+    .icon_path = "resources/map1.png",
     .name = "Dirty"
 },
 {
@@ -149,6 +150,7 @@ Maps::MapData Maps::maps[2] = {{
         {0, 0},
     },
     .resource_path = "resources/game_window/spacemap.png",
+    .icon_path = "resources/map2.png",
     .name = "Spaceship"
 }
 };
