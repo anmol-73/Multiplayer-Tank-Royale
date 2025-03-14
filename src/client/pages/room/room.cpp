@@ -1,5 +1,5 @@
 #include "room.hpp"
-
+#include <cstring>
 
 void Pages::RoomScene::_update()
 {

@@ -1,4 +1,5 @@
 #include "lobby_service_provider.hpp"
+#include<cstring>
 
 #define log(message) std::cout << "[Lobby Server] " << message << std::endl
 
