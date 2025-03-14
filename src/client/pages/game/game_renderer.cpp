@@ -271,6 +271,7 @@ void Pages::GameRenderer::draw(const Game::GameState& gs, int player_id, const s
                 );
                 break;
             }
+            
         }
     }
 
