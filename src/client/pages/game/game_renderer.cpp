@@ -138,9 +138,12 @@ void Pages::GameRenderer::draw(Game::GameState& gs, int player_id, const std::ve
             }
         }
 
+    }
+    EndShaderMode();
         
         { // draw projectiles
             for (auto it = gs.projectile_vector.begin(); it != gs.projectile_vector.end(); ++it){
+                
                 DrawTexturePro(
                     projectile_spritesheet.tex,
                     {0,0,36,16},
@@ -168,8 +171,7 @@ void Pages::GameRenderer::draw(Game::GameState& gs, int player_id, const std::ve
         //         );
         //     }
         // }
-        }
-    EndShaderMode();
+    std::cout<<GetFPS()<<std::endl;
     { // draw health bar and name
         for (size_t j = 0; j < pd.size(); ++j)
         {
@@ -410,7 +412,7 @@ void Pages::GameRenderer::load_async()
             }
             else if(gun_type == 1)
             {
-                gun_anim_duration = 0.5;
+                gun_anim_duration = 0.3;
             }
             else
             {
@@ -463,7 +465,6 @@ void Pages::GameRenderer::load_async()
     effect_ac.register_animation(
         new Utils::AAnimation(
             2.3, [this](float time, Rectangle rect, float _angle){
-                std::cout << time << rect.x << ' ' << rect.y << std::endl;
                 if (time < 1.5){
                     float width = std::min((time / 0.5f) * rect.width, rect.width);
                     
@@ -544,6 +545,7 @@ void Pages::GameRenderer::load_sync()
     skull_spritesheet.load_tex();
     explosion_spritesheet.load_tex();
     spacebg_spritesheet.load_tex();
+    projectile_spritesheet.load_tex();
 
 }
 
@@ -563,6 +565,7 @@ void Pages::GameRenderer::cleanup_async()
     skull_spritesheet.unload_im();
     explosion_spritesheet.unload_im();
     spacebg_spritesheet.unload_im();
+    projectile_spritesheet.unload_im();
 }
 
 void Pages::GameRenderer::cleanup_sync()
@@ -579,6 +582,7 @@ void Pages::GameRenderer::cleanup_sync()
     skull_spritesheet.unload_tex();
     explosion_spritesheet.unload_tex();
     spacebg_spritesheet.unload_tex();
+    projectile_spritesheet.unload_tex();
 }
 
 
