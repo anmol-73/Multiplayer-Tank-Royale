@@ -49,7 +49,7 @@ void Pages::GameRenderer::draw(Game::GameState& gs, int player_id, const std::ve
             WHITE
         );
     }
-    //BeginShaderMode(Global::Rendering::Shaders::rendering_shader);
+    if (gs.map_num != 2)    BeginShaderMode(Global::Rendering::Shaders::rendering_shader);
     {
         camera.follow(gs.player_vector[player_id].position);
         
@@ -152,7 +152,7 @@ void Pages::GameRenderer::draw(Game::GameState& gs, int player_id, const std::ve
             WHITE
         );
     }
-   // EndShaderMode();
+    if (gs.map_num != 2)   EndShaderMode();
         
         { // draw projectiles
             for (auto it = gs.projectile_vector.begin(); it != gs.projectile_vector.end(); ++it){

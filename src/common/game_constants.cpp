@@ -2,22 +2,22 @@
 
 std::vector<Game::Types::TankType> Game::Data::tank_types = {
     {
-        102.4, // Height
-        76.8, // Width
+        68.2, // Height
+        50.6, // Width
         7, // Health
         120.0f, // Mov speed
         PI/2, // Rot speed
     },
     {
-        115.2, // Height
-        89.6, // Width
-        10, // Health
+        76.8, // Height
+        65.2, // Width
+        11, // Health
         80.0f, // Mov speed
         PI/3, // Rot speed
     },
     {
-        89.6, // Height
-        64, // Width
+        59.7, // Height
+        42.6, // Width
         4, // Health
         150.0f, // Mov speed
         PI, // Rot speed
@@ -31,24 +31,24 @@ std::vector<std::array<std::string, 3>> Game::Data::tank_resources = {
 
 std::vector<Game::Types::GunType> Game::Data::gun_types = {
     {
-        240, // Width
-        60, // Height
-        1, // Rot speed
+        160, // Width
+        40, // Height
+        1.7, // Rot speed
         1, // Dmg
         100000, // Range
-        1, // Reload time
+        0.7, // Reload time
     }, // Gun
     {
-        200, // Width
-        50, // Height
-        1, // Rot speed
+        133, // Width
+        33, // Height
+        0.8, // Rot speed
         0, // Dmg
         0, // Range
-        1, // Reload time
+        0.4, // Reload time
     }, // Cannon
     {
-        240, // Height
-        60, // Width
+        160, // Height
+        40, // Width
         0, // Rot speed
         0, // Dmg
         0, // Range
@@ -74,8 +74,8 @@ std::vector<Game::Types::ProjectileType> Game::Data::projectile_types = {
 
 std::vector<Game::Types::ExplosionType> Game::Data::explosion_types = {
     {
-        72, // Radius
-        3, // Dmg
+        100, // Radius
+        5, // Dmg
         2000, // Lifetime
     },
 };
