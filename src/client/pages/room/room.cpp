@@ -1,9 +1,15 @@
 #include "room.hpp"
-
+#include <cstring>
 
 void Pages::RoomScene::_update()
 {
     if (client->get_join_status() == Communication::RequestStatus::ONGOING) return _loading_update();
+
+    if (!client->is_connected()){
+        SceneManagement::SceneManager::prepare_scene(SceneManagement::SceneName::LOBBY, "Connection to the room server was lost!", 1);
+        SceneManagement::SceneManager::load_scene(SceneManagement::SceneName::LOBBY);
+        return;
+    }
 
     if (WindowShouldClose()){
         SceneManagement::SceneManager::quit();
@@ -121,7 +127,7 @@ void Pages::RoomScene::_load()
     
     if (address.is_invalid()){ // This is clean af. I love you past self :)
         SceneManagement::SceneManager::prepare_scene(SceneManagement::SceneName::LOBBY, address.name.c_str(), 1);
-        SceneManagement::SceneManager::load_scene(SceneManagement::SceneName::LOBBY);
+        SceneManagement::SceneManager::load_deferred(SceneManagement::SceneName::LOBBY);
         return;
     }
     
@@ -130,7 +136,7 @@ void Pages::RoomScene::_load()
     
     if (error.size() > 0){
         SceneManagement::SceneManager::prepare_scene(SceneManagement::SceneName::LOBBY, error.c_str(), 1);
-        SceneManagement::SceneManager::load_scene(SceneManagement::SceneName::LOBBY);
+        SceneManagement::SceneManager::load_deferred(SceneManagement::SceneName::LOBBY);
         return;
     }
     

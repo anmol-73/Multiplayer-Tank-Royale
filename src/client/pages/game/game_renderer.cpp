@@ -23,10 +23,11 @@ Pages::GameRenderer::GameRenderer()
     explosion_spritesheet.path = "resources/game_window/misc/ONLY_EXPLOSION.png";
     skull_spritesheet.path = "resources/game_window/misc/TARGET.png";
     projectile_spritesheet.path = "resources/game_window/misc/PROJECTILE.png";
+    spacebg_spritesheet.path = "resources/game_window/spacebg.png";
     
 }
 
-void Pages::GameRenderer::draw(const Game::GameState& gs, int player_id, const std::vector<Communication::Game::PlayerIdentification>& pd)
+void Pages::GameRenderer::draw(Game::GameState& gs, int player_id, const std::vector<Communication::Game::PlayerIdentification>& pd)
 {
     auto delta_time = GetFrameTime();
     if (gs.player_vector[player_id].is_alive){
@@ -279,6 +280,37 @@ void Pages::GameRenderer::draw(const Game::GameState& gs, int player_id, const s
         }
     }
 
+    int time = (std::max(120000 - static_cast<int>(gs.curtime()), 0)) / 1000;
+    if (!game_started){
+        DragonLib::Utils::Drawing::draw_text(
+            {
+                .content = "Waiting for players...",
+                .font_size = Global::rem * 3,
+                .font_color = BLACK,
+                .position = {
+                    .value = {0.5, 0.1},
+                    .mode = {DragonLib::UI::DrawParameters::SizeMode::SCREEN_W, DragonLib::UI::DrawParameters::SizeMode::SCREEN_H}
+                }
+            }
+        );
+        return;
+    }
+    int minutes = time / 60;
+    int seconds = time % 60;
+    std::string secstring = std::to_string(seconds);
+    secstring = std::string(2 - std::min(static_cast<size_t>(2), secstring.length()), '0') + secstring;
+    std::string time_string = std::to_string(minutes) + ":" + secstring;
+    DragonLib::Utils::Drawing::draw_text(
+        {
+            .content = time_string,
+            .font_size = Global::rem * 3,
+            .font_color = BLACK,
+            .position = {
+                .value = {0.5, 0.1},
+                .mode = {DragonLib::UI::DrawParameters::SizeMode::SCREEN_W, DragonLib::UI::DrawParameters::SizeMode::SCREEN_H}
+            }
+        }
+    );
     
 }
 
@@ -305,6 +337,7 @@ void Pages::GameRenderer::load_async()
     explosion_spritesheet.load_im();
     skull_spritesheet.load_im();
     projectile_spritesheet.load_im();
+    spacebg_spritesheet.load_im();
 
     tank_acs.reserve(12);
     const float tank_anim_duration = 0.4;
@@ -499,7 +532,7 @@ void Pages::GameRenderer::load_sync()
 
     skull_spritesheet.load_tex();
     explosion_spritesheet.load_tex();
-    projectile_spritesheet.load_tex();
+    spacebg_spritesheet.load_tex();
 
 }
 
@@ -518,7 +551,7 @@ void Pages::GameRenderer::cleanup_async()
     }
     skull_spritesheet.unload_im();
     explosion_spritesheet.unload_im();
-    projectile_spritesheet.unload_im();
+    spacebg_spritesheet.unload_im();
 }
 
 void Pages::GameRenderer::cleanup_sync()
@@ -534,7 +567,7 @@ void Pages::GameRenderer::cleanup_sync()
     }
     skull_spritesheet.unload_tex();
     explosion_spritesheet.unload_tex();
-    projectile_spritesheet.unload_tex();
+    spacebg_spritesheet.unload_tex();
 }
 
 
@@ -554,12 +587,15 @@ void Pages::GameRenderer::draw_leaderboard(const Game::GameState& gs, const std:
     int leaderboardWidth = 220;
     int leaderboardHeight = 250;
     int padding = 15;
-    int xPos = screenWidth - leaderboardWidth - padding; 
-    int yPos = padding;
+    float xPos = screenWidth - leaderboardWidth - padding; 
+    float yPos = padding;
 
     DrawRectangle(xPos, yPos, leaderboardWidth, leaderboardHeight, {0x45, 0x41, 0x39, 0xf0});
 
-    DrawText("Leaderboard", xPos + 10, yPos + 10, 22, RAYWHITE);
+    DragonLib::Utils::Drawing::place_text(
+        "Leaderboard", Vector2{xPos + 10, yPos}, RAYWHITE, 22
+    );
+    // DrawText("Leaderboard", xPos + 10, yPos + 10, 22, RAYWHITE);
 
     std::vector<std::pair<std::string, int>> leaderboard;
     for (size_t i = 0; i < pd.size(); i++) {
@@ -569,10 +605,13 @@ void Pages::GameRenderer::draw_leaderboard(const Game::GameState& gs, const std:
     std::sort(leaderboard.begin(), leaderboard.end(), [](const auto& a, const auto& b) { return a.second > b.second;});
 
    
-    int textY = yPos + 40;
+    float textY = yPos + 40;
     for (const auto& player : leaderboard) {
         std::string playerText = player.first + " - " + std::to_string(player.second);
-        DrawText(playerText.c_str(), xPos + 10, textY, 18, RAYWHITE);
+        DragonLib::Utils::Drawing::place_text(
+            playerText.c_str(), Vector2{xPos + 10, textY}, RAYWHITE, 18
+        );
+        // DrawText(playerText.c_str(), xPos + 10, textY, 18, RAYWHITE);
         textY += 30; 
     }
 }

@@ -1,5 +1,5 @@
 #include "lobby_client.hpp"
-
+#include <cstring>
 #define log(message) std::cout << "[Lobby] " << message << std::endl
 
 bool ServiceConsumers::LobbyClient::is_connected()

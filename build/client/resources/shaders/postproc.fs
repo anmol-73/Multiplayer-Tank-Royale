@@ -15,7 +15,7 @@ out vec4 finalColor;
 // Parameters
 const float brightnessThreshold = 0.6;
 const float bloomIntensity = 1.8;
-const float darkenFactor = 0.4;
+const float darkenFactor = 0.9;
 
 // Blur settings
 const int blurRadius = 6;  // Controls blur strength
@@ -82,5 +82,5 @@ void main()
     finalImage += cloud * 0.4; // Increase intensity of smudges
 
     // Output final color
-    finalColor = vec4(finalImage, 1.0);
+    finalColor = vec4(finalImage, color.a);
 }

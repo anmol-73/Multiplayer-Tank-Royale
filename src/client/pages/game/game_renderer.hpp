@@ -14,10 +14,10 @@ namespace Pages
     public:
         GameRenderer();
 
-        void draw(const Game::GameState& gs, int player_id, const std::vector<Communication::Game::PlayerIdentification>& pd);
+        void draw(Game::GameState& gs, int player_id, const std::vector<Communication::Game::PlayerIdentification>& pd);
         void draw_leaderboard(const Game::GameState& gs, const std::vector<Communication::Game::PlayerIdentification>& pd);
 
-
+        bool game_started = false;
         struct CrosshairData
         {
             Vector2 mouse_position; // Relative
@@ -53,6 +53,7 @@ namespace Pages
         DragonLib::DImage explosion_spritesheet;
         DragonLib::DImage skull_spritesheet;
         DragonLib::DImage projectile_spritesheet;
+        DragonLib::DImage spacebg_spritesheet;
 
         Utils::EffectAnimationController effect_ac;
 

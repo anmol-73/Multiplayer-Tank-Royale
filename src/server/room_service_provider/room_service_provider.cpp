@@ -1,4 +1,5 @@
 #include "room_service_provider.hpp"
+#include<cstring>
 
 #define log(message) std::cout << "[Room Server `" << name << "`] " << message << std::endl
 
@@ -40,7 +41,7 @@ void RoomServiceProvider::handle_new_client(ENetPeer *peer)
     using namespace Communication::Room;
 
     // Don't accept connections if the game has started
-    if (room_size >= max_room_size or game_started){
+    if (room_size >= max_room_size or game_started or !is_running()){
         log("Client was not allowed to join");
         send_command(Server::JOIN_DENIED, peer);        
         enet_peer_disconnect(peer, 0);        
@@ -67,6 +68,7 @@ void RoomServiceProvider::handle_new_client(ENetPeer *peer)
     send_message(Server::JOIN_OK, &id, sizeof(int), peer);
 
     auto pd = get_player_details();
+    log(pd.size());
     broadcast_message(Server::PLAYER_LIST, pd.data(), sizeof(PlayerDetail) * pd.size());
     
     log("New client(" << id << ") connected! Current room size: " << ++room_size);
@@ -97,10 +99,15 @@ void RoomServiceProvider::handle_disconnection(ENetPeer *peer)
     log("Client(" << id << ") disconnected. Current room size: " << --room_size);
 
     if (room_size <= 0) stop();
+    else{
+        auto pd = get_player_details();
+        broadcast_message(Server::PLAYER_LIST, pd.data(), sizeof(PlayerDetail) * pd.size());
+    }
 }
 
 void RoomServiceProvider::handle_message(ENetPeer *peer, Communication::Command type, const void *message, size_t size)
 {
+    if (!is_running()) return;
     log("Recieved message");
     using namespace Communication::Room;
     if (peer_to_idx.count(peer) == 0){

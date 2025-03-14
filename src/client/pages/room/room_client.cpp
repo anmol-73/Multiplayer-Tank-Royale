@@ -1,4 +1,5 @@
 #include "room_client.hpp"
+#include<cstring>
 
 #define log(message) std::cout << "[Room] " << message << std::endl
 

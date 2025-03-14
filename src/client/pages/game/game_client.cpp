@@ -29,6 +29,11 @@ bool ServiceConsumers::GameClient::allow_respawn()
     return respawn_ok;
 }
 
+bool ServiceConsumers::GameClient::is_connected()
+{
+    return _is_connected;
+}
+
 std::string ServiceConsumers::GameClient::on_connection_established()
 {
     _is_connected = true;
