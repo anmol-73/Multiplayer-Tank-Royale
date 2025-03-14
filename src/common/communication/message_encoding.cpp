@@ -1,5 +1,5 @@
 #include "message_encoding.hpp"
-
+#include<cstring>
 std::pair<Utils::unique_void_ptr, size_t> Communication::encode_message(Command type, const void *data, size_t data_sz)
 {
     size_t encoded_message_size = sizeof(Command) + data_sz;

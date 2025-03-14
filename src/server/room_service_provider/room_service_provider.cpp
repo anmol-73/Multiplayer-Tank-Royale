@@ -1,4 +1,5 @@
 #include "room_service_provider.hpp"
+#include<cstring>
 
 #define log(message) std::cout << "[Room Server `" << name << "`] " << message << std::endl
 
