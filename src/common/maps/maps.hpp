@@ -26,7 +26,9 @@ namespace Maps{
         float vheight();
 
         std::string resource_path;
+        std::string upper_path;
         std::string icon_path;
+
         std::string name;
     };
 

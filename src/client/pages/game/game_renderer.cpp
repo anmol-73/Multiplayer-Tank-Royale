@@ -24,6 +24,7 @@ Pages::GameRenderer::GameRenderer()
     skull_spritesheet.path = "resources/game_window/misc/TARGET.png";
     projectile_spritesheet.path = "resources/game_window/misc/PROJECTILE.png";
     spacebg_spritesheet.path = "resources/game_window/spacebg.png";
+    upper.path = "resources/game_window/map3upper.png";
     
 }
 
@@ -48,7 +49,8 @@ void Pages::GameRenderer::draw(Game::GameState& gs, int player_id, const std::ve
             WHITE
         );
     }
-    BeginShaderMode(Global::Rendering::Shaders::rendering_shader);{
+    //BeginShaderMode(Global::Rendering::Shaders::rendering_shader);
+    {
         camera.follow(gs.player_vector[player_id].position);
         
         { // draw map
@@ -139,7 +141,18 @@ void Pages::GameRenderer::draw(Game::GameState& gs, int player_id, const std::ve
         }
 
     }
-    EndShaderMode();
+    if(gs.map_num==2)
+    { // draw map
+        DrawTexturePro(
+            upper.tex,
+            camera.viewport(),
+            {0, 0, static_cast<float>(GetScreenWidth()), static_cast<float>(GetScreenHeight())},
+            {0, 0},
+            0,
+            WHITE
+        );
+    }
+   // EndShaderMode();
         
         { // draw projectiles
             for (auto it = gs.projectile_vector.begin(); it != gs.projectile_vector.end(); ++it){
@@ -351,6 +364,7 @@ void Pages::GameRenderer::load_async()
     skull_spritesheet.load_im();
     projectile_spritesheet.load_im();
     spacebg_spritesheet.load_im();
+    upper.load_im();
 
     tank_acs.reserve(12);
     const float tank_anim_duration = 0.4;
@@ -545,6 +559,7 @@ void Pages::GameRenderer::load_sync()
     skull_spritesheet.load_tex();
     explosion_spritesheet.load_tex();
     spacebg_spritesheet.load_tex();
+    upper.load_tex();
     projectile_spritesheet.load_tex();
 
 }

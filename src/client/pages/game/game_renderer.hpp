@@ -54,6 +54,7 @@ namespace Pages
         DragonLib::DImage skull_spritesheet;
         DragonLib::DImage projectile_spritesheet;
         DragonLib::DImage spacebg_spritesheet;
+        DragonLib::DImage upper;
 
         Utils::EffectAnimationController effect_ac;
 
