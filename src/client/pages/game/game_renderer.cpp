@@ -16,6 +16,11 @@ void Pages::GameRenderer::draw(const Game::GameState& gs, int player_id, const s
         SetMouseCursor(MOUSE_CURSOR_CROSSHAIR);
     }
 
+    if(IsKeyPressed(KEY_P)){
+        Global::Rendering::Shaders::rendering_shader = LoadShader(0, TextFormat("resources/shaders/postproc.fs"));
+    }
+    
+    BeginShaderMode(Global::Rendering::Shaders::rendering_shader);{
     camera.follow(gs.player_vector[player_id].position);
 
     { // draw map
@@ -159,7 +164,8 @@ void Pages::GameRenderer::draw(const Game::GameState& gs, int player_id, const s
             );
         }
     }
-
+}
+EndShaderMode();
     { // draw health bar and name
         for (size_t i = 0; i < gs.player_vector.size(); ++ i)
         {
@@ -195,6 +201,7 @@ void Pages::GameRenderer::draw(const Game::GameState& gs, int player_id, const s
         }
     }
 
+    BeginShaderMode(Global::Rendering::Shaders::rendering_shader);{
     { // Draw tracker
         switch (gs.player_vector[player_id].gun_type){
             case 0:
@@ -246,8 +253,11 @@ void Pages::GameRenderer::draw(const Game::GameState& gs, int player_id, const s
                 );
                 break;
             }
+            
         }
     }
+}
+EndShaderMode();
 }
 
 void Pages::GameRenderer::prepare(size_t _map_idx, size_t _player_tank_type)
