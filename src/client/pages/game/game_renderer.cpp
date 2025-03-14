@@ -160,7 +160,7 @@ void Pages::GameRenderer::draw(Game::GameState& gs, int player_id, const std::ve
         //         );
         //     }
         // }
-    // std::cout<<GetFPS()<<std::endl;
+    std::cout<<GetFPS()<<std::endl;
     { // draw health bar and name
         for (size_t j = 0; j < pd.size(); ++j)
         {
