@@ -33,131 +33,130 @@ void Pages::GameRenderer::draw(const Game::GameState& gs, int player_id, const s
         SetMouseCursor(MOUSE_CURSOR_CROSSHAIR);
     }
 
-    if(IsKeyPressed(KEY_P)){
-            
+    if(IsKeyPressed(KEY_P)){            
         Global::Rendering::Shaders::rendering_shader = LoadShader(0, TextFormat("resources/shaders/postproc.fs"));
     }
     BeginShaderMode(Global::Rendering::Shaders::rendering_shader);{
-    camera.follow(gs.player_vector[player_id].position);
-    
-    { // draw map
-        DrawTexturePro(
-            map_images[gs.map_num].tex,
-            camera.viewport(),
-            {0, 0, static_cast<float>(GetScreenWidth()), static_cast<float>(GetScreenHeight())},
-            {0, 0},
-            0,
-            WHITE
-        );
-    }
-    effect_ac.draw(delta_time);
-    { // draw tanks
-        for (size_t i = 0; i < gs.player_vector.size(); ++ i){
-            if (!(gs.player_vector[i].exists and gs.player_vector[i].is_alive)) continue;
-            tank_acs[i].play(gs.player_vector[i].tank_type * 2 + gs.player_vector[i].is_moving, false);
-            
-            auto rect = camera.transform(
-                {
-                    gs.player_vector[i].position.x, gs.player_vector[i].position.y,
-                    static_cast<float>(Game::Data::tank_types[gs.player_vector[i].tank_type].width), static_cast<float>(Game::Data::tank_types[gs.player_vector[i].tank_type].height)
-                }
-            );
-            tank_acs[i].draw(delta_time, rect, gs.player_vector[i].angle);
-            // DrawRectanglePro(
-                //     camera.transform(
-            //         {
-            //             gs.player_vector[i].position.x, gs.player_vector[i].position.y,
-            //             static_cast<float>(Game::Data::tank_types[gs.player_vector[i].tank_type].width), static_cast<float>(Game::Data::tank_types[gs.player_vector[i].tank_type].height)
-            //         }
-            //     ), camera.scale(Vector2{
-                //         static_cast<float>(Game::Data::tank_types[gs.player_vector[i].tank_type].width/2), static_cast<float>(Game::Data::tank_types[gs.player_vector[i].tank_type].height/2)
-                //     }), -RAD2DEG*gs.player_vector[i].angle, WHITE
-                // );
-            }
-        }
+        camera.follow(gs.player_vector[player_id].position);
         
-    { // draw gun
-        for (size_t i = 0; i < gs.player_vector.size(); ++ i)
-        {
-            if((!gs.player_vector[i].exists) || (!gs.player_vector[i].is_alive)) continue;
-            
-            bool has_shot = gs.player_vector[i].time_since_last_shot < prev_times_since_last_shot[i];
-            if (gun_acs[i].current_anim % 2 == 0 or gun_acs[i].current_iteration_count > 0){
-                gun_acs[i].play(gs.player_vector[i].gun_type * 2 + has_shot, false);
-
-                if (has_shot){
-                    if (gs.player_vector[i].gun_type == 2){
-                        Rectangle rect = {
-                            gs.player_vector[i].ray_contact.x, gs.player_vector[i].ray_contact.y, static_cast<float>(Game::Data::explosion_types[0].radius) * 2, static_cast<float>(Game::Data::explosion_types[0].radius) * 2
-                        };
-                        effect_ac.play(0, [rect, this](float _){
-                            return std::pair<Rectangle, float>{camera.transform(rect), 0};
-                        });
-                    }
-                }
-            }
-            switch (gs.player_vector[i].gun_type)
-            {
-                case 0: // Gun behaviour
-                {   // Draw traces
-                    if(gs.player_vector[i].time_since_last_shot <= 0.07)
-                    {
-                        DrawLineEx(
-                            camera.transform(gs.player_vector[i].position),
-                            camera.transform(gs.player_vector[i].ray_contact),
-                            4, WHITE
-                        );
-                    }
-                }
-
-                case 1:
-                case 2:
-                {   // Draw Gun
-                    auto rect = camera.transform(
-                        {
-                            gs.player_vector[i].position.x, gs.player_vector[i].position.y,
-                            static_cast<float>(Game::Data::gun_types[gs.player_vector[i].tank_type].width), static_cast<float>(Game::Data::gun_types[gs.player_vector[i].tank_type].height)
-                        }
-                    );
-                    gun_acs[i].draw(delta_time, rect, gs.player_vector[i].gun_angle);
-                    break;
-                }
-            }
-            prev_times_since_last_shot[i] = gs.player_vector[i].time_since_last_shot;
-        }
-    }
-
-    
-    { // draw projectiles
-        for (auto it = gs.projectile_vector.begin(); it != gs.projectile_vector.end(); ++it){
+        { // draw map
             DrawTexturePro(
-                projectile_spritesheet.tex,
-                {0,0,36,16},
-                camera.transform({
-                    (*it).position.x, (*it).position.y,
-                    static_cast<float>(Game::Data::projectile_types[(*it).type].width), static_cast<float>(Game::Data::projectile_types[(*it).type].height)
-                }),
-                camera.scale(Vector2{
-                    static_cast<float>(Game::Data::projectile_types[(*it).type].width/2), static_cast<float>(Game::Data::projectile_types[(*it).type].height/2)
-                }), 
-                -(*it).angle*RAD2DEG, WHITE
+                map_images[gs.map_num].tex,
+                camera.viewport(),
+                {0, 0, static_cast<float>(GetScreenWidth()), static_cast<float>(GetScreenHeight())},
+                {0, 0},
+                0,
+                WHITE
             );
         }
-    }
-
-
-    // { // draw explosions
-    //     for (auto it = gs.explosion_vector.begin(); it != gs.explosion_vector.end(); ++it){
+        effect_ac.draw(delta_time);
+        { // draw tanks
+            for (size_t i = 0; i < gs.player_vector.size(); ++ i){
+                if (!(gs.player_vector[i].exists and gs.player_vector[i].is_alive)) continue;
+                tank_acs[i].play(gs.player_vector[i].tank_type * 2 + gs.player_vector[i].is_moving, false);
+                
+                auto rect = camera.transform(
+                    {
+                        gs.player_vector[i].position.x, gs.player_vector[i].position.y,
+                        static_cast<float>(Game::Data::tank_types[gs.player_vector[i].tank_type].width), static_cast<float>(Game::Data::tank_types[gs.player_vector[i].tank_type].height)
+                    }
+                );
+                tank_acs[i].draw(delta_time, rect, gs.player_vector[i].angle);
+                // DrawRectanglePro(
+                    //     camera.transform(
+                //         {
+                //             gs.player_vector[i].position.x, gs.player_vector[i].position.y,
+                //             static_cast<float>(Game::Data::tank_types[gs.player_vector[i].tank_type].width), static_cast<float>(Game::Data::tank_types[gs.player_vector[i].tank_type].height)
+                //         }
+                //     ), camera.scale(Vector2{
+                    //         static_cast<float>(Game::Data::tank_types[gs.player_vector[i].tank_type].width/2), static_cast<float>(Game::Data::tank_types[gs.player_vector[i].tank_type].height/2)
+                    //     }), -RAD2DEG*gs.player_vector[i].angle, WHITE
+                    // );
+                }
+            }
             
-    //         auto position = camera.transform((*it).position);
-    //         DrawCircleGradient(
-    //             position.x, position.y,
-    //             camera.scale(Game::Data::explosion_types[(*it).type].radius), 
-    //             MAGENTA, RED
-    //         );
-    //     }
-    // }
-    }
+        { // draw gun
+            for (size_t i = 0; i < gs.player_vector.size(); ++ i)
+            {
+                if((!gs.player_vector[i].exists) || (!gs.player_vector[i].is_alive)) continue;
+                
+                bool has_shot = gs.player_vector[i].time_since_last_shot < prev_times_since_last_shot[i];
+                if (gun_acs[i].current_anim % 2 == 0 or gun_acs[i].current_iteration_count > 0){
+                    gun_acs[i].play(gs.player_vector[i].gun_type * 2 + has_shot, false);
+
+                    if (has_shot){
+                        if (gs.player_vector[i].gun_type == 2){
+                            Rectangle rect = {
+                                gs.player_vector[i].ray_contact.x, gs.player_vector[i].ray_contact.y, static_cast<float>(Game::Data::explosion_types[0].radius) * 2, static_cast<float>(Game::Data::explosion_types[0].radius) * 2
+                            };
+                            effect_ac.play(0, [rect, this](float _){
+                                return std::pair<Rectangle, float>{camera.transform(rect), 0};
+                            });
+                        }
+                    }
+                }
+                switch (gs.player_vector[i].gun_type)
+                {
+                    case 0: // Gun behaviour
+                    {   // Draw traces
+                        if(gs.player_vector[i].time_since_last_shot <= 0.07)
+                        {
+                            DrawLineEx(
+                                camera.transform(gs.player_vector[i].position),
+                                camera.transform(gs.player_vector[i].ray_contact),
+                                4, GREEN
+                            );
+                        }
+                    }
+
+                    case 1:
+                    case 2:
+                    {   // Draw Gun
+                        auto rect = camera.transform(
+                            {
+                                gs.player_vector[i].position.x, gs.player_vector[i].position.y,
+                                static_cast<float>(Game::Data::gun_types[gs.player_vector[i].tank_type].width), static_cast<float>(Game::Data::gun_types[gs.player_vector[i].tank_type].height)
+                            }
+                        );
+                        gun_acs[i].draw(delta_time, rect, gs.player_vector[i].gun_angle);
+                        break;
+                    }
+                }
+                prev_times_since_last_shot[i] = gs.player_vector[i].time_since_last_shot;
+            }
+        }
+
+        
+        { // draw projectiles
+            for (auto it = gs.projectile_vector.begin(); it != gs.projectile_vector.end(); ++it){
+                DrawTexturePro(
+                    projectile_spritesheet.tex,
+                    {0,0,36,16},
+                    camera.transform({
+                        (*it).position.x, (*it).position.y,
+                        static_cast<float>(Game::Data::projectile_types[(*it).type].width), static_cast<float>(Game::Data::projectile_types[(*it).type].height)
+                    }),
+                    camera.scale(Vector2{
+                        static_cast<float>(Game::Data::projectile_types[(*it).type].width/2), static_cast<float>(Game::Data::projectile_types[(*it).type].height/2)
+                    }), 
+                    -(*it).angle*RAD2DEG, WHITE
+                );
+            }
+        }
+
+
+        // { // draw explosions
+        //     for (auto it = gs.explosion_vector.begin(); it != gs.explosion_vector.end(); ++it){
+                
+        //         auto position = camera.transform((*it).position);
+        //         DrawCircleGradient(
+        //             position.x, position.y,
+        //             camera.scale(Game::Data::explosion_types[(*it).type].radius), 
+        //             MAGENTA, RED
+        //         );
+        //     }
+        // }
+        }
     EndShaderMode();
     { // draw health bar and name
         for (size_t j = 0; j < pd.size(); ++j)
@@ -425,7 +424,7 @@ void Pages::GameRenderer::load_async()
                     float width = std::min((time / 0.5f) * rect.width, rect.width);
                     
                     DrawRing(
-                        {rect.x, rect.y}, rect.width / 2 - 4, rect.width / 2, 0, 2 * RAD2DEG * PI, 10, {230, 10, 10, 200}
+                        {rect.x, rect.y}, rect.width / 2 - 4, rect.width / 2, 0, 2 * RAD2DEG * PI, 24, {230, 10, 10, 200}
                     );
                     // DrawCircleLines(
                     //     rect.x, rect.y, rect.width / 2, {230, 10, 10, 200}
@@ -440,7 +439,7 @@ void Pages::GameRenderer::load_async()
                             .height = static_cast<float>(skull_spritesheet.tex.height)
                         },
                         rect,
-                        {rect.width / 2, rect.height / 2}, 0, WHITE
+                        {rect.width / 2, rect.height / 2}, 0, {255, 255, 255, 200}
                     );
                     return;
                 }
@@ -460,7 +459,7 @@ void Pages::GameRenderer::load_async()
                             .height = static_cast<float>(skull_spritesheet.tex.height)
                         },
                         rect,
-                        {rect.width / 2, rect.height / 2}, PI * 2 * RAD2DEG * ratio, {255, 255, 255, 255}
+                        {rect.width / 2, rect.height / 2}, PI * 2 * RAD2DEG * ratio, {255, 255, 255, 200}
                     );
                     return;
                 }
