@@ -17,6 +17,33 @@ Pages::GameOverUI::GameOverUI()
     );
     register_element(bg);
 
+    bg->register_element(
+        new UI::Elements::Text(
+            [](auto _) -> std::pair<UI::DrawParameters::Box, UI::DrawParameters::Text> {
+                return {
+                    { // Box (for alignment)
+                        .position = {
+                            .value = {0.50f, 0.14f},
+                            .mode = {Mode::SCREEN_W, Mode::SCREEN_H}
+                        }
+                    },
+                    { // Text properties
+                        .content = "Final standings",
+                        .font_size = Global::rem * 3,
+                        .font_color = {0x45, 0x41, 0x39, 0xc0},
+                        .position = {
+                            .value = {0.5f, 0.5f},  // Centered within the box
+                            .mode = {Mode::SELF_W, Mode::SELF_H}
+                        },
+                        .origin = {
+                            .value = {0.5, 0.5},  // Align vertically
+                            .mode = {Mode::SELF_W, Mode::SELF_H}
+                        }
+                    }
+                };
+            }
+        )
+    );
     { // Player list
         for (size_t i = 0; i < 12; ++i){ // The names of every player in the lobby
             bg->register_element(
@@ -26,7 +53,7 @@ Pages::GameOverUI::GameOverUI()
                             {
                                 .position = {
                                     .value = {
-                                        i < 12/2 ? 0.05f : 0.35f, 0.15f + (i % (12/2)) * 0.1f
+                                        i < 12/2 ? 0.22f : 0.52f, 0.25f + (i % (12/2)) * 0.1f
                                     },
                                     .mode = {Mode::SCREEN_W, Mode::SCREEN_H}
                                 },
@@ -38,7 +65,7 @@ Pages::GameOverUI::GameOverUI()
                                 .fill = i < scores.size() ? Color{0xb2, 0xad, 0x99, 0xc0} : Color{0x49, 0x47, 0x3f, 0x00}
                             },
                             {
-                                .content = i < scores.size() ? scores[i].first + ": " + std::to_string(scores[i].second) : "",
+                                .content = i < scores.size() ? scores[i].first + " - " + std::to_string(scores[i].second) : "",
                                 .font_size = Global::rem,
                                 .font_color = {0x45, 0x41, 0x39, 0xc0},
                                 .position = {

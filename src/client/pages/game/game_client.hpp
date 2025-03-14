@@ -22,6 +22,7 @@ namespace ServiceConsumers
 
         bool is_game_over();
         bool allow_respawn();
+        bool is_connected();
 
         protected:
             std::string on_connection_established();

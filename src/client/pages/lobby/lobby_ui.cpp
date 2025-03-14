@@ -5,7 +5,7 @@ Pages::LobbyUI::LobbyUI()
 {
     using Mode = UI::DrawParameters::SizeMode;
     
-    const size_t max_room_count = 14;
+    const size_t max_room_count = 12;
     room_selects.assign(max_room_count, nullptr);
     
     auto *bg = new UI::Elements::ImageView(
