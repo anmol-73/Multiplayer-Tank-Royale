@@ -16,7 +16,7 @@ namespace Maps{
         size_t map_height_tiles;
         float tile_width_units;
         int unique_tiles; // Walls always 0 for now
-        std::vector<int> walls;
+        std::vector<short> walls;
         std::vector<Vector2> spawnpoints;
 
         float width();
@@ -30,7 +30,7 @@ namespace Maps{
         std::string name;
     };
 
-    constexpr size_t map_count = 2;
+    constexpr size_t map_count = 3;
     extern MapData maps[map_count];
 
     //void setmap(MapData map, int map_no);

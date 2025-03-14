@@ -37,6 +37,17 @@ void Pages::GameRenderer::draw(Game::GameState& gs, int player_id, const std::ve
     if(IsKeyPressed(KEY_P)){            
         Global::Rendering::Shaders::rendering_shader = LoadShader(0, TextFormat("resources/shaders/postproc.fs"));
     }
+    if(gs.map_num==1)
+    {
+        DrawTexturePro(
+            spacebg_spritesheet.tex,
+            {0,0,1024,576},
+            {0, 0, static_cast<float>(GetScreenWidth()), static_cast<float>(GetScreenHeight())},
+            {0, 0},
+            0,
+            WHITE
+        );
+    }
     BeginShaderMode(Global::Rendering::Shaders::rendering_shader);{
         camera.follow(gs.player_vector[player_id].position);
         
