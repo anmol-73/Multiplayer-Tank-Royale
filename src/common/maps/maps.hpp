@@ -29,7 +29,7 @@ namespace Maps{
         std::string name;
     };
 
-    constexpr size_t map_count = 1;
+    constexpr size_t map_count = 2;
     extern MapData maps[map_count];
 
     //void setmap(MapData map, int map_no);
