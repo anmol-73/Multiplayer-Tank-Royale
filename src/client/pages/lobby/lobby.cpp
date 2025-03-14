@@ -8,6 +8,11 @@ void Pages::LobbyScene::_update()
         return;
     }
 
+    if (!client->is_connected()){
+        SceneManagement::SceneManager::prepare_scene(SceneManagement::SceneName::SPLASH, "ERROR! Lost connection to lobby", 1);
+        SceneManagement::SceneManager::load_scene(SceneManagement::SceneName::SPLASH);
+    }
+
     ui.visible_rooms = client->get_rooms();
     
     BeginDrawing();{
@@ -94,7 +99,7 @@ void Pages::LobbyScene::_load()
     
     if (address.is_invalid()){ // This is clean af. I love you past self :)
         SceneManagement::SceneManager::prepare_scene(SceneManagement::SceneName::SPLASH, address.name.c_str(), 0);
-        SceneManagement::SceneManager::load_scene(SceneManagement::SceneName::SPLASH);
+        SceneManagement::SceneManager::load_deferred(SceneManagement::SceneName::SPLASH);
         return;
     }
     
@@ -103,7 +108,7 @@ void Pages::LobbyScene::_load()
     
     if (error.size() > 0){
         SceneManagement::SceneManager::prepare_scene(SceneManagement::SceneName::SPLASH, error.c_str(), 0);
-        SceneManagement::SceneManager::load_scene(SceneManagement::SceneName::SPLASH);
+        SceneManagement::SceneManager::load_deferred(SceneManagement::SceneName::SPLASH);
         return;
     }
 

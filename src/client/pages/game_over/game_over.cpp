@@ -27,6 +27,8 @@ void Pages::GameOverScene::_loading_update()
         return;
     }
 
+
+
     BeginDrawing();{
         ClearBackground({0xcb, 0xc6, 0xb2, 0xe0});
         DragonLib::Utils::Drawing::draw_text({
@@ -47,13 +49,13 @@ void Pages::GameOverScene::_prepare(const void *msg, size_t command)
             break;
         }
         case 1: {
-            assert(msg != nullptr);
+            if (msg == nullptr){
+                ui.scores.clear();
+                return;
+            }
             auto ptr = static_cast<const std::pair<std::string, int>*>(msg);
 
             ui.scores.assign(ptr, ptr + pi.list_size);
-            for (const auto [n, s]: ui.scores){
-                std::cout << n << " " << s << std::endl;
-            }
             break;
         }
 
@@ -64,6 +66,10 @@ void Pages::GameOverScene::_prepare(const void *msg, size_t command)
 void Pages::GameOverScene::_load()
 {
     ui.load_async();
+    if (ui.scores.size() == 0){
+        SceneManagement::SceneManager::load_deferred(SceneManagement::SceneName::LOBBY);
+        return;
+    }
 }
 
 void Pages::GameOverScene::_cleanup()

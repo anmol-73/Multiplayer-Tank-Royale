@@ -8,6 +8,11 @@ void Pages::GameWindowScene::_update()
         SceneManagement::SceneManager::quit();
         return;
     }
+    if (!client->is_connected()){
+        SceneManagement::SceneManager::prepare_scene(SceneManagement::SceneName::LOBBY, "Connection to the game server was lost!", 1);
+        SceneManagement::SceneManager::load_scene(SceneManagement::SceneName::LOBBY);
+        return;
+    }
     
     if (client->is_game_over() or (IsKeyDown(KEY_LEFT_CONTROL) and IsKeyPressed(KEY_C))){
         std::unique_lock<std::mutex> lk(gs_mutex);
@@ -27,7 +32,9 @@ void Pages::GameWindowScene::_update()
 
     if (!game_state.player_vector[prepared_args.pi.id].is_alive){
         ui.show();
-        ui.allow_respawn(client->allow_respawn());
+        bool allow_respawn = client->allow_respawn();
+        ui.allow_respawn(allow_respawn);
+        renderer.game_started |= allow_respawn;
     } else{
         ui.hide();
     }

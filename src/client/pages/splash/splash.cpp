@@ -17,6 +17,7 @@ void Pages::SplashScene::_update()
     if(ui.connect_button->clicked){
         Communication::Address address(ui.address_input->value);
         SceneManagement::SceneManager::prepare_scene(SceneManagement::SceneName::LOBBY, &address, 0);
+        SceneManagement::SceneManager::prepare_scene(SceneManagement::SceneName::LOBBY, "", 1);
         SceneManagement::SceneManager::load_scene(SceneManagement::SceneName::LOBBY);
     }
 }
