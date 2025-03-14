@@ -23,6 +23,7 @@ Pages::GameRenderer::GameRenderer()
     explosion_spritesheet.path = "resources/game_window/misc/ONLY_EXPLOSION.png";
     skull_spritesheet.path = "resources/game_window/misc/TARGET.png";
     projectile_spritesheet.path = "resources/game_window/misc/PROJECTILE.png";
+    spacebg_spritesheet.path = "resources/game_window/spacebg.png";
     
 }
 
@@ -305,6 +306,7 @@ void Pages::GameRenderer::load_async()
     explosion_spritesheet.load_im();
     skull_spritesheet.load_im();
     projectile_spritesheet.load_im();
+    spacebg_spritesheet.load_im();
 
     tank_acs.reserve(12);
     const float tank_anim_duration = 0.4;
@@ -499,7 +501,7 @@ void Pages::GameRenderer::load_sync()
 
     skull_spritesheet.load_tex();
     explosion_spritesheet.load_tex();
-    projectile_spritesheet.load_tex();
+    spacebg_spritesheet.load_tex();
 
 }
 
@@ -518,7 +520,7 @@ void Pages::GameRenderer::cleanup_async()
     }
     skull_spritesheet.unload_im();
     explosion_spritesheet.unload_im();
-    projectile_spritesheet.unload_im();
+    spacebg_spritesheet.unload_im();
 }
 
 void Pages::GameRenderer::cleanup_sync()
@@ -534,7 +536,7 @@ void Pages::GameRenderer::cleanup_sync()
     }
     skull_spritesheet.unload_tex();
     explosion_spritesheet.unload_tex();
-    projectile_spritesheet.unload_tex();
+    spacebg_spritesheet.unload_tex();
 }
 
 
