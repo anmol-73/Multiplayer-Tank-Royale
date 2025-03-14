@@ -415,7 +415,7 @@ void Pages::GameRenderer::load_async()
                     float width = std::min((time / 0.5f) * rect.width, rect.width);
                     
                     DrawRing(
-                        {rect.x, rect.y}, rect.width / 2 - 4, rect.width / 2, 0, 2 * PI, 10, {230, 10, 10, 200}
+                        {rect.x, rect.y}, rect.width / 2 - 4, rect.width / 2, 0, 2 * PI * RAD2DEG, 24, {230, 10, 10, 200}
                     );
                     // DrawCircleLines(
                     //     rect.x, rect.y, rect.width / 2, {230, 10, 10, 200}
@@ -438,7 +438,7 @@ void Pages::GameRenderer::load_async()
                     float ratio = ((time - 1.5)/ 0.5);
                     float width = (1 - ratio) * rect.width;
                     DrawRing(
-                        {rect.x, rect.y}, rect.width / 2 - 4, rect.width / 2, 0, 2 * PI, 10, {230, 10, 10, 200}
+                        {rect.x, rect.y}, rect.width / 2 - 4, rect.width / 2, 0, 2 * PI * RAD2DEG, 24, {230, 10, 10, 200}
                     );
                     rect.width = width; rect.height = width;
                     DrawTexturePro(

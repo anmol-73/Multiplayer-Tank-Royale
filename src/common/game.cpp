@@ -24,7 +24,7 @@ void Game::GameState::init_game_state(size_t map)
     Game::GameState::start_time = std::chrono::high_resolution_clock().now();
 }
 
-void Game::GameState::apply_frame(const Game::Frame &frame)
+void Game::GameState::apply_frame(const Game::Frame &frame, bool apply_changes)
 {
     
     curr_frame = frame;
@@ -34,7 +34,7 @@ void Game::GameState::apply_frame(const Game::Frame &frame)
     
     handle_movement();
     set_gun_angle();
-    handle_shots();
+    if (apply_changes) handle_shots();
     float t=static_cast<float>(curtime());
     time_of_last_objects_update=t;
     return;
