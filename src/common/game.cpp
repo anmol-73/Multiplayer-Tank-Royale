@@ -288,7 +288,7 @@ void Game::GameState::handle_shots()
                             if (wall_idx >= Maps::maps[map_num].walls.size()){
                                 continue;
                             }
-                            if((wall_x>=0) && (wall_y>=0) && (wall_x<=Maps::maps[map_num].map_width_tiles-1) && (wall_y<=Maps::maps[map_num].map_height_tiles-1) && Maps::maps[map_num].walls[wall_idx]!=0)
+                            if((wall_x>=0) && (wall_y>=0) && (wall_x<=Maps::maps[map_num].map_width_tiles-1) && (wall_y<=Maps::maps[map_num].map_height_tiles-1) && Maps::maps[map_num].walls[wall_idx]<0)
                             {
                                 Rectangle wall = {
                                     .x = static_cast<float>(wall_x)*(Maps::maps[map_num].tile_width_units),
