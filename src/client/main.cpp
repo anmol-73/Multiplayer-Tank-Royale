@@ -12,7 +12,7 @@ int main(int argc, char* argv[]){
         throw std::runtime_error("Could not initialize enet!");
     }
 
-    SetConfigFlags(FLAG_WINDOW_HIGHDPI | FLAG_VSYNC_HINT | FLAG_MSAA_4X_HINT);
+    SetConfigFlags(FLAG_WINDOW_HIGHDPI | FLAG_VSYNC_HINT | FLAG_MSAA_4X_HINT | FLAG_WINDOW_RESIZABLE);
     InitWindow(800, 450, "Multiplayer Tank Royal (Demo)");{
         size_t screen_height = GetMonitorHeight(GetCurrentMonitor());
         size_t screen_width = GetMonitorWidth(GetCurrentMonitor());

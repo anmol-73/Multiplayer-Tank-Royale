@@ -306,7 +306,7 @@ void Pages::GameRenderer::draw(Game::GameState& gs, int player_id, const std::ve
         }
     }
 
-    int time = (std::max(120000 - static_cast<int>(gs.curtime()), 0)) / 1000;
+    int time = (std::max(240000 - static_cast<int>(gs.curtime()), 0)) / 1000;
     if (!game_started){
         DragonLib::Utils::Drawing::draw_text(
             {
