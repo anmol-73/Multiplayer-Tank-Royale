@@ -17,8 +17,11 @@ int main(int argc, char* argv[]){
         size_t screen_height = GetMonitorHeight(GetCurrentMonitor());
         size_t screen_width = GetMonitorWidth(GetCurrentMonitor());
         
-        size_t window_width = std::min(GetMonitorWidth(GetCurrentMonitor()) - 10, 1600);
+        size_t window_width = std::min(GetMonitorWidth(GetCurrentMonitor()) - 50, 2400);
         size_t window_height = window_width * 9 / 16;
+
+        window_height = std::min(static_cast<size_t>(GetMonitorHeight(GetCurrentMonitor())) - 50ll, window_height);
+        window_width = window_height * 16 / 9;
         
         SetWindowSize(window_width, window_height);
         SetWindowPosition((screen_width - window_width) / 2, (screen_height - window_height) / 2);
