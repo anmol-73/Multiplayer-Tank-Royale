@@ -102,6 +102,8 @@ void RoomServiceProvider::handle_disconnection(ENetPeer *peer)
     else{
         auto pd = get_player_details();
         broadcast_message(Server::PLAYER_LIST, pd.data(), sizeof(PlayerDetail) * pd.size());
+        
+        send_message(SETTINGS_SET, &settings, sizeof(RoomSettings), peer);
     }
 }
 
