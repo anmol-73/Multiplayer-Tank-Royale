@@ -1,5 +1,5 @@
-#ifndef HEADER_CORE_DRAGONLIB_UTILS_LAYOUT_PARAMETERS
-#define HEADER_CORE_DRAGONLIB_UTILS_LAYOUT_PARAMETERS
+#ifndef H_DLIB_LAYOUT_PARAMS
+#define H_DLIB_LAYOUT_PARAMS
 
 #include <raylib.h>
 #include <string>
@@ -16,7 +16,7 @@ namespace DragonLib
                 Color color = BLACK; // The color of the border
                 float offset = 0; // The offset around the box with which the border is drawn
                 
-                // TODO: Add support for border radius?
+                // FUTURE: Add support for border radius?
                 // (One of the initial commits has the struct definition to store radius information it doesn't have an implementation yet)
             };
             enum SizeMode{

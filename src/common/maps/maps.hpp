@@ -1,11 +1,8 @@
-/*************************************************************************
- * Walls are of type 0
- ***************************************************************************/
-
-#ifndef HEADER_MAPS
-#define HEADER_MAPS
+#ifndef H_COM_MAPS
+#define H_COM_MAPS
 
 #include <vector>
+#include <string>
 #include <stdlib.h>
 #include <raylib.h>
 
@@ -19,16 +16,24 @@ namespace Maps{
         size_t map_height_tiles;
         float tile_width_units;
         int unique_tiles; // Walls always 0 for now
-        std::vector<int> walls;
+        std::vector<short> walls;
+        std::vector<Vector2> spawnpoints;
 
         float width();
         float height();
         
         float vwidth();
         float vheight();
+
+        std::string resource_path;
+        std::string upper_path;
+        std::string icon_path;
+
+        std::string name;
     };
 
-    extern MapData maps[1];
+    constexpr size_t map_count = 3;
+    extern MapData maps[map_count];
 
     //void setmap(MapData map, int map_no);
 }

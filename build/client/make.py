@@ -77,9 +77,3 @@ assert os.system(
 	f"{CC} -o {PROJECT_NAME}.exe {OBJS} {CFLAGS} {INCLUDE_DIRS} {LINK_DIRS} {LINK_LIBS} -D{PLATFORM}"
 ) == 0
 print("Built executabe")
-
-
-if len(sys.argv) > 1 and sys.argv[1] == "test":
-	assert os.system(
-		f"{PROJECT_NAME}.exe"
-	) == 0

@@ -38,6 +38,7 @@ void DragonLib::UI::Elements::View::reset()
 
 void DragonLib::UI::Elements::View::hide()
 {
+    if (!visible) return;
     reset();
     visible = false;
 }
@@ -55,4 +56,32 @@ inline void DragonLib::UI::Elements::View::disable_events()
 inline void DragonLib::UI::Elements::View::enable_events()
 {
     events_enabled = true;
+}
+
+void DragonLib::UI::Elements::View::load_async()
+{
+    for (size_t i = 0; i < elements.size(); ++i){
+        elements[i]->load_async();
+    }
+}
+
+void DragonLib::UI::Elements::View::cleanup_async()
+{
+    for (size_t i = 0; i < elements.size(); ++i){
+        elements[i]->cleanup_async();
+    }
+}
+
+void DragonLib::UI::Elements::View::load_sync()
+{
+    for (size_t i = 0; i < elements.size(); ++i){
+        elements[i]->load_sync();
+    }
+}
+
+void DragonLib::UI::Elements::View::cleanup_sync()
+{
+    for (size_t i = 0; i < elements.size(); ++i){
+        elements[i]->cleanup_sync();
+    }
 }

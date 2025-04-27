@@ -1,10 +1,9 @@
-#ifndef HEADER_CORE_GLOBAL
-#define HEADER_CORE_GLOBAL
+#ifndef H_GLOBAL
+#define H_GLOBAL
 
 #include <raylib.h>
 #include "dragonlib/utils/text.hpp"
-#include "core/task.hpp"
-#include "communication/room_client.hpp"
+#include "misc/task.hpp"
 
 namespace Global
 {
@@ -42,13 +41,7 @@ namespace Global
     /**
      * Just some unit proportional to screen height. Use it for like text size and all.
      */
-    extern float rem;
-    namespace ServiceProviders
-    {
-        extern Communication::RoomClient room_client;
-        extern Utils::Task room_client_worker;
-    } // namespace ServiceProviders
-    
+    extern float rem;    
 
     /**
      * Initializes global parameters
@@ -58,7 +51,7 @@ namespace Global
     /**
      * Frees resources associated with global shit
      */
-    void cleanup();  
+    void cleanup();
 } // namespace Global
 
 #endif

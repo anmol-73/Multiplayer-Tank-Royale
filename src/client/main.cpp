@@ -1,41 +1,43 @@
 #include <raylib.h>
+#include <enet_include.hpp>
+#include <stdexcept>
+#include <iostream>
 
-#include "core/scene_management/scene_manager.hpp"
-#include "pages/pages.hpp"
+#include "core/scene_management.hpp"
+#include "core/global.hpp"
+#include "pages.hpp"
 
-#if defined(_WIN32)           
-	#define NOGDI             // All GDI defines and routines
-	#define NOUSER            // All USER defines and routines
-#endif
-typedef struct tagMSG *LPMSG;
-#include <enet/enet.h>
+int main(int argc, char* argv[]){
+    if (enet_initialize()){
+        throw std::runtime_error("Could not initialize enet!");
+    }
 
-#if defined(_WIN32)           // raylib uses these names as function parameters
-	#undef near
-	#undef far
-    #undef ABSOLUTE
-    #undef min
-    #undef max
-#endif
-
-int main(int argc, char const *argv[])
-{
     SetConfigFlags(FLAG_WINDOW_HIGHDPI | FLAG_VSYNC_HINT | FLAG_MSAA_4X_HINT);
-    
-    InitWindow(800, 450, "Multiplayer Tank Royal (Demo)");
-    size_t window_width = std::min(GetMonitorWidth(GetCurrentMonitor()) - 200, 800);
-    SetWindowSize(window_width, (window_width * 9) / 16);
-    SetWindowPosition(20, 20);
-    SetTargetFPS(120);
+    InitWindow(800, 450, "Multiplayer Tank Royal (Demo)");{
+        size_t screen_height = GetMonitorHeight(GetCurrentMonitor());
+        size_t screen_width = GetMonitorWidth(GetCurrentMonitor());
+        
+        size_t window_width = std::min(GetMonitorWidth(GetCurrentMonitor()) - 50, 2400);
+        size_t window_height = window_width * 9 / 16;
 
+        window_height = std::min(static_cast<size_t>(GetMonitorHeight(GetCurrentMonitor())) - 50ll, window_height);
+        window_width = window_height * 16 / 9;
+        
+        SetWindowSize(window_width, window_height);
+        SetWindowPosition((screen_width - window_width) / 2, (screen_height - window_height) / 2);
+    }
+    SetTargetFPS(60);
+    
     Global::init();
 
-    SceneManagement::SceneManager::register_scene(SceneManagement::SceneName::MAIN_PAGE, new Pages::MainWindowScene());
-    SceneManagement::SceneManager::register_scene(SceneManagement::SceneName::LOBBY_PAGE, new Pages::LobbyWindowScene());
-    SceneManagement::SceneManager::register_scene(SceneManagement::SceneName::GAME_PAGE, new Pages::GameWindowScene());
+    SceneManagement::SceneManager::register_scene(SceneManagement::SceneName::SPLASH, new Pages::SplashScene());
+    SceneManagement::SceneManager::register_scene(SceneManagement::SceneName::LOBBY, new Pages::LobbyScene());
+    SceneManagement::SceneManager::register_scene(SceneManagement::SceneName::ROOM, new Pages::RoomScene());
+    SceneManagement::SceneManager::register_scene(SceneManagement::SceneName::GAME, new Pages::GameWindowScene());
+    SceneManagement::SceneManager::register_scene(SceneManagement::SceneName::GOVER, new Pages::GameOverScene());
     SceneManagement::SceneManager::init();
 
-    SceneManagement::SceneManager::load_scene(SceneManagement::SceneName::MAIN_PAGE);   
+    SceneManagement::SceneManager::load_scene(SceneManagement::SceneName::SPLASH);
 
     while (SceneManagement::SceneManager::is_active){
         SceneManagement::SceneManager::update();
@@ -43,5 +45,6 @@ int main(int argc, char const *argv[])
 
     SceneManagement::SceneManager::cleanup();
     Global::cleanup();
+
     return 0;
 }

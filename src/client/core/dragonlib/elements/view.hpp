@@ -1,5 +1,5 @@
-#ifndef HEADER_CORE_DRAGONLIB_ELEMENTS_VIEW
-#define HEADER_CORE_DRAGONLIB_ELEMENTS_VIEW
+#ifndef H_DLIB_ELEMENT_VIEW
+#define H_DLIB_ELEMENT_VIEW
 #include <vector>
 #include <memory>
 #include "element.hpp"
@@ -27,6 +27,11 @@ namespace DragonLib
                 inline void disable_events();
 
                 inline void enable_events();
+
+                void load_async();
+                void cleanup_async();
+                void load_sync();
+                void cleanup_sync();
 
             protected:
                 std::vector<std::unique_ptr<Element>> elements;

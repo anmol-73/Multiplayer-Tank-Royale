@@ -1,3 +1,4 @@
+#include "elements/image_view.hpp"
 #include "elements/page_view.hpp"
 #include "elements/element.hpp"
 #include "elements/span.hpp"

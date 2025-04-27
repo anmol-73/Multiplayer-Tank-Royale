@@ -1,5 +1,5 @@
-#ifndef HEADER_CORE_DRAGONLIB_ELEMENTS_ELEMENT
-#define HEADER_CORE_DRAGONLIB_ELEMENTS_ELEMENT
+#ifndef H_DLIB_ELEMENT
+#define H_DLIB_ELEMENT
 
 namespace DragonLib
 {
@@ -41,6 +41,23 @@ namespace DragonLib
                 virtual void reset();
 
                 virtual ~Element();
+
+                /**
+                 * Called outside the main thread (only when the scene is loaded)
+                 */
+                virtual void load_async();
+                /**
+                 * Called outside the main thread (only when the scene is unloaded)
+                 */
+                virtual void cleanup_async();
+                /**
+                 * Called on the main thread (only when the scene is loaded)
+                 */
+                virtual void load_sync();
+                /**
+                 * Called on the main thread (only when the scene is unloaded)
+                 */
+                virtual void cleanup_sync();
 
             protected:
                 /**

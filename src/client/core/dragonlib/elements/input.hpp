@@ -1,5 +1,5 @@
-#ifndef HEADER_CORE_DRAGONLIB_ELEMENTS_INPUT
-#define HEADER_CORE_DRAGONLIB_ELEMENTS_INPUT
+#ifndef H_DLIB_ELEMENT_INPUT
+#define H_DLIB_ELEMENT_INPUT
 
 #include <string>
 #include <raylib.h>

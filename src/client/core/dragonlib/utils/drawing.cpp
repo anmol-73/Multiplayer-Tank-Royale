@@ -31,7 +31,7 @@ Rectangle DragonLib::Utils::Drawing::__draw_text_no_wrap(UI::DrawParameters::Tex
 Rectangle DragonLib::Utils::Drawing::__draw_text_with_wrap(UI::DrawParameters::Text &params)
 {
     assert(params.font != nullptr);
-    // TODO: Text with wrap
+    // FUTURE: Text with wrap
     // https://www.raylib.com/examples/text/loader.html?name=text_rectangle_bounds
     return Rectangle();
 }
@@ -74,7 +74,7 @@ Rectangle DragonLib::Utils::Drawing::__draw_box_no_radius(UI::DrawParameters::Bo
 
 Rectangle DragonLib::Utils::Drawing::__draw_box_with_radius(UI::DrawParameters::Box &params)
 {
-    // TODO: Do rect with border radius
+    // FUTURE: Do rect with border radius
     // https://www.shadertoy.com/view/WtdSDs
     // Look into Triangle Fan
     return Rectangle();

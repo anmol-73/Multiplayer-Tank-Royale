@@ -22,7 +22,8 @@
         "includePath": [
           "${workspaceFolder}/src/server/**",
           "${workspaceFolder}/src/common/**",
-          "${workspaceFolder}/include/**"
+          "${workspaceFolder}/include/**",
+          "C:/raylib/raylib/src/**"
         ],
         "defines": [
           "_DEBUG",

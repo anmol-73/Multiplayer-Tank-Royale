@@ -1,15 +1,16 @@
-#ifndef HEADER_CORE_UTILS_CAMERA
-#define HEADER_CORE_UTILS_CAMERA
+#ifndef H_UTILS_CAMERA
+#define H_UTILS_CAMERA
 
 #include <raylib.h>
 #include <raymath.h>
+#include <cassert>
 
 namespace Utils
 {
     struct Camera{
     public:
         /** Initialize the camera based on the map*/
-        void init(Vector2 map_size, Vector2 viewport_size, Vector2 player_size);
+        void init(Vector2 map_size, Vector2 viewport_size);
 
         /** Update the camera position based on the player position */
         void follow(Vector2 player_position);
@@ -21,12 +22,17 @@ namespace Utils
         Rectangle transform(Rectangle rect);
 
         /** Scales a size from world units to camera units */
+        float scale(float size);
         Vector2 scale(Vector2 size);
         Rectangle scale(Rectangle size);
 
+        /** Undoes scale */
+        Vector2 descale(Vector2 size);
+        Rectangle descale(Rectangle size);
+
         Rectangle viewport();
 
-    private:
+        private:
         /** The position of the camera in world space */
         Vector2 position;
         /** The size of the viewport of the camera in world size */
@@ -36,8 +42,7 @@ namespace Utils
         /** The of the window we are working with */
         Vector2 half_screen_size;
 
-        Vector2 scaling_factor;
-        Vector2 player_size;
+        float scaling_factor;
 
     };
     

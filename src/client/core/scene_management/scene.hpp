@@ -1,16 +1,23 @@
-#ifndef HEADER_CORE_SCENE_MANAGEMENT_SCENE
-#define HEADER_CORE_SCENE_MANAGEMENT_SCENE
+#ifndef H_SCENE
+#define H_SCENE
+
 #include <cassert>
 #include <thread>
 #include <mutex>
 #include <condition_variable>
 
+#ifndef _WIN32
+#define jthread thread
+#endif
+
 namespace SceneManagement
 {
     enum SceneName{
-        MAIN_PAGE,
-        LOBBY_PAGE,
-        GAME_PAGE,
+        SPLASH,
+        LOBBY,
+        ROOM,
+        GAME,
+        GOVER,
         __NIL__ // NOTE: This must be the last position in the enum
     };
 
@@ -47,6 +54,12 @@ namespace SceneManagement
         
         /** Pushes the cleanup request onto the load-unload thread. */
         void __request_cleanup();
+
+        /**
+         *  The scene was asked to prepare itself with some initialization data
+         *  NOTE: It is up to the caller to ensure that the data provided is as expected!
+         */
+        virtual void _prepare(const void *data, size_t command);
 
         /** 
          * Called every frame.
@@ -100,7 +113,7 @@ namespace SceneManagement
             std::condition_variable load_unload_cv;
             
             bool thread_should_run = false; // Flag that tells whether the load_unload thread should run
-            std::thread load_unload_worker_thread; // The thread that handles all load and unload calls for the scene
+            std::jthread load_unload_worker_thread; // The thread that handles all load and unload calls for the scene
 
             size_t loads_requested = 0; // Keeps track of the number of loads requested
             size_t unloads_requested = 0; // Keeps track of the number of unloads requested

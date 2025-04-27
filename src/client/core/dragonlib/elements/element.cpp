@@ -24,5 +24,9 @@ void DragonLib::UI::Elements::Element::HoverState::clear()
 }
 
 DragonLib::UI::Elements::Element::~Element() = default;
-void DragonLib::UI::Elements::Element::draw(){}
+void DragonLib::UI::Elements::Element::load_async() {}
+void DragonLib::UI::Elements::Element::cleanup_async() {}
+void DragonLib::UI::Elements::Element::load_sync() {}
+void DragonLib::UI::Elements::Element::cleanup_sync() {}
+void DragonLib::UI::Elements::Element::draw() {}
 void DragonLib::UI::Elements::Element::poll_events(){}
