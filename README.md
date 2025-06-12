@@ -144,10 +144,10 @@ Contains all resources used by client and server.
 
 ---
 ## Photo Gallery
-![alt text](https://drive.google.com/file/d/1Qhk-I1NP61bTuU41H3lzKzkkMlqR7Xaf/view?usp=drive_link)
+![alt text](https://drive.google.com/uc?export=view&id=1Qhk-I1NP61bTuU41H3lzKzkkMlqR7Xaf)
 
-![alt text](https://drive.google.com/file/d/1N-Iva0rlnp6MbkzRBfEFxOedrwEhIDy7/view?usp=drive_link)
+![alt text](https://drive.google.com/uc?export=view&id=1N-Iva0rlnp6MbkzRBfEFxOedrwEhIDy7)
 
-![alt text](https://drive.google.com/file/d/1eAYNYbh4xHdOFx9xlGBrEvGVhDNUvaqW/view?usp=drive_link)
+![alt text](https://drive.google.com/uc?export=view&id=1eAYNYbh4xHdOFx9xlGBrEvGVhDNUvaqW)
 
 ---
