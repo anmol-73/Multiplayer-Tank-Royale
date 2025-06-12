@@ -13,6 +13,7 @@ This is the repo for the project 'MULTIPLAYER TANK ROYALE' under Programming Clu
 - [Repo Structure](#repo-structure)
 - [Usage](#usage)
 - [The Team](#the-team)
+- [Photo Gallery](#photo-gallery)
 
 ---
 
@@ -140,5 +141,13 @@ Contains all resources used by client and server.
 - Dhruv Prasad
 - Kaushal Raghu
 - Shriram Arul
+
+---
+## Photo Gallery
+![alt text](https://drive.google.com/file/d/1Qhk-I1NP61bTuU41H3lzKzkkMlqR7Xaf/view?usp=drive_link)
+
+![alt text](https://drive.google.com/file/d/1N-Iva0rlnp6MbkzRBfEFxOedrwEhIDy7/view?usp=drive_link)
+
+![alt text](https://drive.google.com/file/d/1eAYNYbh4xHdOFx9xlGBrEvGVhDNUvaqW/view?usp=drive_link)
 
 ---
